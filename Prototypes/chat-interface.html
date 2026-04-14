@@ -210,7 +210,7 @@
     <div class="mb-5">
       <p class="border-bb-blue-40 border-l-4 py-xs pl-s text-bb-mid-grey-00 text-[1rem] mb-3">Government of Barbados</p>
       <h1 class="font-bold text-[2.5rem] leading-tight">Complete a form by chat</h1>
-      <p class="text-bb-mid-grey-00 mt-2">Have a conversation to fill in any of the 9 NIS and government forms. Powered by AI.</p>
+      <p class="text-bb-mid-grey-00 mt-2">Have a conversation to fill in any of the 31 government forms across NIS and BLA. Powered by AI.</p>
     </div>
     <div id="chat-window">
       <div id="messages"></div>
@@ -237,6 +237,7 @@
 </footer>
 
 <script src="../assets/govbb-framework.js"></script>
+<script src="../assets/bla-forms-data.js"></script>
 <script>
 'use strict';
 
@@ -260,7 +261,7 @@ var FORMS = [
   { id:'secp', name:'Self-Employed Contributions Certificate',          ref:'SECP', agency:'National Insurance Scheme (NIS)' },
   { id:'tc',   name:'Termination Certificate',                          ref:'TC',   agency:'National Insurance Scheme (NIS)' },
   { id:'vep',  name:'Permit to Remove / Relocate Structure',            ref:'VEP',  agency:'Barbados Licensing Authority (BLA)' }
-];
+].concat(window.BLA_FORMS || []);
 
 /* ─────────────────────────────────────────
    SYSTEM PROMPTS
@@ -576,6 +577,13 @@ ${BASE_RULES}`
 
 };
 
+// Merge BLA system prompts, replacing <<BASE_RULES>> placeholder with the shared rules string
+if (window.BLA_SYSTEM_PROMPTS) {
+  Object.keys(window.BLA_SYSTEM_PROMPTS).forEach(function(id) {
+    SYSTEM_PROMPTS[id] = window.BLA_SYSTEM_PROMPTS[id].replace('<<BASE_RULES>>', BASE_RULES);
+  });
+}
+
 /* ─────────────────────────────────────────
    STATE
 ───────────────────────────────────────── */
@@ -754,21 +762,29 @@ function saveApiKey() {
 /* ─────────────────────────────────────────
    ROUTING — natural language form selection
 ───────────────────────────────────────── */
+// NIS form descriptions (the BLA entries are taken straight from FORMS[].name)
+var FORM_DESCRIPTIONS = {
+  'se':   'register as self-employed with NIS',
+  'oss':  'set up an NIS online account / access NIS services online',
+  'dd':   'receive NIS benefit payments directly into a bank account',
+  'dp10': 'employer submitting monthly NIS contributions for staff',
+  'pd':   'pensioner over 60 declaring status to avoid tax on savings bond interest',
+  'ub':   'claim unemployment benefit after losing a job',
+  'secp': 'self-employed person paying their annual NIS contributions',
+  'tc':   "employer reporting that an employee's job has ended",
+  'vep':  'permission to move a house, building, or boat on public roads'
+};
+
 var ROUTING_PROMPT =
   'You are a routing assistant for the Government of Barbados. ' +
   'Based on what the user says they want to do, identify which form they need. ' +
   'Reply with ONLY the form ID — nothing else.\n\n' +
   'Forms:\n' +
-  'se — Self-Employment Registration: register as self-employed with NIS\n' +
-  'oss — NIS Online Registration: set up an NIS online account / access NIS services online\n' +
-  'dd — Direct Deposit: receive NIS benefit payments directly into a bank account\n' +
-  'dp10 — NIS Contributions Certificate D.P.10: employer submitting monthly NIS contributions for staff\n' +
-  'pd — Pensioner Declaration: pensioner over 60 declaring status to avoid tax on savings bond interest\n' +
-  'ub — Unemployment Benefit: claim unemployment benefit after losing a job\n' +
-  'secp — Self-Employed Contributions Certificate: self-employed person paying their annual NIS contributions\n' +
-  'tc — Termination Certificate: employer reporting that an employee\'s job has ended\n' +
-  'vep — Permit to Remove/Relocate Structure: permission to move a house, building, or boat on public roads\n\n' +
-  'If you can identify the form reply with its ID (e.g. "se"). If you cannot, reply with "unknown".';
+  FORMS.map(function(f) {
+    var desc = FORM_DESCRIPTIONS[f.id] || f.name;
+    return f.id + ' — ' + f.name + ': ' + desc;
+  }).join('\n') +
+  '\n\nIf you can identify the form reply with its ID exactly as listed above. If you cannot, reply with "unknown".';
 
 function renderSelect() {
   state.phase = 'routing';
@@ -800,7 +816,7 @@ async function handleRouting(text) {
     ], FAST_MODEL);
 
     typingStop();
-    var formId = reply.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    var formId = reply.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
     var form = null;
     for (var i = 0; i < FORMS.length; i++) {
       if (FORMS[i].id === formId) { form = FORMS[i]; break; }
