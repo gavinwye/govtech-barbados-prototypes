@@ -2,3 +2,6 @@
 pdf forms/
 service pattern documents/
 .claude/
+
+# Local Netlify folder
+.netlify
