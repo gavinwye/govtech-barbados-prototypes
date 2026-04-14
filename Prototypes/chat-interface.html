@@ -177,6 +177,61 @@
       color: var(--color-red-00);
     }
     .api-hint { font-size: 0.875rem; color: var(--color-mid-grey-00); margin-top: 0.25rem; }
+    /* Mic button */
+    .mic-btn {
+      background: #fff;
+      color: var(--color-black-00);
+      border: 2px solid var(--color-black-00);
+      border-radius: 4px;
+      width: 46px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.1s, border-color 0.1s, color 0.1s;
+    }
+    .mic-btn:hover { background: var(--color-teal-10); border-color: var(--color-teal-00); color: var(--color-teal-00); }
+    .mic-btn.recording {
+      background: var(--color-red-00);
+      border-color: var(--color-red-00);
+      color: #fff;
+      animation: pulse-mic 1.2s infinite;
+    }
+    .mic-btn.transcribing {
+      background: var(--color-teal-10);
+      border-color: var(--color-teal-00);
+      color: var(--color-teal-00);
+      cursor: not-allowed;
+    }
+    .mic-btn:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
+    @keyframes pulse-mic {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(164, 44, 44, 0.45); }
+      50% { box-shadow: 0 0 0 7px rgba(164, 44, 44, 0); }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    /* TTS toggle */
+    .tts-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-mid-grey-00);
+      font-family: inherit;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      transition: color 0.1s, background 0.1s;
+      text-decoration: none;
+    }
+    .tts-btn:hover { color: var(--color-teal-00); background: var(--color-teal-10); }
+    .tts-btn.active { color: var(--color-teal-00); font-weight: 600; }
   </style>
 </head>
 <body>
@@ -244,9 +299,19 @@
 /* ─────────────────────────────────────────
    CONFIG
 ───────────────────────────────────────── */
-var GROQ_URL   = 'https://api.groq.com/openai/v1/chat/completions';
-var CHAT_MODEL = 'llama-3.3-70b-versatile';
-var FAST_MODEL = 'llama-3.1-8b-instant';
+var GROQ_URL      = 'https://api.groq.com/openai/v1/chat/completions';
+var WHISPER_URL   = 'https://api.groq.com/openai/v1/audio/transcriptions';
+var CHAT_MODEL    = 'llama-3.3-70b-versatile';
+var FAST_MODEL    = 'llama-3.1-8b-instant';
+var WHISPER_MODEL = 'whisper-large-v3-turbo';
+
+var voice = {
+  recording:     false,
+  mediaRecorder: null,
+  audioChunks:   [],
+  ttsEnabled:    false,
+  synth:         window.speechSynthesis || null
+};
 
 /* ─────────────────────────────────────────
    FORM CATALOG
@@ -646,6 +711,7 @@ function botMsg(html) {
     '<div class="bubble-bot">' + html + '</div>';
   messagesEl.appendChild(wrap);
   scrollBottom();
+  speakText(html);
 }
 
 function userMsg(text) {
@@ -884,13 +950,176 @@ async function startForm(form) {
   setBusy(false);
 }
 
+/* ─────────────────────────────────────────
+   VOICE — mic + TTS
+───────────────────────────────────────── */
+function micSvg() {
+  return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>';
+}
+function stopSvg() {
+  return '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>';
+}
+function spinSvg() {
+  return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="animation:spin 0.8s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+}
+
+function updateMicBtn(btnState) {
+  var btn = document.getElementById('mic-btn');
+  if (!btn) return;
+  btn.disabled = false;
+  if (btnState === 'transcribing') {
+    btn.className = 'mic-btn transcribing';
+    btn.innerHTML = spinSvg();
+    btn.disabled  = true;
+    btn.title     = 'Transcribing…';
+  } else if (voice.recording) {
+    btn.className = 'mic-btn recording';
+    btn.innerHTML = stopSvg();
+    btn.title     = 'Stop recording';
+  } else {
+    btn.className = 'mic-btn';
+    btn.innerHTML = micSvg();
+    btn.title     = 'Speak your reply';
+  }
+}
+
+async function toggleRecording() {
+  if (voice.recording) {
+    stopRecording();
+  } else {
+    await startRecording();
+  }
+}
+
+async function startRecording() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert('Your browser does not support microphone access. Try Chrome or Firefox.');
+    return;
+  }
+  try {
+    var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    voice.audioChunks   = [];
+    voice.mediaRecorder = new MediaRecorder(stream);
+    voice.mediaRecorder.ondataavailable = function(e) {
+      if (e.data.size > 0) voice.audioChunks.push(e.data);
+    };
+    voice.mediaRecorder.onstop = async function() {
+      stream.getTracks().forEach(function(t) { t.stop(); });
+      var mimeType = voice.mediaRecorder.mimeType || 'audio/webm';
+      var blob = new Blob(voice.audioChunks, { type: mimeType });
+      await transcribeAudio(blob, mimeType);
+    };
+    voice.mediaRecorder.start();
+    voice.recording = true;
+    updateMicBtn();
+  } catch(err) {
+    voice.recording = false;
+    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+      alert('Microphone access was denied. Allow microphone access in your browser settings and try again.');
+    } else {
+      alert('Could not start recording: ' + err.message);
+    }
+    updateMicBtn();
+  }
+}
+
+function stopRecording() {
+  if (voice.mediaRecorder && voice.recording) {
+    voice.recording = false;
+    voice.mediaRecorder.stop();
+    updateMicBtn('transcribing');
+  }
+}
+
+async function transcribeAudio(blob, mimeType) {
+  updateMicBtn('transcribing');
+  var status = document.getElementById('chat-status');
+  if (status) status.textContent = 'Transcribing voice…';
+
+  try {
+    var ext = 'webm';
+    if (mimeType && mimeType.includes('ogg'))  ext = 'ogg';
+    if (mimeType && mimeType.includes('mp4'))  ext = 'mp4';
+    if (mimeType && mimeType.includes('wav'))  ext = 'wav';
+
+    var fd = new FormData();
+    fd.append('file', blob, 'recording.' + ext);
+    fd.append('model', WHISPER_MODEL);
+    fd.append('language', 'en');
+
+    var res = await fetch(WHISPER_URL, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + state.apiKey },
+      body: fd
+    });
+
+    if (!res.ok) {
+      var eb = {};
+      try { eb = await res.json(); } catch(e) {}
+      throw new Error((eb.error && eb.error.message) || 'HTTP ' + res.status);
+    }
+
+    var data = await res.json();
+    var text = (data.text || '').trim();
+
+    if (text) {
+      var ta = document.getElementById('chat-input');
+      if (ta) {
+        ta.value = text;
+        ta.dispatchEvent(new Event('input'));
+      }
+      if (status) status.textContent = '';
+      updateMicBtn();
+      // Auto-send the transcribed message
+      sendMessage();
+    } else {
+      if (status) status.textContent = 'Nothing heard — try again.';
+      updateMicBtn();
+    }
+  } catch(err) {
+    if (status) status.textContent = '';
+    updateMicBtn();
+    errorMsg('Voice transcription failed: ' + err.message);
+  }
+}
+
+function toggleTts() {
+  voice.ttsEnabled = !voice.ttsEnabled;
+  if (!voice.ttsEnabled && voice.synth) voice.synth.cancel();
+  var btn = document.getElementById('tts-btn');
+  if (btn) {
+    btn.className = 'tts-btn' + (voice.ttsEnabled ? ' active' : '');
+    btn.title     = voice.ttsEnabled ? 'Turn off read-aloud' : 'Turn on read-aloud';
+  }
+}
+
+function speakText(html) {
+  if (!voice.ttsEnabled || !voice.synth) return;
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  var text = (tmp.textContent || tmp.innerText || '').trim();
+  if (!text) return;
+  voice.synth.cancel();
+  var utt  = new SpeechSynthesisUtterance(text);
+  utt.rate  = 1.05;
+  utt.pitch = 1;
+  voice.synth.speak(utt);
+}
+
 function renderChatInput(placeholder) {
   inputAreaEl.innerHTML =
     '<div class="input-row">' +
       '<textarea class="chat-textarea" id="chat-input" placeholder="' + escH(placeholder || 'Type your reply…') + '" rows="1"></textarea>' +
+      '<button class="mic-btn" id="mic-btn" onclick="toggleRecording()" title="Speak your reply">' + micSvg() + '</button>' +
       '<button class="send-btn" id="send-btn" onclick="sendMessage()">Send</button>' +
     '</div>' +
-    '<p class="api-hint" id="chat-status"></p>';
+    '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+      '<p class="api-hint" id="chat-status"></p>' +
+      '<button class="tts-btn" id="tts-btn" onclick="toggleTts()" title="Turn on read-aloud">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>' +
+        ' Read aloud' +
+      '</button>' +
+    '</div>';
 
   var ta = document.getElementById('chat-input');
   if (ta) {
@@ -912,11 +1141,13 @@ function setBusy(busy) {
   state.busy = busy;
   var ta = document.getElementById('chat-input');
   var btn = document.getElementById('send-btn');
+  var mic = document.getElementById('mic-btn');
   if (ta) {
     ta.disabled = busy;
     if (!busy) ta.focus();
   }
   if (btn) btn.disabled = busy;
+  if (mic && !voice.recording) mic.disabled = busy;
   var status = document.getElementById('chat-status');
   if (status) status.textContent = busy ? 'Thinking…' : '';
 }
