@@ -309,7 +309,7 @@ var voice = {
   recording:     false,
   mediaRecorder: null,
   audioChunks:   [],
-  ttsEnabled:    false,
+  ttsEnabled:    true,
   synth:         window.speechSynthesis || null
 };
 
@@ -1115,7 +1115,7 @@ function renderChatInput(placeholder) {
     '</div>' +
     '<div style="display:flex;align-items:center;justify-content:space-between;">' +
       '<p class="api-hint" id="chat-status"></p>' +
-      '<button class="tts-btn" id="tts-btn" onclick="toggleTts()" title="Turn on read-aloud">' +
+      '<button class="tts-btn active" id="tts-btn" onclick="toggleTts()" title="Turn off read-aloud">' +
         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>' +
         ' Read aloud' +
       '</button>' +
