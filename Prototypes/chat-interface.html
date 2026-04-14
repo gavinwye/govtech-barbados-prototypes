@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Assistant – Government of Barbados</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="../assets/govbb-base.css">
+  <style>
+    #chat-window {
+      border: 2px solid var(--color-grey-00);
+      border-radius: 0.375rem;
+      display: flex;
+      flex-direction: column;
+      height: 620px;
+      overflow: hidden;
+    }
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+      scroll-behavior: smooth;
+    }
+    .msg-bot { display: flex; flex-direction: column; align-items: flex-start; gap: 0.375rem; }
+    .msg-user { display: flex; flex-direction: column; align-items: flex-end; }
+    .bot-header { display: flex; align-items: center; gap: 0.5rem; }
+    .bot-avatar {
+      width: 26px; height: 26px;
+      background: var(--color-teal-00);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .bot-label { font-size: 0.8rem; font-weight: 700; color: var(--color-teal-00); letter-spacing: 0.02em; text-transform: uppercase; }
+    .bubble-bot {
+      background: var(--color-teal-10);
+      border-radius: 0 12px 12px 12px;
+      padding: 0.75rem 1rem;
+      max-width: 82%;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+    .bubble-bot p { margin: 0 0 0.4rem; }
+    .bubble-bot p:last-child { margin-bottom: 0; }
+    .bubble-bot ul { margin: 0.3rem 0; padding-left: 1.2rem; }
+    .bubble-bot li { margin-bottom: 0.2rem; }
+    .bubble-user {
+      background: var(--color-blue-10);
+      border-radius: 12px 0 12px 12px;
+      padding: 0.75rem 1rem;
+      max-width: 82%;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+    /* Typing indicator */
+    .typing-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 0.375rem; }
+    .typing-bubble {
+      background: var(--color-teal-10);
+      border-radius: 0 12px 12px 12px;
+      padding: 0.75rem 1.125rem;
+      display: flex; gap: 5px; align-items: center;
+    }
+    .typing-dot {
+      width: 8px; height: 8px;
+      background: var(--color-teal-00);
+      border-radius: 50%;
+      animation: tdot 1.4s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes tdot {
+      0%,80%,100% { transform: scale(0.7); opacity: 0.45; }
+      40% { transform: scale(1.1); opacity: 1; }
+    }
+    /* Input area */
+    #input-area {
+      border-top: 2px solid var(--color-grey-00);
+      padding: 0.875rem 1.25rem;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .input-row { display: flex; gap: 0.625rem; align-items: flex-end; }
+    .chat-textarea {
+      flex: 1; min-width: 0;
+      border: 2px solid var(--color-black-00);
+      border-radius: 4px;
+      padding: 0.625rem 0.875rem;
+      font-family: inherit;
+      font-size: 1.05rem;
+      line-height: 1.5;
+      outline: none;
+      resize: none;
+      min-height: 46px;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+    .chat-textarea:focus { box-shadow: 0 0 0 3px var(--color-teal-100); }
+    .chat-textarea:disabled { opacity: 0.5; cursor: not-allowed; }
+    .send-btn {
+      background: var(--color-teal-00); color: #fff;
+      border: none; border-radius: 4px;
+      padding: 0.625rem 1.25rem;
+      font-family: inherit; font-size: 1rem; font-weight: 700;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: background 0.1s;
+      height: 46px;
+    }
+    .send-btn:hover { background: #1a777d; }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    /* API key setup */
+    .setup-card {
+      background: var(--color-teal-10);
+      border: 2px solid var(--color-teal-40);
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+    }
+    .setup-card label { font-weight: 700; font-size: 1rem; display: block; margin-bottom: 0.25rem; }
+    .setup-card input {
+      width: 100%;
+      border: 2px solid var(--color-black-00);
+      border-radius: 4px;
+      padding: 0.625rem 0.875rem;
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+    }
+    .setup-card input:focus { box-shadow: 0 0 0 3px var(--color-teal-100); }
+    .setup-card .hint { font-size: 0.9rem; color: var(--color-mid-grey-00); }
+    /* Form selection */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; }
+    @media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-card {
+      border: 2px solid var(--color-grey-00);
+      border-radius: 0.375rem;
+      padding: 0.875rem 1rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      background: #fff;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.12s, background 0.12s;
+    }
+    .form-card:hover { border-color: var(--color-teal-00); background: var(--color-teal-10); }
+    .form-card strong { display: block; font-size: 1rem; margin-bottom: 0.2rem; }
+    .form-card span { color: var(--color-mid-grey-00); font-size: 0.875rem; }
+    /* Summary */
+    .summary-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .summary-table tr { border-bottom: 1px solid var(--color-grey-00); }
+    .summary-table td { padding: 0.4rem 0.5rem; vertical-align: top; }
+    .summary-table td:first-child { font-weight: 600; color: var(--color-mid-grey-00); width: 40%; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+    .summary-table td:last-child { color: var(--color-black-00); }
+    .section-header { font-weight: 700; font-size: 0.8rem; color: var(--color-teal-00); text-transform: uppercase; letter-spacing: 0.06em; padding: 0.75rem 0 0.2rem; }
+    /* Confirm panel */
+    .confirm-panel { background: var(--color-teal-00); color: #fff; border-radius: 0.5rem; padding: 1.5rem; }
+    .confirm-panel h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.375rem; }
+    .ref-number { font-size: 2rem; font-weight: 700; letter-spacing: 0.06em; }
+    /* Error bubble */
+    .bubble-error {
+      background: var(--color-red-10);
+      border: 2px solid var(--color-red-40);
+      border-radius: 0 12px 12px 12px;
+      padding: 0.75rem 1rem;
+      max-width: 82%;
+      font-size: 1rem;
+      color: var(--color-red-00);
+    }
+    .api-hint { font-size: 0.875rem; color: var(--color-mid-grey-00); margin-top: 0.25rem; }
+  </style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="bg-bb-blue-100 text-bb-white-00">
+  <div class="container flex items-center gap-2 py-2 text-[0.875rem]">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Coat_of_arms_of_Barbados_%282%29.svg/1280px-Coat_of_arms_of_Barbados_%282%29.svg.png" alt="" class="h-5 w-auto">
+    Official website of the Government of Barbados
+  </div>
+</div>
+
+<!-- Header -->
+<header class="bg-bb-yellow-100">
+  <div class="container py-s">
+    <div class="text-bb-black-00" style="width:276px;height:27px;">
+      <svg width="100%" viewBox="0 0 276 27" fill="currentColor" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Government of Barbados"><g><path d="M39.079 21.527C37.5026 21.527 36.103 21.1903 34.8802 20.5168C33.6721 19.8286 32.7219 18.8916 32.0294 17.7057C31.337 16.5051 30.9908 15.1288 30.9908 13.5769C30.9908 12.0249 31.337 10.6559 32.0294 9.47001C32.7219 8.26943 33.6721 7.3324 34.8802 6.65891C36.103 5.97077 37.5026 5.6267 39.079 5.6267C40.0219 5.6267 40.8911 5.7658 41.6867 6.04398C42.4823 6.32216 43.1821 6.71015 43.7861 7.20795C44.4049 7.69111 44.9205 8.24747 45.3331 8.87704L42.858 10.4144C42.6075 10.0191 42.276 9.66767 41.8635 9.3602C41.4657 9.05274 41.0237 8.81116 40.5376 8.63547C40.0514 8.45977 39.5652 8.37192 39.079 8.37192C38.1067 8.37192 37.2448 8.59886 36.4934 9.05274C35.7421 9.49197 35.1527 10.0996 34.7255 10.8756C34.2982 11.6515 34.0846 12.552 34.0846 13.5769C34.0846 14.5871 34.2909 15.4875 34.7034 16.2782C35.1307 17.0688 35.7273 17.691 36.4934 18.1449C37.2595 18.5841 38.1435 18.8038 39.1453 18.8038C39.8967 18.8038 40.567 18.6647 41.1563 18.3865C41.7456 18.0937 42.2171 17.691 42.5707 17.1786C42.9243 16.6661 43.1231 16.0659 43.1673 15.3777H39.5873V13.0278H46.0844V14.8946C46.055 16.3001 45.7382 17.5007 45.1342 18.4963C44.5301 19.4773 43.7051 20.2313 42.6591 20.7584C41.613 21.2708 40.4197 21.527 39.079 21.527Z"/><path d="M52.8353 21.527C51.7156 21.527 50.7138 21.2854 49.8298 20.8023C48.9606 20.3045 48.2755 19.6237 47.7746 18.7598C47.2884 17.896 47.0453 16.9004 47.0453 15.773C47.0453 14.6457 47.2884 13.6501 47.7746 12.7862C48.2608 11.9224 48.9385 11.2489 49.8077 10.7658C50.677 10.268 51.6714 10.0191 52.7911 10.0191C53.9255 10.0191 54.9273 10.268 55.7966 10.7658C56.6658 11.2489 57.3435 11.9224 57.8297 12.7862C58.3159 13.6501 58.559 14.6457 58.559 15.773C58.559 16.9004 58.3159 17.896 57.8297 18.7598C57.3435 19.6237 56.6658 20.3045 55.7966 20.8023C54.9421 21.2854 53.955 21.527 52.8353 21.527ZM52.8353 18.8477C53.3804 18.8477 53.8592 18.7159 54.2717 18.4524C54.6843 18.1888 55.001 17.8301 55.222 17.3763C55.4577 16.9077 55.5756 16.3733 55.5756 15.773C55.5756 15.1728 55.4577 14.6457 55.222 14.1918C54.9863 13.7233 54.6548 13.3572 54.2275 13.0937C53.815 12.8302 53.3362 12.6984 52.7911 12.6984C52.2607 12.6984 51.7819 12.8302 51.3547 13.0937C50.9421 13.3572 50.618 13.7233 50.3823 14.1918C50.1466 14.6457 50.0287 15.1728 50.0287 15.773C50.0287 16.3733 50.1466 16.9077 50.3823 17.3763C50.618 17.8301 50.9495 18.1888 51.3768 18.4524C51.804 18.7159 52.2902 18.8477 52.8353 18.8477Z"/><path d="M12.5786 0C11.6253 2.46943 10.6536 5.03986 8.57466 7.00774C9.21998 6.80573 10.3493 6.62461 11.0753 6.64203V17.0283L7.988 17.4636C7.878 17.4532 7.84133 17.2895 7.84133 17.0666C7.54434 13.8413 6.74135 11.1316 5.81736 8.32779C5.75136 7.94466 4.58171 6.48181 5.4837 6.73955C5.5937 6.75348 6.80002 7.2202 6.60935 6.99729C4.96671 5.38119 2.56508 4.21788 0.233112 3.87306C0.0277812 3.8243 -0.0932171 3.92183 0.0901136 4.14822C3.18474 8.6726 5.77336 14.012 5.75136 20.3475C6.95401 20.3475 9.86897 19.6718 11.0753 19.6718V27H12.5969L12.9453 6.53406L12.5786 0Z"/><path d="M12.5786 0C13.5319 2.46943 14.5036 5.03986 16.5825 7.00774C15.9372 6.80573 14.8079 6.62461 14.0819 6.64203V17.0283L17.1692 17.4636C17.2792 17.4532 17.3159 17.2895 17.3159 17.0666C17.6129 13.8413 18.4158 11.1316 19.3398 8.32779C19.4058 7.94466 20.5755 6.48181 19.6735 6.73955C19.5635 6.75348 18.3572 7.2202 18.5478 6.99729C20.1905 5.38119 22.5921 4.21788 24.9241 3.87306C25.1294 3.8243 25.2504 3.92183 25.0671 4.14822C21.9725 8.6726 19.3838 14.012 19.4058 20.3475C18.2032 20.3475 15.2882 19.6718 14.0819 19.6718V27H12.5603L12.2119 6.53406L12.5786 0Z"/></g></svg>
+    </div>
+  </div>
+</header>
+
+<!-- Alpha banner -->
+<div class="bg-bb-blue-10">
+  <div class="container py-xs text-[1rem]">
+    This page is in <a href="#" class="inline-flex outline-none underline-offset-2 underline hover:no-underline text-bb-teal-00 hover:text-bb-black-00 hover:bg-bb-teal-10">Alpha</a>. Your feedback helps us improve.
+  </div>
+</div>
+
+<main>
+  <div class="container py-m" style="max-width:780px;">
+    <div class="mb-5">
+      <p class="border-bb-blue-40 border-l-4 py-xs pl-s text-bb-mid-grey-00 text-[1rem] mb-3">Government of Barbados</p>
+      <h1 class="font-bold text-[2.5rem] leading-tight">Complete a form by chat</h1>
+      <p class="text-bb-mid-grey-00 mt-2">Have a conversation to fill in any of the 9 NIS and government forms. Powered by AI.</p>
+    </div>
+    <div id="chat-window">
+      <div id="messages"></div>
+      <div id="input-area"></div>
+    </div>
+    <div class="mt-4 flex items-center justify-between">
+      <a href="../index.html" class="text-bb-teal-00 underline underline-offset-2 hover:no-underline hover:text-bb-black-00 text-[1rem]">← Back to all forms</a>
+      <button id="restart-btn" onclick="restartChat()" style="display:none" class="text-[1rem] text-bb-mid-grey-00 underline cursor-pointer border-none bg-transparent font-inherit">Start again</button>
+    </div>
+  </div>
+</main>
+
+<footer class="bg-bb-blue-100 text-bb-white-00">
+  <div class="container py-l text-[1rem]">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <p>&copy; 2024 Government of Barbados. All rights reserved.</p>
+      <div class="flex gap-4">
+        <a href="#" class="underline underline-offset-2 hover:no-underline text-bb-white-00">Privacy</a>
+        <a href="#" class="underline underline-offset-2 hover:no-underline text-bb-white-00">Terms</a>
+        <a href="#" class="underline underline-offset-2 hover:no-underline text-bb-white-00">Accessibility</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/govbb-framework.js"></script>
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────
+   CONFIG
+───────────────────────────────────────── */
+var GROQ_URL   = 'https://api.groq.com/openai/v1/chat/completions';
+var CHAT_MODEL = 'llama-3.3-70b-versatile';
+var FAST_MODEL = 'llama-3.1-8b-instant';
+
+/* ─────────────────────────────────────────
+   FORM CATALOG
+───────────────────────────────────────── */
+var FORMS = [
+  { id:'se',   name:'Self-Employment Registration',                     ref:'SE',   agency:'National Insurance Scheme (NIS)' },
+  { id:'oss',  name:'NIS Online Service Registration',                  ref:'OSS',  agency:'National Insurance Scheme (NIS)' },
+  { id:'dd',   name:'Direct Deposit Form',                              ref:'DD',   agency:'National Insurance Scheme (NIS)' },
+  { id:'dp10', name:'NIS Contributions Certificate (D.P. 10)',          ref:'DP10', agency:'National Insurance Scheme (NIS)' },
+  { id:'pd',   name:'Pensioner Declaration',                            ref:'PD',   agency:'Central Bank of Barbados' },
+  { id:'ub',   name:'Claim for Unemployment Benefit',                   ref:'UB',   agency:'National Insurance Scheme (NIS)' },
+  { id:'secp', name:'Self-Employed Contributions Certificate',          ref:'SECP', agency:'National Insurance Scheme (NIS)' },
+  { id:'tc',   name:'Termination Certificate',                          ref:'TC',   agency:'National Insurance Scheme (NIS)' },
+  { id:'vep',  name:'Permit to Remove / Relocate Structure',            ref:'VEP',  agency:'Barbados Licensing Authority (BLA)' }
+];
+
+/* ─────────────────────────────────────────
+   SYSTEM PROMPTS
+───────────────────────────────────────── */
+var BASE_RULES = `
+STYLE — follow these rules strictly:
+- Keep every response SHORT. One or two sentences max per turn.
+- Ask only ONE question per message, two at most if they're closely related (like first and last name).
+- No preamble. Do not start with "Of course!", "Great!", "Sure!", "Absolutely!" or any filler.
+- No summaries mid-conversation. Just ask the next question.
+- Acknowledge an answer in at most 3 words before moving on ("Got it.", "Thanks.", "Perfect.") — or skip the acknowledgement entirely.
+- Use contractions and plain language.
+
+VALIDATION:
+- NIS number: exactly 6 digits (e.g. 123456) — found on the NIS card
+- NRN: format YYMMDD-XXXX (e.g. 870315-1234) — on the national ID card
+- Email: must look like a valid email address
+- Postal code: BB followed by 5 digits (e.g. BB11000)
+- Amounts: numbers only (e.g. 1500 or 1500.50)
+- Dates: accept any reasonable format, store as "DD MM YYYY"
+- Year: 4-digit only
+- If an answer is invalid, correct in one short sentence and re-ask
+- If a user skips an optional field, accept it
+PARISHES: Christ Church, St. Andrew, St. George, St. James, St. John, St. Joseph, St. Lucy, St. Michael, St. Peter, St. Philip, St. Thomas
+
+FINISHING:
+Once all required fields are collected, give a brief summary (a few bullet points) and ask: "Does everything look right? Say 'yes' to submit, or tell me what to change."
+When the user confirms:
+- Output ##COMPLETE## on its own line
+- On the very next line, output a single valid JSON object with all collected data using the exact field keys listed. Use null for optional fields not provided.
+- Nothing else after the JSON.`;
+
+var SYSTEM_PROMPTS = {
+
+se: `You are a concise assistant helping a Barbados citizen complete the Self-Employment Registration form (SE) for NIS. Ask one question at a time. Short responses only.
+
+COLLECT THE FOLLOWING INFORMATION:
+
+Personal details (keys: title, first-name, middle-name, last-name, marital-status, maiden-name, gender, dob, nis-number, id-type, nrn, passport-number, passport-issued, passport-expiry, passport-country):
+- title — optional: Mr, Mrs, Miss, Ms, Professor, Doctor, Sir, or Dame
+- first-name, middle-name (optional), last-name
+- marital-status: Single, Married, Divorced, Separated, or Widowed
+- maiden-name — only ask if married
+- gender: Male or Female
+- dob — date of birth
+- nis-number — 6-digit NIS number
+- id-type — "National Registration Number" or "Passport"
+  → If National Registration Number: ask for nrn (format YYMMDD-XXXX)
+  → If Passport: ask for passport-number, passport-issued (date), passport-expiry (date), passport-country
+
+Address (keys: street-address, district, parish):
+- street-address
+- district — optional: village or district name
+- parish — one of the 11 Barbados parishes
+
+Contact (keys: email, mobile):
+- email
+- mobile phone number
+
+Business (keys: business-name, business-nature, business-start, monthly-income, field-officer, officer-code):
+- business-name
+- business-nature — brief description of what the business does
+- business-start — date the business started
+- monthly-income — estimated monthly income in BBD
+- field-officer — Did an NIS Field Officer assist with this form? Yes or No
+  → If Yes: officer-code (1–2 digit number on the officer's badge)
+${BASE_RULES}`,
+
+oss: `You are a concise assistant helping a Barbados citizen register for NIS Online Services (OSS). Ask one question at a time. Short responses only.
+
+COLLECT THE FOLLOWING INFORMATION:
+
+Identity (keys: residency, id-type, nrn, passport-number, passport-issued, passport-expiry, passport-country, nis-number):
+- residency: "In Barbados" or "Overseas"
+- id-type: "Barbados National ID Card" or "Passport"
+  → If National ID Card: ask for nrn (format YYMMDD-XXXX)
+  → If Passport: passport-number, passport-issued, passport-expiry, passport-country
+- nis-number — 6-digit NIS number
+
+Personal details (keys: first-name, middle-name, last-name, dob, gender):
+- first-name, middle-name (optional), last-name
+- dob — date of birth
+- gender: Male or Female
+
+Present address (keys: present-street, present-district, present-parish, present-postal):
+- present-street
+- present-district — optional
+- present-parish
+- present-postal — postal code (BB + 5 digits)
+
+Mailing address (keys: same-address, mailing-street, mailing-district, mailing-parish, mailing-postal, mailing-country):
+- same-address: Yes or No — ask if mailing address is the same as current address
+  → If No: mailing-street, mailing-district (optional), mailing-parish, mailing-postal, mailing-country
+
+Contact (keys: contact-email, telephone, mobile):
+- contact-email — email for login credentials to be sent to
+- telephone — landline (optional)
+- mobile (optional)
+
+If overseas (keys: notary-name):
+- notary-name — only if residency is Overseas: ask for the name of the Notary Public certifying their documents. Mention they'll also need to upload the notary's stamp (but note you can't handle file uploads in chat — they should attach it when submitting).
+${BASE_RULES}`,
+
+dd: `You are a concise assistant helping a Barbados citizen set up direct deposit for NIS benefits (DD form). Ask one question at a time. Short responses only.
+
+COLLECT THE FOLLOWING INFORMATION:
+
+Personal details (keys: first-name, middle-name, last-name, nis-number, nrn, tamis-number):
+- first-name, middle-name (optional), last-name
+- nis-number — 6-digit NIS number
+- nrn — National Registration Number (format YYMMDD-XXXX)
+- tamis-number — optional TAMIS number (tell them to leave it if they're not sure)
+
+Address (keys: street-address, district, parish, postal-code):
+- street-address, district (optional), parish, postal-code
+
+Contact (keys: contact-email, telephone, cellular):
+- contact-email
+- telephone — landline (optional)
+- cellular — mobile (optional)
+
+Benefit type (keys: benefit-type, benefit-other):
+- benefit-type: Old-Age Pension, Sickness Benefit, Maternity Benefit, Unemployment Benefit, Invalidity Benefit, Survivors Benefit, or Other
+  → If Other: benefit-other (describe the benefit)
+
+Alternate payee (keys: alt-payee, ap-first-name, ap-middle-name, ap-last-name, ap-nis-number, ap-nrn, ap-tamis, ap-street, ap-district, ap-parish, ap-postal, ap-telephone, ap-cellular, ap-empowered):
+- alt-payee: Yes or No — ask if they want someone else to receive payments on their behalf
+  → If Yes: collect ap-first-name, ap-middle-name (optional), ap-last-name, ap-nis-number, ap-nrn, ap-tamis (optional), ap-street, ap-district (optional), ap-parish, ap-postal, ap-telephone (optional), ap-cellular (optional)
+  → Also ask ap-empowered: are they legally empowered to act on behalf? Yes or No
+
+Bank details (keys: account-holder-name, financial-institution, institution-other, account-number, branch-name, branch-transit):
+- account-holder-name — exactly as it appears on the bank statement
+- financial-institution: Barbados National Bank, First Citizens Bank, RBC Royal Bank, Scotiabank, CIBC FirstCaribbean, Butterfield Bank, Republic Bank, Cave Shepherd Financial Services, or Other
+  → If Other: institution-other (name of institution)
+- account-number
+- branch-name (e.g. Bridgetown Branch)
+- branch-transit — optional branch or transit number from bank statement
+
+Note: tell the user they'll also need to upload the top section of a recent bank statement when they formally submit — you can't handle file uploads in chat.
+${BASE_RULES}`,
+
+dp10: `You are a concise assistant helping a Barbados employer complete the NIS Contributions Certificate (D.P. 10 form). Ask one question at a time. Short responses only.
+
+COLLECT THE FOLLOWING INFORMATION:
+
+Employer details (keys: employer-reg, employer-name, trading-name, street, district, parish, postal, contact-person, contact-email, contact-telephone, contact-cell):
+- employer-reg — NIS employer registration number
+- employer-name — legal name of the business
+- trading-name — optional: trading name if different from legal name
+- street, district (optional), parish, postal
+- contact-person — name of the contact person for this submission
+- contact-email
+- contact-telephone
+- contact-cell — optional mobile number
+
+Contribution period (keys: contrib-year, contrib-month):
+- contrib-year — 4-digit year
+- contrib-month — month name (e.g. January)
+
+Earnings (up to 3 types) (keys: earn1-type, earn1-employees, earn1-amount, earn1-more, earn2-type, earn2-employees, earn2-amount, earn2-more, earn3-type, earn3-employees, earn3-amount):
+- earn1-type: Regular, Overtime, Commission, Bonus, Holiday Pay, Sick Pay, or Other
+- earn1-employees — number of employees who received this earning type
+- earn1-amount — total amount paid (BBD)
+- earn1-more: Yes or No — are there other earning types to add?
+  → If Yes: earn2-type, earn2-employees, earn2-amount
+    → earn2-more: Yes or No
+      → If Yes: earn3-type, earn3-employees, earn3-amount
+
+Payment details (keys: payee-name, payee-role, payee-nis):
+- payee-name — name of the person making this payment
+- payee-role: Owner, Director, Payroll Manager, Accountant, Authorised Agent, or Other
+- payee-nis — optional NIS number
+${BASE_RULES}`,
+
+pd: `You are a concise assistant helping a Barbados pensioner complete the Pensioner Declaration (PD form) for the Central Bank. Ask one question at a time. Short responses only.
+
+COLLECT THE FOLLOWING INFORMATION:
+
+Personal details (keys: nis-number, first-name, last-name, dob, nrn, street-address, parish, postal-code, email, telephone):
+- nis-number — 6-digit NIS number
+- first-name, last-name
+- dob — date of birth
+- nrn — National Registration Number (format YYMMDD-XXXX)
+- street-address
+- parish
+- postal-code
+- email
+- telephone — optional
+
+Employment status (keys: employed, employment-details, monthly-income):
+- employed: Yes or No — are they currently employed or self-employed?
+  → If Yes: employment-details (brief description of their work)
+- monthly-income — optional: any monthly income (enter 0 if none)
+
+Dependents (keys: has-dependents, dependent-names):
+- has-dependents: Yes or No
+  → If Yes: dependent-names — names of dependents
+${BASE_RULES}`,
+
+ub: `You are a concise, empathetic assistant helping a Barbados citizen claim Unemployment Benefit (UB form) from NIS. Ask one question at a time. Short responses only. Be warm but brief.
+
+COLLECT THE FOLLOWING INFORMATION:
+
+Personal details (keys: first-name, last-name, nis-number, nrn, dob, street-address, parish, postal-code, email, telephone):
+- first-name, last-name
+- nis-number — 6-digit NIS number
+- nrn — National Registration Number (format YYMMDD-XXXX)
+- dob — date of birth
+- street-address, parish, postal-code
+- email
+- telephone — optional
+
+Employment history — most recent employer first, up to 3 employers
+Employer 1 (keys: emp1-name, emp1-address, emp1-start, emp1-end, emp1-occupation, emp1-reason):
+- emp1-name, emp1-address, emp1-start (date), emp1-end (date), emp1-occupation (job title)
+- emp1-reason: Redundancy, Retrenchment, Expiry of contract, Closure of business, Constructive dismissal, End of seasonal employment, or Other
+
+(keys: add-emp2)
+- add-emp2: Yes or No — do they have another employer to add?
+
+Employer 2 (keys: emp2-name, emp2-address, emp2-start, emp2-end, emp2-occupation, emp2-reason) — only if add-emp2 is Yes
+(keys: add-emp3)
+- add-emp3: Yes or No — a third employer?
+
+Employer 3 (keys: emp3-name, emp3-address, emp3-start, emp3-end, emp3-occupation, emp3-reason) — only if add-emp3 is Yes
+
+Current status (keys: date-unemployed, currently-employed, seeking-employment, seek-details):
+- date-unemployed — when did they become unemployed?
+- currently-employed: Yes or No — are they currently employed or self-employed?
+- seeking-employment: Yes or No — are they actively looking for work?
+  → If Yes: seek-details — how are they looking (job sites, agencies, word of mouth, etc.)
+${BASE_RULES}`,
+
+secp: `You are a concise assistant helping a self-employed person in Barbados complete the Contributions Payment Certificate (SECP) for NIS. Ask one question at a time. Short responses only.
+
+COLLECT THE FOLLOWING INFORMATION:
+
+Personal details (keys: first-name, last-name, nis-number, nrn, street-address, parish, postal-code, email):
+- first-name, last-name
+- nis-number — 6-digit NIS number
+- nrn — National Registration Number (format YYMMDD-XXXX)
+- street-address, parish, postal-code
+- email
+
+Contributions — up to 3 years (keys: contrib1-year, contrib1-amount, add-contrib2, contrib2-year, contrib2-amount, add-contrib3, contrib3-year, contrib3-amount):
+- contrib1-year — 4-digit year
+- contrib1-amount — amount in BBD
+- add-contrib2: Yes or No — any other years to add?
+  → If Yes: contrib2-year, contrib2-amount
+    → add-contrib3: Yes or No
+      → If Yes: contrib3-year, contrib3-amount
+
+Payment details (keys: payer-name, payment-method, bank-reference):
+- payer-name — who's making this payment?
+- payment-method: Bank transfer, Cash, or Cheque
+  → If Bank transfer: bank-reference (bank reference number)
+${BASE_RULES}`,
+
+tc: `You are a concise assistant helping a Barbados employer complete the Termination Certificate (TC form) for NIS. Ask one question at a time. Short responses only.
+
+COLLECT THE FOLLOWING INFORMATION:
+
+Employee details (keys: emp-first-name, emp-middle-name, emp-last-name, emp-nrn, emp-nis, emp-street, emp-district, emp-parish, emp-postal, emp-telephone, emp-cell):
+- emp-first-name, emp-middle-name (optional), emp-last-name
+- emp-nrn — employee's NRN (format YYMMDD-XXXX)
+- emp-nis — employee's NIS number (6 digits)
+- emp-street, emp-district (optional), emp-parish, emp-postal
+- emp-telephone (required), emp-cell (optional)
+
+Employer details (keys: employer-reg, employer-name, employer-street, employer-parish, employer-telephone, employer-contact):
+- employer-reg — NIS employer registration number
+- employer-name — business name
+- employer-street, employer-parish, employer-telephone
+- employer-contact — contact person's name
+
+Termination details (keys: termination-type, termination-other, employment-start, employment-end, emp-occupation, emp-status, final-salary-date, severance-paid, severance-amount, outstanding-dues):
+- termination-type: Redundancy, Retrenchment, Voluntary Resignation, Dismissal for Cause, End of Contract, Business Closure, or Other
+  → If Other: termination-other (describe the reason)
+- employment-start — when employment started
+- employment-end — when employment ended
+- emp-occupation — employee's job title
+- emp-status: Full-time, Part-time, Casual, or Temporary
+- final-salary-date — date of final salary payment
+- severance-paid: Yes or No
+  → If Yes: severance-amount (BBD)
+- outstanding-dues — optional: any outstanding payments (unpaid wages, vacation pay, etc.)
+${BASE_RULES}`,
+
+vep: `You are a concise assistant helping someone in Barbados apply for a Permit to Remove or Relocate a Structure (VEP form) from the BLA. Ask one question at a time. Short responses only.
+
+COLLECT THE FOLLOWING INFORMATION:
+
+Applicant details (keys: app-first-name, app-last-name, app-email, app-telephone):
+- app-first-name, app-last-name
+- app-email
+- app-telephone
+
+Structure details (keys: property-address, property-parish, property-description, property-age):
+- property-address — current address of the structure
+- property-parish — current parish
+- property-description — what kind of structure? (e.g. a 3-bedroom wooden house, a fishing boat, a commercial building)
+- property-age — optional: approximate age in years
+
+Relocation details (keys: intended-location, intended-parish, moving-reason, moving-date, moving-contractor):
+- intended-location — where is it going? (full address or description of the new location)
+- intended-parish — parish of the new location
+- moving-reason — why does it need to be moved or removed?
+- moving-date — proposed date of the move
+- moving-contractor — name and contact details of the company or contractor handling the move
+
+Note: mention they can attach supporting documents (site plans, photos) when they formally submit — you can't handle file uploads in chat.
+${BASE_RULES}`
+
+};
+
+/* ─────────────────────────────────────────
+   STATE
+───────────────────────────────────────── */
+var state = {
+  phase: 'init',    // init | setup | select | chat | extracting | summary | submitted
+  apiKey: '',
+  form: null,
+  messages: [],     // [{role, content}] — full chat history
+  formData: null,   // extracted JSON
+  busy: false
+};
+
+var messagesEl, inputAreaEl;
+
+/* ─────────────────────────────────────────
+   API
+───────────────────────────────────────── */
+async function callGroq(messages, model) {
+  var m = model || CHAT_MODEL;
+  var res = await fetch(GROQ_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + state.apiKey
+    },
+    body: JSON.stringify({
+      model: m,
+      messages: messages,
+      temperature: 0.7,
+      max_tokens: 2048
+    })
+  });
+  if (!res.ok) {
+    var body = {};
+    try { body = await res.json(); } catch(e) {}
+    var msg = (body.error && body.error.message) || ('HTTP ' + res.status);
+    if (res.status === 401) throw new Error('API key is invalid or has no access. Check your Groq API key and try again.');
+    if (res.status === 429) throw new Error('Rate limit reached. Please wait a moment and try again.');
+    throw new Error('Groq API error: ' + msg);
+  }
+  var data = await res.json();
+  return data.choices[0].message.content;
+}
+
+/* ─────────────────────────────────────────
+   DOM HELPERS
+───────────────────────────────────────── */
+function scrollBottom() {
+  setTimeout(function() { messagesEl.scrollTop = messagesEl.scrollHeight; }, 60);
+}
+
+function botMsg(html) {
+  var wrap = document.createElement('div');
+  wrap.className = 'msg-bot';
+  wrap.innerHTML =
+    '<div class="bot-header">' +
+      '<div class="bot-avatar"><svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></div>' +
+      '<span class="bot-label">Assistant</span>' +
+    '</div>' +
+    '<div class="bubble-bot">' + html + '</div>';
+  messagesEl.appendChild(wrap);
+  scrollBottom();
+}
+
+function userMsg(text) {
+  var wrap = document.createElement('div');
+  wrap.className = 'msg-user';
+  wrap.innerHTML = '<div class="bubble-user">' + escH(text) + '</div>';
+  messagesEl.appendChild(wrap);
+  scrollBottom();
+}
+
+function errorMsg(text) {
+  var wrap = document.createElement('div');
+  wrap.className = 'msg-bot';
+  wrap.innerHTML =
+    '<div class="bot-header"><div class="bot-avatar" style="background:var(--color-red-00)"><svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div><span class="bot-label" style="color:var(--color-red-00)">Error</span></div>' +
+    '<div class="bubble-error">' + escH(text) + '</div>';
+  messagesEl.appendChild(wrap);
+  scrollBottom();
+}
+
+function typingStart() {
+  var existing = document.getElementById('typing-ind');
+  if (existing) return;
+  var wrap = document.createElement('div');
+  wrap.id = 'typing-ind';
+  wrap.className = 'typing-wrap';
+  wrap.innerHTML =
+    '<div class="bot-header"><div class="bot-avatar"><svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></div></div>' +
+    '<div class="typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  messagesEl.appendChild(wrap);
+  scrollBottom();
+}
+
+function typingStop() {
+  var el = document.getElementById('typing-ind');
+  if (el) el.remove();
+}
+
+function escH(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* Convert markdown-like text to HTML for bot messages */
+function mdToHtml(text) {
+  // Strip the ##COMPLETE## marker and everything after if present
+  var completeIdx = text.indexOf('##COMPLETE##');
+  if (completeIdx !== -1) {
+    text = text.substring(0, completeIdx).trim();
+  }
+  if (!text) return '';
+  // Convert **bold**, *italic*, line breaks to HTML
+  var html = text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .split('\n\n').map(function(para) {
+      para = para.trim();
+      if (!para) return '';
+      // Convert lines starting with - or • into a list
+      var lines = para.split('\n');
+      var isList = lines.every(function(l) { return /^[-•]\s/.test(l.trim()) || l.trim() === ''; });
+      if (isList && lines.length > 1) {
+        return '<ul>' + lines.map(function(l) {
+          var c = l.trim().replace(/^[-•]\s/,'');
+          return c ? '<li>' + c + '</li>' : '';
+        }).join('') + '</ul>';
+      }
+      return '<p>' + lines.join('<br>') + '</p>';
+    }).filter(Boolean).join('');
+  return html;
+}
+
+/* ─────────────────────────────────────────
+   SETUP PHASE — API key entry
+───────────────────────────────────────── */
+function renderSetup() {
+  state.phase = 'setup';
+  document.getElementById('restart-btn').style.display = 'none';
+  inputAreaEl.innerHTML = '';
+  messagesEl.innerHTML = '';
+
+  botMsg('<p>Hi! To have a real conversation, this assistant uses the <strong>Groq API</strong> — a free AI service. You\'ll need a free API key to get started.</p>' +
+    '<p>Get one in about 30 seconds at <strong>console.groq.com</strong> — create an account and copy your API key.</p>');
+
+  inputAreaEl.innerHTML =
+    '<div class="setup-card">' +
+      '<div>' +
+        '<label for="api-key-input">Your Groq API key</label>' +
+        '<p class="hint" style="margin-bottom:0.5rem">Starts with <code>gsk_</code> — it stays in your browser and is never sent anywhere except directly to Groq.</p>' +
+        '<input type="password" id="api-key-input" placeholder="gsk_..." autocomplete="off" autocorrect="off" spellcheck="false">' +
+      '</div>' +
+      '<div class="input-row">' +
+        '<button class="send-btn" style="width:100%" onclick="saveApiKey()">Start chatting</button>' +
+      '</div>' +
+      '<p class="hint">Need a key? Go to <strong>console.groq.com</strong>, sign up free, and create an API key under API Keys.</p>' +
+    '</div>';
+
+  var inp = document.getElementById('api-key-input');
+  if (inp) {
+    inp.focus();
+    inp.onkeydown = function(e) { if (e.key === 'Enter') saveApiKey(); };
+  }
+}
+
+function saveApiKey() {
+  var inp = document.getElementById('api-key-input');
+  if (!inp) return;
+  var key = inp.value.trim();
+  if (!key) { inp.style.borderColor = 'var(--color-red-00)'; inp.focus(); return; }
+  state.apiKey = key;
+  try { localStorage.setItem('govbb-groq-key', key); } catch(e) {}
+  renderSelect();
+}
+
+/* ─────────────────────────────────────────
+   ROUTING — natural language form selection
+───────────────────────────────────────── */
+var ROUTING_PROMPT =
+  'You are a routing assistant for the Government of Barbados. ' +
+  'Based on what the user says they want to do, identify which form they need. ' +
+  'Reply with ONLY the form ID — nothing else.\n\n' +
+  'Forms:\n' +
+  'se — Self-Employment Registration: register as self-employed with NIS\n' +
+  'oss — NIS Online Registration: set up an NIS online account / access NIS services online\n' +
+  'dd — Direct Deposit: receive NIS benefit payments directly into a bank account\n' +
+  'dp10 — NIS Contributions Certificate D.P.10: employer submitting monthly NIS contributions for staff\n' +
+  'pd — Pensioner Declaration: pensioner over 60 declaring status to avoid tax on savings bond interest\n' +
+  'ub — Unemployment Benefit: claim unemployment benefit after losing a job\n' +
+  'secp — Self-Employed Contributions Certificate: self-employed person paying their annual NIS contributions\n' +
+  'tc — Termination Certificate: employer reporting that an employee\'s job has ended\n' +
+  'vep — Permit to Remove/Relocate Structure: permission to move a house, building, or boat on public roads\n\n' +
+  'If you can identify the form reply with its ID (e.g. "se"). If you cannot, reply with "unknown".';
+
+function renderSelect() {
+  state.phase = 'routing';
+  state.form = null;
+  state.messages = [];
+  state.formData = null;
+  document.getElementById('restart-btn').style.display = 'none';
+  messagesEl.innerHTML = '';
+
+  botMsg('<p>Hi! What would you like to do today?</p>');
+
+  renderChatInput('What do you need help with?');
+
+  // Add "change API key" below the input
+  var changeKey = document.createElement('div');
+  changeKey.style.cssText = 'padding: 0.25rem 0 0;';
+  changeKey.innerHTML = '<button onclick="clearApiKey()" style="font-size:0.8rem;color:var(--color-mid-grey-00);text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit">Change API key</button>';
+  inputAreaEl.appendChild(changeKey);
+}
+
+async function handleRouting(text) {
+  typingStart();
+  setBusy(true);
+
+  try {
+    var reply = await callGroq([
+      { role: 'system', content: ROUTING_PROMPT },
+      { role: 'user', content: text }
+    ], FAST_MODEL);
+
+    typingStop();
+    var formId = reply.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    var form = null;
+    for (var i = 0; i < FORMS.length; i++) {
+      if (FORMS[i].id === formId) { form = FORMS[i]; break; }
+    }
+
+    if (form) {
+      setBusy(false);
+      await startForm(form);
+    } else {
+      setBusy(false);
+      botMsg('<p>I\'m not sure which form you need. Could you say a bit more?</p>');
+    }
+  } catch(err) {
+    typingStop();
+    setBusy(false);
+    errorMsg(err.message);
+  }
+}
+
+function clearApiKey() {
+  state.apiKey = '';
+  try { localStorage.removeItem('govbb-groq-key'); } catch(e) {}
+  renderSetup();
+}
+
+/* ─────────────────────────────────────────
+   CHAT PHASE
+───────────────────────────────────────── */
+async function startForm(form) {
+  state.form = form;
+  state.phase = 'chat';
+  state.messages = [];
+  document.getElementById('restart-btn').style.display = 'block';
+
+  renderChatInput();
+
+  var systemPrompt = SYSTEM_PROMPTS[form.id];
+  if (!systemPrompt) {
+    botMsg('<p>Sorry, I don\'t have a prompt set up for that form yet.</p>');
+    return;
+  }
+
+  // First message: introduce the form
+  state.messages.push({ role: 'system', content: systemPrompt });
+
+  var opener = 'Start. Greet the user in one sentence, then ask your first question.';
+  state.messages.push({ role: 'user', content: opener });
+
+  typingStart();
+  setBusy(true);
+
+  try {
+    var reply = await callGroq(state.messages);
+    typingStop();
+    state.messages.push({ role: 'assistant', content: reply });
+    // Remove the opener from messages so future calls don't re-send it
+    state.messages.splice(1, 1); // remove the opener
+    var html = mdToHtml(reply);
+    if (html) botMsg(html);
+  } catch(err) {
+    typingStop();
+    errorMsg(err.message);
+  }
+
+  setBusy(false);
+}
+
+function renderChatInput(placeholder) {
+  inputAreaEl.innerHTML =
+    '<div class="input-row">' +
+      '<textarea class="chat-textarea" id="chat-input" placeholder="' + escH(placeholder || 'Type your reply…') + '" rows="1"></textarea>' +
+      '<button class="send-btn" id="send-btn" onclick="sendMessage()">Send</button>' +
+    '</div>' +
+    '<p class="api-hint" id="chat-status"></p>';
+
+  var ta = document.getElementById('chat-input');
+  if (ta) {
+    ta.focus();
+    ta.onkeydown = function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    };
+    ta.oninput = function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 140) + 'px';
+    };
+  }
+}
+
+function setBusy(busy) {
+  state.busy = busy;
+  var ta = document.getElementById('chat-input');
+  var btn = document.getElementById('send-btn');
+  if (ta) {
+    ta.disabled = busy;
+    if (!busy) ta.focus();
+  }
+  if (btn) btn.disabled = busy;
+  var status = document.getElementById('chat-status');
+  if (status) status.textContent = busy ? 'Thinking…' : '';
+}
+
+async function sendMessage() {
+  if (state.busy) return;
+  if (state.phase !== 'chat' && state.phase !== 'routing') return;
+
+  var ta = document.getElementById('chat-input');
+  if (!ta) return;
+  var text = ta.value.trim();
+  if (!text) return;
+
+  ta.value = '';
+  ta.style.height = 'auto';
+  userMsg(text);
+
+  if (state.phase === 'routing') {
+    await handleRouting(text);
+    return;
+  }
+
+  state.messages.push({ role: 'user', content: text });
+
+  typingStart();
+  setBusy(true);
+
+  try {
+    var reply = await callGroq(state.messages);
+    typingStop();
+    state.messages.push({ role: 'assistant', content: reply });
+
+    // Check for completion signal
+    if (reply.indexOf('##COMPLETE##') !== -1) {
+      var beforeComplete = reply.substring(0, reply.indexOf('##COMPLETE##')).trim();
+      if (beforeComplete) botMsg(mdToHtml(beforeComplete));
+      setBusy(false);
+      await extractAndShowSummary(reply);
+      return;
+    }
+
+    var html = mdToHtml(reply);
+    if (html) botMsg(html);
+  } catch(err) {
+    typingStop();
+    errorMsg(err.message);
+  }
+
+  setBusy(false);
+}
+
+/* ─────────────────────────────────────────
+   DATA EXTRACTION
+───────────────────────────────────────── */
+async function extractAndShowSummary(completionReply) {
+  state.phase = 'extracting';
+
+  // Try to parse JSON from the completion reply first
+  var jsonData = tryParseJsonFromReply(completionReply);
+
+  if (!jsonData) {
+    // Fallback: make a separate extraction call
+    botMsg('<p>Let me just pull that all together for you…</p>');
+    typingStart();
+    setBusy(true);
+
+    // Build a conversation summary string
+    var convText = state.messages.slice(1).map(function(m) {
+      return (m.role === 'user' ? 'User: ' : 'Assistant: ') + m.content;
+    }).join('\n\n');
+
+    var extractionMessages = [
+      {
+        role: 'system',
+        content: 'You are a data extraction assistant. Extract form data from conversations and output ONLY a valid JSON object. No explanation, no markdown, just raw JSON.'
+      },
+      {
+        role: 'user',
+        content: 'Extract all collected form data from this conversation as a JSON object. Use null for any field not provided.\n\nConversation:\n' + convText
+      }
+    ];
+
+    try {
+      var jsonReply = await callGroq(extractionMessages, FAST_MODEL);
+      typingStop();
+      jsonData = tryParseJson(jsonReply);
+    } catch(err) {
+      typingStop();
+      setBusy(false);
+      errorMsg('Had trouble extracting your data: ' + err.message);
+      return;
+    }
+
+    setBusy(false);
+  }
+
+  if (jsonData) {
+    state.formData = jsonData;
+    renderSummary();
+  } else {
+    errorMsg('Something went wrong extracting your data. Please try again or start over.');
+  }
+}
+
+function tryParseJsonFromReply(text) {
+  // Look for JSON after ##COMPLETE##
+  var afterMarker = text.substring(text.indexOf('##COMPLETE##') + '##COMPLETE##'.length).trim();
+  return tryParseJson(afterMarker);
+}
+
+function tryParseJson(text) {
+  if (!text) return null;
+  // Strip markdown code fences if present
+  var cleaned = text.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
+  // Find the first { and last }
+  var start = cleaned.indexOf('{');
+  var end = cleaned.lastIndexOf('}');
+  if (start === -1 || end === -1) return null;
+  try {
+    return JSON.parse(cleaned.substring(start, end + 1));
+  } catch(e) {
+    return null;
+  }
+}
+
+/* ─────────────────────────────────────────
+   SUMMARY PHASE
+───────────────────────────────────────── */
+function renderSummary() {
+  state.phase = 'summary';
+  inputAreaEl.innerHTML = '';
+
+  var data = state.formData || {};
+  var entries = Object.entries(data).filter(function(e) { return e[1] !== null && e[1] !== '' && e[1] !== undefined; });
+
+  var tableHtml = '<table class="summary-table">';
+  entries.forEach(function(pair) {
+    var key = pair[0], val = pair[1];
+    // Format the key as a readable label
+    var label = key.replace(/-/g,' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+    tableHtml += '<tr><td>' + escH(label) + '</td><td>' + escH(String(val)) + '</td></tr>';
+  });
+  tableHtml += '</table>';
+
+  var summaryHtml =
+    '<div style="padding:1rem 1.25rem;">' +
+      '<p style="font-weight:700;margin-bottom:0.75rem;">Here\'s everything I\'ve collected:</p>' +
+      tableHtml +
+      '<div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">' +
+        '<button class="send-btn" onclick="submitForm()">Submit form</button>' +
+        '<button onclick="goBackToChat()" style="border:2px solid var(--color-grey-00);background:#fff;border-radius:4px;padding:0.625rem 1.25rem;font-family:inherit;font-size:1rem;cursor:pointer;">Make changes</button>' +
+      '</div>' +
+    '</div>';
+
+  inputAreaEl.innerHTML = summaryHtml;
+  scrollBottom();
+}
+
+function goBackToChat() {
+  state.phase = 'chat';
+  state.formData = null;
+  renderChatInput();
+  botMsg('<p>No problem — what would you like to change?</p>');
+  var ta = document.getElementById('chat-input');
+  if (ta) ta.focus();
+}
+
+/* ─────────────────────────────────────────
+   SUBMISSION
+───────────────────────────────────────── */
+async function submitForm() {
+  var btn = inputAreaEl.querySelector('.send-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+
+  var payload = {
+    formName: state.form ? state.form.name : 'Unknown',
+    formData: state.formData || {},
+    userEmail: (state.formData || {})['contact-email'] || (state.formData || {})['email'] || (state.formData || {})['app-email'] || ''
+  };
+
+  var refNumber = null;
+  try {
+    var res = await fetch('/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      var body = await res.json();
+      refNumber = body.referenceNumber || body.refNumber || null;
+    }
+  } catch(e) { /* server not running in dev — use client-side ref */ }
+
+  if (!refNumber) {
+    var prefix = (state.form && state.form.ref) ? state.form.ref : 'REF';
+    refNumber = prefix + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  }
+
+  renderConfirmation(refNumber);
+}
+
+function renderConfirmation(refNumber) {
+  state.phase = 'submitted';
+  inputAreaEl.innerHTML = '';
+  messagesEl.innerHTML = '';
+
+  var formName = state.form ? state.form.name : 'your form';
+
+  var html =
+    '<div style="padding:1.25rem;">' +
+      '<div class="confirm-panel">' +
+        '<h2>Form submitted</h2>' +
+        '<p style="margin:0.25rem 0 0.75rem;opacity:0.9;">Your ' + escH(formName) + ' has been received.</p>' +
+        '<p style="font-size:0.875rem;opacity:0.8;margin-bottom:0.375rem;">Your reference number</p>' +
+        '<p class="ref-number">' + escH(refNumber) + '</p>' +
+      '</div>' +
+      '<div style="margin-top:1rem;color:var(--color-mid-grey-00);font-size:0.95rem;">' +
+        '<p>Keep your reference number safe. We\'ll be in touch if we need anything else from you.</p>' +
+        '<p style="margin-top:0.5rem;">You can close this window or <button onclick="restartChat()" style="color:var(--color-teal-00);text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit;font-size:inherit;">complete another form</button>.</p>' +
+      '</div>' +
+    '</div>';
+
+  inputAreaEl.innerHTML = html;
+  scrollBottom();
+}
+
+/* ─────────────────────────────────────────
+   RESTART
+───────────────────────────────────────── */
+function restartChat() {
+  state.phase = 'init';
+  state.form = null;
+  state.messages = [];
+  state.formData = null;
+  state.busy = false;
+  messagesEl.innerHTML = '';
+  inputAreaEl.innerHTML = '';
+  renderSelect();
+}
+
+/* ─────────────────────────────────────────
+   INIT
+───────────────────────────────────────── */
+function init() {
+  messagesEl   = document.getElementById('messages');
+  inputAreaEl  = document.getElementById('input-area');
+
+  // Check for stored API key
+  var stored = '';
+  try { stored = localStorage.getItem('govbb-groq-key') || ''; } catch(e) {}
+
+  // Also check for key passed in URL hash (for easy sharing)
+  if (!stored && window.location.hash) {
+    var h = window.location.hash.substring(1);
+    if (h.startsWith('gsk_')) { stored = h; }
+  }
+
+  if (stored) {
+    state.apiKey = stored;
+    renderSelect();
+  } else {
+    renderSetup();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
