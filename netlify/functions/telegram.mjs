@@ -13,7 +13,6 @@
  *   RESEND_API_KEY      — (optional) for email on form submission
  */
 
-import { getStore } from '@netlify/blobs';
 import { FORMS, SYSTEM_PROMPTS, ROUTING_PROMPT, FORM_DESCRIPTIONS } from './telegram-data.mjs';
 
 // ── Config ──────────────────────────────────────────────────────────
@@ -95,19 +94,22 @@ async function callClaude(apiKey, messages, model, systemPrompt) {
   return data.content?.map(b => b.text).join('') || '';
 }
 
-// ── Session store (Netlify Blobs) ───────────────────────────────────
+// ── Session store (/tmp file-based, persists within warm instances) ──
 
-function getSessionStore() {
-  return getStore({ name: 'telegram-sessions', consistency: 'eventual' });
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { join } from 'path';
+
+const SESSION_DIR = '/tmp/tg-sessions';
+try { mkdirSync(SESSION_DIR, { recursive: true }); } catch {}
+
+function sessionPath(chatId) {
+  return join(SESSION_DIR, `${chatId}.json`);
 }
 
 async function loadSession(chatId) {
-  const store = getSessionStore();
   try {
-    const raw = await store.get(String(chatId));
-    if (!raw) return newSession();
+    const raw = readFileSync(sessionPath(chatId), 'utf8');
     const session = JSON.parse(raw);
-    // Expire stale sessions
     if (Date.now() - (session.lastActivity || 0) > SESSION_TTL_MS) {
       return newSession();
     }
@@ -118,9 +120,8 @@ async function loadSession(chatId) {
 }
 
 async function saveSession(chatId, session) {
-  const store = getSessionStore();
   session.lastActivity = Date.now();
-  await store.set(String(chatId), JSON.stringify(session));
+  writeFileSync(sessionPath(chatId), JSON.stringify(session));
 }
 
 function newSession() {
