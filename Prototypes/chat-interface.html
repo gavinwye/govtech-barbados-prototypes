@@ -210,7 +210,7 @@
     <div class="mb-5">
       <p class="border-bb-blue-40 border-l-4 py-xs pl-s text-bb-mid-grey-00 text-[1rem] mb-3">Government of Barbados</p>
       <h1 class="font-bold text-[2.5rem] leading-tight">Complete a form by chat</h1>
-      <p class="text-bb-mid-grey-00 mt-2">Have a conversation to fill in any of the 62 government forms across NIS, BLA, CAIPO, IMMD and NAB. Powered by AI.</p>
+      <p class="text-bb-mid-grey-00 mt-2" id="service-count"></p>
     </div>
     <div id="chat-window">
       <div id="messages"></div>
@@ -1166,6 +1166,10 @@ function restartChat() {
 function init() {
   messagesEl   = document.getElementById('messages');
   inputAreaEl  = document.getElementById('input-area');
+  var countEl  = document.getElementById('service-count');
+  if (countEl) {
+    countEl.textContent = 'Have a conversation to complete any of the ' + FORMS.length + ' government services. Powered by AI.';
+  }
   renderSelect();
 }
 
