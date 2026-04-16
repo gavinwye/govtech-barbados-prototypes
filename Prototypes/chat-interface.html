@@ -210,7 +210,7 @@
     <div class="mb-5">
       <p class="border-bb-blue-40 border-l-4 py-xs pl-s text-bb-mid-grey-00 text-[1rem] mb-3">Government of Barbados</p>
       <h1 class="font-bold text-[2.5rem] leading-tight">Complete a form by chat</h1>
-      <p class="text-bb-mid-grey-00 mt-2">Have a conversation to fill in any of the 31 government forms across NIS and BLA. Powered by AI.</p>
+      <p class="text-bb-mid-grey-00 mt-2">Have a conversation to fill in any of the 62 government forms across NIS, BLA, CAIPO, IMMD and NAB. Powered by AI.</p>
     </div>
     <div id="chat-window">
       <div id="messages"></div>
@@ -238,6 +238,9 @@
 
 <script src="../assets/govbb-framework.js"></script>
 <script src="../assets/bla-forms-data.js"></script>
+<script src="../assets/caipo-forms-data.js"></script>
+<script src="../assets/immd-forms-data.js"></script>
+<script src="../assets/other-forms-data.js"></script>
 <script>
 'use strict';
 
@@ -261,7 +264,7 @@ var FORMS = [
   { id:'secp', name:'Self-Employed Contributions Certificate',          ref:'SECP', agency:'National Insurance Scheme (NIS)' },
   { id:'tc',   name:'Termination Certificate',                          ref:'TC',   agency:'National Insurance Scheme (NIS)' },
   { id:'vep',  name:'Permit to Remove / Relocate Structure',            ref:'VEP',  agency:'Barbados Licensing Authority (BLA)' }
-].concat(window.BLA_FORMS || []);
+].concat(window.BLA_FORMS || []).concat(window.CAIPO_FORMS || []).concat(window.IMMD_FORMS || []).concat(window.OTHER_FORMS || []);
 
 /* ─────────────────────────────────────────
    SYSTEM PROMPTS
@@ -577,12 +580,14 @@ ${BASE_RULES}`
 
 };
 
-// Merge BLA system prompts, replacing <<BASE_RULES>> placeholder with the shared rules string
-if (window.BLA_SYSTEM_PROMPTS) {
-  Object.keys(window.BLA_SYSTEM_PROMPTS).forEach(function(id) {
-    SYSTEM_PROMPTS[id] = window.BLA_SYSTEM_PROMPTS[id].replace('<<BASE_RULES>>', BASE_RULES);
-  });
-}
+// Merge external system prompts, replacing <<BASE_RULES>> placeholder with the shared rules string
+[window.BLA_SYSTEM_PROMPTS, window.CAIPO_SYSTEM_PROMPTS, window.IMMD_SYSTEM_PROMPTS, window.OTHER_SYSTEM_PROMPTS].forEach(function(promptSet) {
+  if (promptSet) {
+    Object.keys(promptSet).forEach(function(id) {
+      SYSTEM_PROMPTS[id] = promptSet[id].replace('<<BASE_RULES>>', BASE_RULES);
+    });
+  }
+});
 
 /* ─────────────────────────────────────────
    STATE
@@ -749,7 +754,42 @@ var FORM_DESCRIPTIONS = {
   'ub':   'claim unemployment benefit after losing a job',
   'secp': 'self-employed person paying their annual NIS contributions',
   'tc':   "employer reporting that an employee's job has ended",
-  'vep':  'permission to move a house, building, or boat on public roads'
+  'vep':  'permission to move a house, building, or boat on public roads',
+  // CAIPO
+  'caipo-reincorporation': 'file articles of reincorporation for a company with CAIPO',
+  'caipo-business-names': 'register a business name in Barbados with CAIPO',
+  'caipo-caricom-complaints': 'file a complaint about treatment at a CARICOM port of entry or checkpoint',
+  'caipo-company-name-search': 'search and reserve a company name with CAIPO',
+  'caipo-declaration-cap308': 'attorney filing a declaration of compliance under the Companies Act',
+  'caipo-declaration-nonprofit': 'attorney filing a declaration of compliance for a non-profit company',
+  'caipo-financial-exemption': 'apply for a financial statements exemption under the Companies Act',
+  'caipo-geographical-agent': 'authorise an agent for geographical indications matters',
+  'caipo-ibc-licence': 'apply for a licence as an international business company (IBC)',
+  'caipo-registered-agent': 'register as a registered agent with CAIPO',
+  'caipo-srl-name-search': 'search and reserve a name for a society with restricted liability (SRL)',
+  'caipo-url-domain': 'declare domain name ownership for company incorporation',
+  // IMMD
+  'immd-caricom-stay': 'CARICOM skilled national applying for indefinite stay in Barbados',
+  'immd-citizen-adult': 'adult applying for registration as a Barbados citizen',
+  'immd-citizen-marriage': 'applying for Barbados citizenship through marriage',
+  'immd-citizen-under18': 'registering a child under 18 as a Barbados citizen',
+  'immd-affidavit': 'making a sworn statement (affidavit) supporting a citizenship application',
+  'immd-descent': 'request a certificate of Barbados citizenship by descent (born abroad to Barbadian parents)',
+  'immd-commonwealth': 'Commonwealth citizen registering for citizenship in Barbados',
+  'immd-immigrant-status': 'applying for immigrant status and non-national registration in Barbados',
+  'immd-permanent-resident': 'applying for permanent resident status in Barbados',
+  'immd-short-term-wp': 'applying for a short-term work permit or training attachment in Barbados',
+  'immd-student-h2': 'non-immigrant student certifying their stay in Barbados',
+  'immd-student-h1': 'school certifying eligibility for non-immigrant student status',
+  'immd-work-permit': 'applying for a work permit, extension, or job offer for non-immigrant employment',
+  // NAB
+  'nab-home-care': 'apply for home care services for an elderly or disabled person',
+  'nab-seniors-rec': 'apply for the seniors recreational activities programme',
+  // NIS (additional)
+  'nisss-edu-status': 'confirm student enrolment status with NIS',
+  'nisss-employer-reg': 'register as an employer for NIS online services',
+  'nisss-life-cert': 'complete NIS life certificate to confirm you are alive and eligible for benefits',
+  'nisss-old-age': 'claim old age contributory pension from NIS'
 };
 
 var ROUTING_PROMPT =
