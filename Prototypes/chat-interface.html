@@ -244,9 +244,9 @@
 /* ─────────────────────────────────────────
    CONFIG
 ───────────────────────────────────────── */
-var GROQ_URL   = 'https://api.groq.com/openai/v1/chat/completions';
-var CHAT_MODEL = 'llama-3.3-70b-versatile';
-var FAST_MODEL = 'llama-3.1-8b-instant';
+var CHAT_API   = '/api/chat';
+var CHAT_MODEL = 'claude-sonnet-4-20250514';
+var FAST_MODEL = 'claude-haiku-4-5-20251001';
 
 /* ─────────────────────────────────────────
    FORM CATALOG
@@ -588,10 +588,10 @@ if (window.BLA_SYSTEM_PROMPTS) {
    STATE
 ───────────────────────────────────────── */
 var state = {
-  phase: 'init',    // init | setup | select | chat | extracting | summary | submitted
-  apiKey: '',
+  phase: 'init',    // init | select | chat | extracting | summary | submitted
   form: null,
-  messages: [],     // [{role, content}] — full chat history
+  messages: [],     // [{role, content}] — full chat history (no system msgs)
+  systemPrompt: '', // current system prompt
   formData: null,   // extracted JSON
   busy: false
 };
@@ -599,33 +599,48 @@ var state = {
 var messagesEl, inputAreaEl;
 
 /* ─────────────────────────────────────────
-   API
+   API — calls Anthropic via server-side proxy
 ───────────────────────────────────────── */
-async function callGroq(messages, model) {
+async function callClaude(messages, model, systemPrompt) {
   var m = model || CHAT_MODEL;
-  var res = await fetch(GROQ_URL, {
+  // Separate system messages from user/assistant messages
+  var system = systemPrompt || '';
+  var chatMessages = [];
+  for (var i = 0; i < messages.length; i++) {
+    if (messages[i].role === 'system') {
+      system = messages[i].content;
+    } else {
+      chatMessages.push(messages[i]);
+    }
+  }
+  var payload = {
+    model: m,
+    messages: chatMessages,
+    max_tokens: 2048
+  };
+  if (system) payload.system = system;
+
+  var res = await fetch(CHAT_API, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + state.apiKey
-    },
-    body: JSON.stringify({
-      model: m,
-      messages: messages,
-      temperature: 0.7,
-      max_tokens: 2048
-    })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
   });
   if (!res.ok) {
     var body = {};
     try { body = await res.json(); } catch(e) {}
     var msg = (body.error && body.error.message) || ('HTTP ' + res.status);
-    if (res.status === 401) throw new Error('API key is invalid or has no access. Check your Groq API key and try again.');
     if (res.status === 429) throw new Error('Rate limit reached. Please wait a moment and try again.');
-    throw new Error('Groq API error: ' + msg);
+    throw new Error('API error: ' + msg);
   }
   var data = await res.json();
-  return data.choices[0].message.content;
+  // Anthropic Messages API returns content as an array of blocks
+  var text = '';
+  if (data.content && data.content.length) {
+    for (var j = 0; j < data.content.length; j++) {
+      if (data.content[j].type === 'text') text += data.content[j].text;
+    }
+  }
+  return text;
 }
 
 /* ─────────────────────────────────────────
@@ -718,46 +733,8 @@ function mdToHtml(text) {
 }
 
 /* ─────────────────────────────────────────
-   SETUP PHASE — API key entry
+   SETUP PHASE — no longer needed (API key is server-side)
 ───────────────────────────────────────── */
-function renderSetup() {
-  state.phase = 'setup';
-  document.getElementById('restart-btn').style.display = 'none';
-  inputAreaEl.innerHTML = '';
-  messagesEl.innerHTML = '';
-
-  botMsg('<p>Hi! To have a real conversation, this assistant uses the <strong>Groq API</strong> — a free AI service. You\'ll need a free API key to get started.</p>' +
-    '<p>Get one in about 30 seconds at <strong>console.groq.com</strong> — create an account and copy your API key.</p>');
-
-  inputAreaEl.innerHTML =
-    '<div class="setup-card">' +
-      '<div>' +
-        '<label for="api-key-input">Your Groq API key</label>' +
-        '<p class="hint" style="margin-bottom:0.5rem">Starts with <code>gsk_</code> — it stays in your browser and is never sent anywhere except directly to Groq.</p>' +
-        '<input type="password" id="api-key-input" placeholder="gsk_..." autocomplete="off" autocorrect="off" spellcheck="false">' +
-      '</div>' +
-      '<div class="input-row">' +
-        '<button class="send-btn" style="width:100%" onclick="saveApiKey()">Start chatting</button>' +
-      '</div>' +
-      '<p class="hint">Need a key? Go to <strong>console.groq.com</strong>, sign up free, and create an API key under API Keys.</p>' +
-    '</div>';
-
-  var inp = document.getElementById('api-key-input');
-  if (inp) {
-    inp.focus();
-    inp.onkeydown = function(e) { if (e.key === 'Enter') saveApiKey(); };
-  }
-}
-
-function saveApiKey() {
-  var inp = document.getElementById('api-key-input');
-  if (!inp) return;
-  var key = inp.value.trim();
-  if (!key) { inp.style.borderColor = 'var(--color-red-00)'; inp.focus(); return; }
-  state.apiKey = key;
-  try { localStorage.setItem('govbb-groq-key', key); } catch(e) {}
-  renderSelect();
-}
 
 /* ─────────────────────────────────────────
    ROUTING — natural language form selection
@@ -797,12 +774,6 @@ function renderSelect() {
   botMsg('<p>Hi! What would you like to do today?</p>');
 
   renderChatInput('What do you need help with?');
-
-  // Add "change API key" below the input
-  var changeKey = document.createElement('div');
-  changeKey.style.cssText = 'padding: 0.25rem 0 0;';
-  changeKey.innerHTML = '<button onclick="clearApiKey()" style="font-size:0.8rem;color:var(--color-mid-grey-00);text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit">Change API key</button>';
-  inputAreaEl.appendChild(changeKey);
 }
 
 async function handleRouting(text) {
@@ -810,10 +781,9 @@ async function handleRouting(text) {
   setBusy(true);
 
   try {
-    var reply = await callGroq([
-      { role: 'system', content: ROUTING_PROMPT },
+    var reply = await callClaude([
       { role: 'user', content: text }
-    ], FAST_MODEL);
+    ], FAST_MODEL, ROUTING_PROMPT);
 
     typingStop();
     var formId = reply.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
@@ -836,12 +806,6 @@ async function handleRouting(text) {
   }
 }
 
-function clearApiKey() {
-  state.apiKey = '';
-  try { localStorage.removeItem('govbb-groq-key'); } catch(e) {}
-  renderSetup();
-}
-
 /* ─────────────────────────────────────────
    CHAT PHASE
 ───────────────────────────────────────── */
@@ -853,14 +817,14 @@ async function startForm(form) {
 
   renderChatInput();
 
-  var systemPrompt = SYSTEM_PROMPTS[form.id];
-  if (!systemPrompt) {
+  var sysPrompt = SYSTEM_PROMPTS[form.id];
+  if (!sysPrompt) {
     botMsg('<p>Sorry, I don\'t have a prompt set up for that form yet.</p>');
     return;
   }
 
-  // First message: introduce the form
-  state.messages.push({ role: 'system', content: systemPrompt });
+  // Store the system prompt separately (Anthropic API takes it as a top-level param)
+  state.systemPrompt = sysPrompt;
 
   var opener = 'Start. Greet the user in one sentence, then ask your first question.';
   state.messages.push({ role: 'user', content: opener });
@@ -869,11 +833,11 @@ async function startForm(form) {
   setBusy(true);
 
   try {
-    var reply = await callGroq(state.messages);
+    var reply = await callClaude(state.messages, CHAT_MODEL, state.systemPrompt);
     typingStop();
     state.messages.push({ role: 'assistant', content: reply });
     // Remove the opener from messages so future calls don't re-send it
-    state.messages.splice(1, 1); // remove the opener
+    state.messages.splice(0, 1); // remove the opener
     var html = mdToHtml(reply);
     if (html) botMsg(html);
   } catch(err) {
@@ -945,7 +909,7 @@ async function sendMessage() {
   setBusy(true);
 
   try {
-    var reply = await callGroq(state.messages);
+    var reply = await callClaude(state.messages, CHAT_MODEL, state.systemPrompt);
     typingStop();
     state.messages.push({ role: 'assistant', content: reply });
 
@@ -988,11 +952,8 @@ async function extractAndShowSummary(completionReply) {
       return (m.role === 'user' ? 'User: ' : 'Assistant: ') + m.content;
     }).join('\n\n');
 
+    var extractionSystem = 'You are a data extraction assistant. Extract form data from conversations and output ONLY a valid JSON object. No explanation, no markdown, just raw JSON.';
     var extractionMessages = [
-      {
-        role: 'system',
-        content: 'You are a data extraction assistant. Extract form data from conversations and output ONLY a valid JSON object. No explanation, no markdown, just raw JSON.'
-      },
       {
         role: 'user',
         content: 'Extract all collected form data from this conversation as a JSON object. Use null for any field not provided.\n\nConversation:\n' + convText
@@ -1000,7 +961,7 @@ async function extractAndShowSummary(completionReply) {
     ];
 
     try {
-      var jsonReply = await callGroq(extractionMessages, FAST_MODEL);
+      var jsonReply = await callClaude(extractionMessages, FAST_MODEL, extractionSystem);
       typingStop();
       jsonData = tryParseJson(jsonReply);
     } catch(err) {
@@ -1093,6 +1054,8 @@ async function submitForm() {
 
   var payload = {
     formName: state.form ? state.form.name : 'Unknown',
+    formId: state.form ? state.form.id : 'unknown',
+    formRef: state.form ? state.form.ref : 'REF',
     formData: state.formData || {},
     userEmail: (state.formData || {})['contact-email'] || (state.formData || {})['email'] || (state.formData || {})['app-email'] || ''
   };
@@ -1163,23 +1126,7 @@ function restartChat() {
 function init() {
   messagesEl   = document.getElementById('messages');
   inputAreaEl  = document.getElementById('input-area');
-
-  // Check for stored API key
-  var stored = '';
-  try { stored = localStorage.getItem('govbb-groq-key') || ''; } catch(e) {}
-
-  // Also check for key passed in URL hash (for easy sharing)
-  if (!stored && window.location.hash) {
-    var h = window.location.hash.substring(1);
-    if (h.startsWith('gsk_')) { stored = h; }
-  }
-
-  if (stored) {
-    state.apiKey = stored;
-    renderSelect();
-  } else {
-    renderSetup();
-  }
+  renderSelect();
 }
 
 init();

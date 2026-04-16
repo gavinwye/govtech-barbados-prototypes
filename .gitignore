@@ -3,5 +3,8 @@ pdf forms/
 service pattern documents/
 .claude/
 
+# Environment variables
+.env
+
 # Local Netlify folder
 .netlify
