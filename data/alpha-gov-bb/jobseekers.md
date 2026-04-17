@@ -15,23 +15,3 @@ The Ministry of Labour and Social Partnership Relations is committed to helping 
 *   **Applying for Jobs Online (Coming Soon)**
 
 ## Guidance and Counseling
-
-The Ministry of Labour and Social Partnership Relations also wants to help you throughout the job search process. Check out Guidance and Counseling for great tips on:
-
-*   Preparing a great resume
-*   Writing an effective cover letter
-*   Searching for available vacancies
-*   Making an application for a job
-*   Preparing for the job interview
-*   Getting ready for that first day on the job
-
-## Education and Training Services
-
-You may also be interested in learning more about Education and Training services within the Ministry of Labour and Social Partnership Relations.
-
-## Public Sector Employment Opportunities
-
-The provisions of the First Schedule – **Recruitment and Employment Code of the Public Service Act, CAP 29** require, that all job opportunities or offices vacant for periods in excess of twelve months must be circularized or advertised and should be filled on merit, but where the nature of the work so requires, consideration shall be given to seniority and experience.
-
-Visit the Ministry of the Public Service at [https://mps.gov.bb/People_Resourcing/](https://mps.gov.bb/People_Resourcing/) for more information.
-```

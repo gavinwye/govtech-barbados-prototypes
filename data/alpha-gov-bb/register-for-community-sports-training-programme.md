@@ -27,19 +27,3 @@ There are 2 ways to complete the form. You can:
    Sky Mall  
    Haggatt Hall  
    St. Michael
-
-   If you complete a paper form, submit it by taking it to:
-   - your local youth commissioner or coach
-   - the ministry office
-
-## After you register
-
-The Youth Commissioner will be in touch to confirm:
-
-- the location of the programme
-- the start date and times
-- what you will need to bring
-
-## When to register
-
-When to register depends on what you would like to register for. You can see a list of current programmes at the [Youth Development Programme page](https://youthaffairs.gov.bb/programme-channels/youth-development-programme/) or contact the Ministry at (246) 535-3835 and ask to be redirected to the Youth Commissioner or the Principal Youth Development Officer.

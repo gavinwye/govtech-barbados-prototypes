@@ -13,19 +13,3 @@ Applications are processed for a fee of **BDS$5.00**. Completed application form
 ## Fees
 
 *   Registration for a Death Certificate is free of cost.
-*   A fee of $5.00 (per copy) is charged for the certificate.
-*   A fee of $10.00 (per copy) is charged for the "Cause of Death" certificate.
-
-Applications must be completed in full and should be mailed to: 
-
-The Registrar of the Supreme Court  
-Registration Department  
-New Supreme Court Complex  
-White Park Road  
-St. Michael  
-BARBADOS
-
-For further information contact the Registration Department at:
-
-(Tel.) 1 (246) 535-9700
-```

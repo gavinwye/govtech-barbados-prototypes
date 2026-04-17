@@ -19,32 +19,3 @@ To register the marriages you must visit the Registration Department, Coleridge 
 ## Document to be Produced
 
 1.  Fully completed duplicate original Marriage record - Marriage Card.
-
-## What Information Must Be Included in the Marriage Record?
-
-*   Place of marriage
-*   Date of marriage
-*   Name and Surname of the husband
-*   Name and Surname of the wife
-*   Age of the husband
-*   Age of the wife
-*   Marital status of husband and wife
-*   Addresses of husband and wife - present addresses (foreign addresses are not allowed)
-*   Occupation of husband
-*   Occupation of wife
-*   Name and occupation of husband's father
-*   Name and occupation of wife's father
-*   Signatures of husband and wife
-*   Signatures of witnesses
-*   Signature of Marriage Officer or Magistrate
-
-## For Further Information
-
-Contact/visit the Registration Department at:
-
-Supreme Court Complex  
-White Park Road  
-St. Michael
-
-(Tel.) 1 (246) 535-9700
-```

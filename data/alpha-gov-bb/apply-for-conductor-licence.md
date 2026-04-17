@@ -29,20 +29,3 @@ There are 2 ways to apply for a conductor's licence. You can:
    \
    The Goddard Building
    \
-   Haggatt Hall
-   \
-   St. Michael
-   \
-   Bridgetown
-
-### What you will need to share
-
-Along with your personal details, the application form will ask for information about your licences, driving history, and any relevant convictions.
-
-You will also need to provide a copy of your [Police Certificate of Character](https://forms.gov.bb/CertificateOfCharacter)
-
-### After you apply
-
-We will review your application.
-
-You must contact the department (246-536-0282) to schedule your in-person oral test.

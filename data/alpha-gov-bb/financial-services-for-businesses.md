@@ -26,6 +26,3 @@ BB14038
 (246) 421-2146
 
 info@fsc.gov.bb
-
-[Visit Website](http://www.fsc.gov.bb/)
-```
