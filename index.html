@@ -84,7 +84,7 @@
       </div>
       <div class="flex-1">
         <p class="font-bold text-[1.25rem]">Try the chat interface — new</p>
-        <p class="text-[1rem] text-bb-mid-grey-00">Answer questions in a conversation to complete any of the 9 forms below. No page reloads.</p>
+        <p class="text-[1rem] text-bb-mid-grey-00">Answer questions in a conversation to complete any of the 80 forms below. No page reloads.</p>
       </div>
       <svg class="shrink-0 text-bb-teal-00" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
     </a>
@@ -95,6 +95,7 @@
       <button onclick="filterForms('individual')" data-filter="individual" class="filter-btn tag bg-bb-white-00 text-bb-black-00 cursor-pointer border-2 border-bb-grey-00 hover:border-bb-teal-00 text-[1rem] py-1 px-4">For individuals</button>
       <button onclick="filterForms('employer')" data-filter="employer" class="filter-btn tag bg-bb-white-00 text-bb-black-00 cursor-pointer border-2 border-bb-grey-00 hover:border-bb-teal-00 text-[1rem] py-1 px-4">For employers</button>
       <button onclick="filterForms('self-employed')" data-filter="self-employed" class="filter-btn tag bg-bb-white-00 text-bb-black-00 cursor-pointer border-2 border-bb-grey-00 hover:border-bb-teal-00 text-[1rem] py-1 px-4">For self-employed</button>
+      <button onclick="filterForms('organisation')" data-filter="organisation" class="filter-btn tag bg-bb-white-00 text-bb-black-00 cursor-pointer border-2 border-bb-grey-00 hover:border-bb-teal-00 text-[1rem] py-1 px-4">For organisations</button>
     </div>
 
     <!-- ─── NIS section ─── -->
@@ -104,7 +105,7 @@
           <p class="text-[0.875rem] font-semibold text-bb-mid-grey-00 uppercase tracking-wide mb-1">Ministry / Department / Agency</p>
           <h2 class="font-bold text-[1.5rem]">National Insurance Scheme (NIS)</h2>
         </div>
-        <span class="tag bg-bb-blue-10 text-bb-blue-00" style="white-space:nowrap">7 forms</span>
+        <span class="tag bg-bb-blue-10 text-bb-blue-00" style="white-space:nowrap">11 forms</span>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" id="nis-grid">
@@ -194,6 +195,55 @@
           </div>
         </a>
 
+        <a href="Prototypes/nis-educational-status.html" class="form-card" data-audience="individual student">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-green-10 text-bb-green-00">ESF</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">NIS Educational Status Form</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Confirm your enrolment status as a student with NIS to maintain benefit eligibility.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Student</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/nis-employer-registration.html" class="form-card" data-audience="employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-green-10 text-bb-green-00">ER</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Register as an Employer for NIS Online Services</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Register your business for NIS online access to manage employee contributions and submit forms.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Employer</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/nis-life-certificate.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-green-10 text-bb-green-00">LC</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">NIS Life Certificate</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Confirm you are alive and still eligible for your NIS benefit. Required regularly to keep receiving payments.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/old-age-pension.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-green-10 text-bb-green-00">OAP</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Claim for Old Age Contributory Pension</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Claim your Old Age Contributory Pension if you have made enough NIS contributions and reached retirement age.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
       </div>
     </section>
 
@@ -232,7 +282,7 @@
           <p class="text-[0.875rem] font-semibold text-bb-mid-grey-00 uppercase tracking-wide mb-1">Ministry / Department / Agency</p>
           <h2 class="font-bold text-[1.5rem]">Barbados Licensing Authority (BLA)</h2>
         </div>
-        <span class="tag bg-bb-blue-10 text-bb-blue-00" style="white-space:nowrap">1 form</span>
+        <span class="tag bg-bb-blue-10 text-bb-blue-00" style="white-space:nowrap">52 forms</span>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -250,6 +300,914 @@
           </div>
         </a>
 
+        <a href="Prototypes/change-of-engine.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">COE</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Change of Engine</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Notify BLA when you replace or swap the engine in your registered vehicle.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/change-of-use.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">COU</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Change of Use of Vehicle</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Change how your vehicle is classified, for example from private to commercial use.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/change-of-vehicle-colour.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">CVC</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Request to Change the Colour of Vehicle</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Tell BLA you have changed or plan to change your vehicle's colour.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/declaration-company-vehicle.html" class="form-card" data-audience="employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">DC</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Company Vehicle Registration Declaration</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Declare and register a vehicle owned by your company with BLA.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Business</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/declaration-partnership-vehicle.html" class="form-card" data-audience="employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">DP</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Partnership Vehicle Registration Declaration</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Declare and register a vehicle owned by a business partnership.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Business</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/declaration-sole-trader-vehicle.html" class="form-card" data-audience="employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">DST</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Sole Trader Vehicle Registration Declaration</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Declare and register a vehicle owned by a sole trader business.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Business</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/duty-free-concession-business.html" class="form-card" data-audience="employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">DFB</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Duty Free Concession (Business)</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a duty free concession on a vehicle imported for business use.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Business</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/duty-free-concession-individual.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">DFI</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Duty Free Concession (Individual)</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a duty free concession on a vehicle you are importing for personal use.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/importation-of-vehicles.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">IOV</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Importation of Vehicles</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Register a vehicle you are importing into Barbados for the first time.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/motor-vehicle-inspection.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">LA</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Motor Vehicle Inspection</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Book a motor vehicle inspection to confirm your vehicle is roadworthy.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/odometer-reading-validation.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">OR</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Odometer Reading Validation</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Submit your vehicle's odometer reading for official validation by BLA.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/registration-temporary-stay.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">RTS</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Register Vehicle for Temporary Stay</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Register a vehicle for temporary use while visiting Barbados.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/request-for-graphics.html" class="form-card" data-audience="individual employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">RFG</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Graphics/Lettering on Vehicle</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for permission to add graphics or lettering to your vehicle.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Business</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/retention-of-registration-number.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">RON</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Retain Registration Number</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Keep your current registration number when you change vehicles.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/sale-of-vehicle-individual.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">SVI</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Sale of Vehicle (Individual)</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Notify BLA when you sell your vehicle to another person.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/sale-of-vehicle-joint.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">SVJ</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Sale of Vehicle (Joint Owners)</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Notify BLA when joint owners sell a vehicle they share ownership of.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/scrapping-of-vehicle.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">SOV</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Scrap or Sell Vehicle in Parts</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Notify BLA that you are scrapping your vehicle or selling it for parts.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/transfer-of-vehicle-individual.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">TVI</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Transfer of Vehicle (Individual)</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Transfer ownership of your vehicle to another person.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/transfer-of-vehicle-joint.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">TVJ</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Transfer of Vehicle (Joint Owners)</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Transfer ownership of a jointly owned vehicle to a new owner.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/vanity-plate-application.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">VP</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Approved Vanity Plate</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a personalised vanity number plate for your vehicle.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/vehicle-investigation.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">VI</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Vehicle Investigation</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Request an investigation into the status or history of a vehicle.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/vehicle-registration-renewal.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">VRR</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Register or Renew Vehicle Licence</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Register a new vehicle or renew your existing vehicle licence with BLA.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/change-of-address.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">COA</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Change of Address</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Update your address on file with the Barbados Licensing Authority.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/stolen-vehicle.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">SV</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Report a Stolen Vehicle</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Report your vehicle as stolen to the Barbados Licensing Authority.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/driving-exam-date-change.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">DEC</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Change Driving Exam Date</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Reschedule the date of your driving exam with BLA.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/lost-learner-permit.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">LLP</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Replace Lost Learner Permit</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Get a replacement if you have lost your learner driving permit.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/change-driving-test-date.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">CDT</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Change Driving Test Date</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Reschedule the date of your practical driving test.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/change-regulation-test-date.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">CRT</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Change Regulation Test Date</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Reschedule the date of your regulation (theory) test.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/driving-record.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">DR</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Request Driving Record</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Request an official copy of your driving record from BLA.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/duplicate-psv-licence.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">DPSV</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Duplicate PSV Licence</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Get a replacement copy of your public service vehicle licence.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/new-learner-permit.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">NLP</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">New Learner Permit</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a learner driving permit to start learning to drive.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/tint-vehicle.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">TV</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Tint Vehicle Windows</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for permission to tint your vehicle windows.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/reinstatement-driving-licence.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">RDL</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Reinstatement of Driving Licence</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply to have your suspended or revoked driving licence reinstated.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/transfer-international-licence.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">TIL</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Transfer International Licence</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Convert your foreign driving licence to a Barbados licence.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/disabled-parking-permit.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">DPP</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Disabled Parking Permit</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a disabled parking permit for your vehicle.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/regulation-test-appointment.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">RTA</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Regulation Test Appointment</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Book an appointment to sit your regulation (theory) driving test.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/register-bicycle-motorcycle.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">RBM</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Register Bicycle/Motorcycle</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Register a bicycle or motorcycle with the Barbados Licensing Authority.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/transfer-vehicle-death.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">TVD</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Transfer Vehicle (Death of Owner)</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Transfer a vehicle to a new owner after the registered owner has died.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/mo-plate-renewal.html" class="form-card" data-audience="employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">MO</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">MO Plate Renewal</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Renew your MO (motor omnibus) plate for public transport vehicles.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Business</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/drivers-licence.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">DL</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Driver's Licence</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for or renew your Barbados driver's licence.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/conductors-licence.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">CL</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Conductor's Licence</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a licence to work as a conductor on public transport.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/taxi-driver-licence.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">TDL</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Taxi Driver Licence</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a licence to drive a taxi in Barbados.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/international-driving-permit.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">IDP</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">International Driving Permit</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for an international driving permit to drive abroad.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/f-class-driving-licence.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">FCL</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">F-Class Driving Licence</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for an F-class licence to drive heavy goods or special vehicles.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/vehicle-registration-private.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">VRP</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Register Private Vehicle</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Register a private vehicle for the first time with BLA.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/tinted-window-exemption-business.html" class="form-card" data-audience="employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">TWE</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Tinted Window Exemption (Business)</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a business exemption to have tinted windows on company vehicles.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Business</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/approved-vehicle-garage.html" class="form-card" data-audience="employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">AVG</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Approved Vehicle Garage</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for your garage to be approved by BLA for vehicle inspections.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Business</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/number-plate-manufacturer.html" class="form-card" data-audience="employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">NPM</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Number Plate Manufacturer Approval</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for approval to manufacture vehicle number plates in Barbados.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Business</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/duty-free-vehicle.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">DFV</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Duty Free Vehicle Concession</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a duty free concession when importing a vehicle into Barbados.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/limited-trade-plates.html" class="form-card" data-audience="employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">LTP</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Limited Trade Plates</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for limited trade plates for use by motor vehicle dealers.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Business</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/taxi-oral-test.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-red-10 text-bb-red-00">TOT</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Oral Test for Taxi Licence</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Book the oral test required to obtain your taxi driver licence.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ─── Police section ─── -->
+    <section class="mb-l" data-section="police">
+      <div class="flex items-center gap-4 mb-m pb-s border-b-2 border-bb-grey-00">
+        <div class="flex-1">
+          <p class="text-[0.875rem] font-semibold text-bb-mid-grey-00 uppercase tracking-wide mb-1">Ministry / Department / Agency</p>
+          <h2 class="font-bold text-[1.5rem]">Royal Barbados Police Force</h2>
+        </div>
+        <span class="tag bg-bb-blue-10 text-bb-blue-00" style="white-space:nowrap">7 forms</span>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+        <a href="Prototypes/police-accident-report.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-blue-10 text-bb-blue-00">PAR</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Police Accident Report</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Report a road traffic accident to the Royal Barbados Police Force.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/motorcade-application.html" class="form-card" data-audience="individual organisation">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-blue-10 text-bb-blue-00">MC</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Motorcade Permit</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a permit to hold a motorcade on public roads.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Organisation</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/loud-music-permit.html" class="form-card" data-audience="individual organisation">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-blue-10 text-bb-blue-00">LMP</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Loud Music Permit</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a permit to play loud music at an event or gathering.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Organisation</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/import-export-firearms.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-blue-10 text-bb-blue-00">IEF</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Import/Export Firearms</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for permission to import or export firearms into or out of Barbados.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/firearm-licence.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-blue-10 text-bb-blue-00">FL</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Firearm Licence</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a licence to own and use a firearm in Barbados.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/firearms-dealer-licence.html" class="form-card" data-audience="employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-blue-10 text-bb-blue-00">FDL</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Firearms Dealer/Gunsmith Licence</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a licence to operate as a firearms dealer or gunsmith.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Business</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/shooting-club-licence.html" class="form-card" data-audience="organisation">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-blue-10 text-bb-blue-00">SCL</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Shooting Club Licence</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a licence to operate a shooting club in Barbados.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Organisation</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ─── Land Tax section ─── -->
+    <section class="mb-l" data-section="landtax">
+      <div class="flex items-center gap-4 mb-m pb-s border-b-2 border-bb-grey-00">
+        <div class="flex-1">
+          <p class="text-[0.875rem] font-semibold text-bb-mid-grey-00 uppercase tracking-wide mb-1">Ministry / Department / Agency</p>
+          <h2 class="font-bold text-[1.5rem]">Land Tax Department</h2>
+        </div>
+        <span class="tag bg-bb-blue-10 text-bb-blue-00" style="white-space:nowrap">3 forms</span>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+        <a href="Prototypes/land-tax-demand-notice.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag" style="background:#f3e8ff;color:#4a235a">LTDN</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Land Tax Demand Notice</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Request a copy of your land tax demand notice for a property you own.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/land-tax-advance-assessment.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag" style="background:#f3e8ff;color:#4a235a">LTAA</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Advance Land Tax Assessment</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Request an advance assessment of land tax for a property before purchase.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/land-tax-change-of-ownership.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag" style="background:#f3e8ff;color:#4a235a">LTCO</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Change of Ownership (Land Tax)</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Notify the Land Tax Department when a property changes ownership.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ─── Town Planning section ─── -->
+    <section class="mb-l" data-section="townplanning">
+      <div class="flex items-center gap-4 mb-m pb-s border-b-2 border-bb-grey-00">
+        <div class="flex-1">
+          <p class="text-[0.875rem] font-semibold text-bb-mid-grey-00 uppercase tracking-wide mb-1">Ministry / Department / Agency</p>
+          <h2 class="font-bold text-[1.5rem]">Town and Country Development Planning Office</h2>
+        </div>
+        <span class="tag bg-bb-blue-10 text-bb-blue-00" style="white-space:nowrap">3 forms</span>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+        <a href="Prototypes/building-development-application.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00">BDA</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Building Development Application</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for planning permission for a new building development.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/chattel-house-permission.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00">CH</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Erect a Chattel House</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for permission to erect a chattel house on your land.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/permission-construct-building.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00">PCB</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Construct/Alter a Building</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for permission to construct a new building or alter an existing one.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ─── Agriculture section ─── -->
+    <section class="mb-l" data-section="agriculture">
+      <div class="flex items-center gap-4 mb-m pb-s border-b-2 border-bb-grey-00">
+        <div class="flex-1">
+          <p class="text-[0.875rem] font-semibold text-bb-mid-grey-00 uppercase tracking-wide mb-1">Ministry / Department / Agency</p>
+          <h2 class="font-bold text-[1.5rem]">Ministry of Agriculture</h2>
+        </div>
+        <span class="tag bg-bb-blue-10 text-bb-blue-00" style="white-space:nowrap">1 form</span>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+        <a href="Prototypes/agribusiness-farm-registration.html" class="form-card" data-audience="individual employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag bg-bb-green-10 text-bb-green-00">AFR</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Farm Registration</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Register your farm or agribusiness with the Ministry of Agriculture.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Business</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ─── Other section ─── -->
+    <section class="mb-l" data-section="other">
+      <div class="flex items-center gap-4 mb-m pb-s border-b-2 border-bb-grey-00">
+        <div class="flex-1">
+          <p class="text-[0.875rem] font-semibold text-bb-mid-grey-00 uppercase tracking-wide mb-1">Ministry / Department / Agency</p>
+          <h2 class="font-bold text-[1.5rem]">Other Government Services</h2>
+        </div>
+        <span class="tag bg-bb-blue-10 text-bb-blue-00" style="white-space:nowrap">4 forms</span>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+        <a href="Prototypes/sell-goods-beach-park.html" class="form-card" data-audience="individual employer">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag" style="background:#e0e4e9;color:#595959">SBP</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Sell on Beach/Park</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a permit to sell goods on a public beach or park.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+            <span class="tag text-[0.8rem]" style="background:#e5e9f2;color:#00164a">Business</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/wills.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag" style="background:#e0e4e9;color:#595959">WL</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Register a Will</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Register your will with the government for safekeeping and legal record.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/new-permit-application.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag" style="background:#e0e4e9;color:#595959">NPA</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">New Permit Application</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Apply for a new government permit for your activity or business.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
+        <a href="Prototypes/transfer-of-permit.html" class="form-card" data-audience="individual">
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <span class="tag" style="background:#e0e4e9;color:#595959">TP</span>
+            <svg class="mt-1 shrink-0 text-bb-teal-00" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <p class="font-bold text-[1.1rem] leading-snug mb-2">Transfer a Permit</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 flex-1">Transfer an existing government permit to another person or business.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="tag bg-bb-teal-10 text-bb-teal-00 text-[0.8rem]">Individual</span>
+          </div>
+        </a>
+
       </div>
     </section>
 
@@ -257,20 +1215,20 @@
     <div class="border-t-2 border-bb-grey-00 pt-l">
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
         <div class="text-center">
-          <p class="font-bold text-[3rem] leading-none text-bb-teal-00">9</p>
+          <p class="font-bold text-[3rem] leading-none text-bb-teal-00">80</p>
           <p class="text-[1rem] text-bb-mid-grey-00 mt-1">Forms prototyped</p>
         </div>
         <div class="text-center">
-          <p class="font-bold text-[3rem] leading-none text-bb-teal-00">3</p>
+          <p class="font-bold text-[3rem] leading-none text-bb-teal-00">9</p>
           <p class="text-[1rem] text-bb-mid-grey-00 mt-1">Government agencies</p>
         </div>
         <div class="text-center">
-          <p class="font-bold text-[3rem] leading-none text-bb-teal-00">5</p>
+          <p class="font-bold text-[3rem] leading-none text-bb-teal-00">62</p>
           <p class="text-[1rem] text-bb-mid-grey-00 mt-1">For individuals</p>
         </div>
         <div class="text-center">
-          <p class="font-bold text-[3rem] leading-none text-bb-teal-00">2</p>
-          <p class="text-[1rem] text-bb-mid-grey-00 mt-1">For employers</p>
+          <p class="font-bold text-[3rem] leading-none text-bb-teal-00">18</p>
+          <p class="text-[1rem] text-bb-mid-grey-00 mt-1">For businesses</p>
         </div>
       </div>
     </div>
