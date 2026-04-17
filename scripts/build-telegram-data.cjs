@@ -26,9 +26,12 @@ const context = vm.createContext({ window, console });
 
 const dataFiles = [
   'assets/bla-forms-data.js',
+  'assets/bla-new-forms-data.js',
   'assets/caipo-forms-data.js',
   'assets/immd-forms-data.js',
   'assets/other-forms-data.js',
+  'assets/govt-forms-data.js',
+  'assets/police-forms-data.js',
 ];
 
 for (const rel of dataFiles) {
@@ -76,9 +79,12 @@ try {
 const allForms = [
   ...inlineForms,
   ...(window.BLA_FORMS || []),
+  ...(window.BLA_NEW_FORMS || []),
   ...(window.CAIPO_FORMS || []),
   ...(window.IMMD_FORMS || []),
   ...(window.OTHER_FORMS || []),
+  ...(window.GOVT_FORMS || []),
+  ...(window.POLICE_FORMS || []),
 ];
 
 // Extract inline SYSTEM_PROMPTS
@@ -96,9 +102,12 @@ const inlinePrompts = vm.runInContext(
 const allPrompts = { ...inlinePrompts };
 const externalSets = [
   window.BLA_SYSTEM_PROMPTS,
+  window.BLA_NEW_SYSTEM_PROMPTS,
   window.CAIPO_SYSTEM_PROMPTS,
   window.IMMD_SYSTEM_PROMPTS,
   window.OTHER_SYSTEM_PROMPTS,
+  window.GOVT_SYSTEM_PROMPTS,
+  window.POLICE_SYSTEM_PROMPTS,
 ];
 for (const set of externalSets) {
   if (!set) continue;
@@ -125,69 +134,39 @@ const ROUTING_PROMPT =
   routingLines.join('\n') +
   '\n\nIf you can identify the form reply with its ID exactly as listed above. If you cannot, reply with "unknown".';
 
-// Alpha.gov.bb service knowledge for the conversational concierge
-const SERVICES_KNOWLEDGE = `
-GOVERNMENT SERVICES ON alpha.gov.bb
-====================================
+// ── Load alpha.gov.bb service content from markdown files ──
 
-Family, Birth and Relationships (alpha.gov.bb/family-birth-relationships)
-- Register a birth
-- Get a copy of a birth certificate
-- Get a copy of a death certificate
-- Get a copy of a marriage certificate
-- Register a death
-- Register a marriage
-- Marriage licences
-- Apply for a place at a day nursery
+const ALPHA_CONTENT_DIR = path.join(ROOT, 'data', 'alpha-gov-bb');
+let SERVICES_KNOWLEDGE = '';
 
-Work and Employment (alpha.gov.bb/work-employment)
-- Jobseekers — help finding employment
-- Apply to be a Project Protégé mentor
-- Apply to the Barbados YouthADVANCE Corps (BYAC) — youth development programme
-- Register for Community Sports Training Programme (Youth Development Programme)
-- Register for a summer camp
-- Apply to volunteer at a sports camp
-- Apply for a position as a temporary teacher
-- Apply to the Job Start Plus programme — employment support
-- Apply for a conductor licence — transport licensing
+try {
+  const mdFiles = fs.readdirSync(ALPHA_CONTENT_DIR)
+    .filter(f => f.endsWith('.md'))
+    .sort();
 
-Money and Financial Support (alpha.gov.bb/money-financial-support)
-- Apply for financial assistance
-- EZPay — online government payments
-- Tax Online — digital tax filing
-- Get disaster relief assistance
-- Get a Primary School Textbook Grant
+  const sections = mdFiles.map(f => {
+    const content = fs.readFileSync(path.join(ALPHA_CONTENT_DIR, f), 'utf8');
+    const slug = f.replace('.md', '');
+    return `--- ${slug} (https://alpha.gov.bb/${slug}) ---\n${content}`;
+  });
 
-Travel, ID and Citizenship (alpha.gov.bb/travel-id-citizenship)
-- Apply for a passport
-- Visa information
-- Visitor permit application
-- Medical requirements for travel
-- Apply for a driver's licence
-- National registration
-- Getting around Barbados — transport information
-- Local information
-- Ports of entry
-- Get a document notarised
-- Redirect personal mail (Post Office)
-- Tell the Post Office someone has died
-- Redirect business mail (Post Office)
+  SERVICES_KNOWLEDGE = `
+DETAILED GOVERNMENT SERVICES KNOWLEDGE FROM alpha.gov.bb
+=========================================================
+Use this information to answer questions about government services.
+When users ask about requirements, fees, documents, eligibility, processing times, etc.,
+answer from this knowledge base. Be specific — cite fees, documents needed, timelines.
+Always include the alpha.gov.bb URL so the user can visit for the latest information.
 
-Business and Trade (alpha.gov.bb/business-trade)
-- Start a business — guidance for new businesses
-- Registering a business name
-- Business policies and law
-- Financial services for businesses
-- Government requirements for businesses
-- Information about business tax
-- Get a permit to play loud music — event/venue noise permits
-- Apply for a licence to sell goods or services at a beach or park
+${sections.join('\n\n')}`;
 
-Public Safety (alpha.gov.bb/public-safety)
-- Report a concern about a child
-- Report elderly abuse
-- Get support for a victim of domestic abuse
-`;
+  const charCount = SERVICES_KNOWLEDGE.length;
+  const tokenEstimate = Math.round(charCount / 4);
+  console.log(`Loaded ${mdFiles.length} service pages from data/alpha-gov-bb/ (${charCount} chars, ~${tokenEstimate} tokens)`);
+} catch (err) {
+  console.warn('Warning: Could not load alpha.gov.bb content:', err.message);
+  SERVICES_KNOWLEDGE = '\nNo detailed service information available. Suggest users visit alpha.gov.bb.\n';
+}
 
 // Build the concierge prompt
 const formList = allForms.map(f => {
@@ -195,11 +174,23 @@ const formList = allForms.map(f => {
   return `  ${f.id} — ${f.name}: ${desc}`;
 }).join('\n');
 
+// Build the completable forms summary grouped by agency
+const formsByAgency = {};
+for (const f of allForms) {
+  const agency = f.agency || 'Other';
+  if (!formsByAgency[agency]) formsByAgency[agency] = [];
+  formsByAgency[agency].push(f.name);
+}
+const completableFormsList = Object.entries(formsByAgency)
+  .map(([agency, names]) => `${agency}:\n${names.map(n => `  - ${n}`).join('\n')}`)
+  .join('\n\n');
+
 const CONCIERGE_PROMPT = `You are a friendly, helpful assistant for the Government of Barbados. You help people find and access government services.
 
-You can help people in two ways:
-1. FILL IN GOVERNMENT FORMS — you can walk people through completing forms conversationally
-2. POINT PEOPLE TO SERVICES — you know about services available on alpha.gov.bb and can explain what's available and how to access them
+You can help people in three ways:
+1. FILL IN GOVERNMENT FORMS — you can walk people through completing ${allForms.length} government forms conversationally
+2. ANSWER QUESTIONS ABOUT SERVICES — you have detailed knowledge about government services from alpha.gov.bb, including requirements, fees, documents needed, eligibility, and processing times
+3. POINT PEOPLE TO SERVICES — for things you can't help with directly, you can explain what's available and where to go
 
 TONE AND STYLE:
 - Be warm, conversational, and helpful — like a friendly civil servant
@@ -214,18 +205,23 @@ Briefly explain you can help with government forms and services. Give a few exam
 
 WHEN SOMEONE DESCRIBES A NEED:
 - If it matches one of the forms you can fill in, tell them briefly what the form is for and that you can help them complete it right now. Then output the marker ##ROUTE:<formid>## on its own line at the END of your message.
-- If it matches a service on alpha.gov.bb that isn't a form you can fill in, tell them about it and give them the alpha.gov.bb URL to visit.
+- If they're asking about a service (requirements, fees, documents, eligibility, processing times), answer from the detailed service knowledge below. Be specific — cite actual fees, documents needed, and timelines. Always include the alpha.gov.bb URL.
+- If the service has an associated form you can fill in, proactively tell the user: "I can help you complete this form right now if you'd like."
 - If it could match multiple things, ask a clarifying question to narrow it down.
 - If you're not sure, ask them to tell you more. Suggest some possibilities based on what they said.
 
 IMPORTANT RULES:
 - Only output ##ROUTE:<formid>## when you are confident which form the user needs AND they want to proceed with it. Never route on a vague query.
 - If the user is just asking questions or browsing, keep chatting — don't try to force them into a form.
-- You can answer general questions about government services, processes, and requirements.
+- You can answer detailed questions about government services using the knowledge base below.
 - If someone asks about something you don't know about, say so honestly and suggest they visit alpha.gov.bb or contact the relevant department.
 
-FORMS YOU CAN HELP FILL IN:
+FORMS YOU CAN HELP FILL IN (${allForms.length} forms):
 ${formList}
+
+FORMS YOU CAN COMPLETE VIA CHAT (grouped by agency):
+${completableFormsList}
+When a user asks about one of these services, tell them you can help them fill in the form right now.
 
 ${SERVICES_KNOWLEDGE}`;
 
