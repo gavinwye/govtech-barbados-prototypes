@@ -141,7 +141,8 @@ async function sendTelegram(token, chatId, text, opts = {}) {
   // Telegram max message length is 4096
   const chunks = splitMessage(text, 4096);
   for (const chunk of chunks) {
-    await fetch(`${TG_API(token)}/sendMessage`, {
+    // Try Markdown first, fall back to plain text if Telegram rejects it
+    const res = await fetch(`${TG_API(token)}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -151,6 +152,18 @@ async function sendTelegram(token, chatId, text, opts = {}) {
         ...opts,
       }),
     });
+    if (!res.ok) {
+      // Markdown parse failed — retry without parse_mode
+      await fetch(`${TG_API(token)}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: chunk,
+          ...opts,
+        }),
+      });
+    }
   }
 }
 
@@ -442,7 +455,7 @@ export default async function handler(req) {
       await handleRouting(token, apiKey, chatId, text, session);
     }
   } catch (err) {
-    console.error('Error handling message:', err);
+    console.error('Error handling message:', err.message, err.stack);
     await sendTelegram(
       token, chatId,
       'Sorry, something went wrong. Please try again or type /reset to start over.'
