@@ -17,11 +17,17 @@
  */
 
 import { FORMS, SYSTEM_PROMPTS, ROUTING_PROMPT, CONCIERGE_PROMPT, FORM_DESCRIPTIONS } from './telegram-data.mjs';
-import { createClient } from '@supabase/supabase-js';
+let createClient;
+try {
+  createClient = (await import('@supabase/supabase-js')).createClient;
+} catch {
+  createClient = null;
+}
 
 // ── Supabase client ────────────────────────────────────────────────
 
 function getSupabase() {
+  if (!createClient) return null;
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_ANON_KEY;
   if (!url || !key) return null;
