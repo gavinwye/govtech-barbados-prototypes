@@ -9,7 +9,8 @@
  *
  * Environment variables required:
  *   TELEGRAM_BOT_TOKEN  — from @BotFather
- *   ANTHROPIC_API_KEY   — Anthropic API key
+ *   ANTHROPIC_API_KEY   — Anthropic API key (or use GROQ_API_KEY as fallback)
+ *   GROQ_API_KEY        — (optional) Groq API key, used when ANTHROPIC_API_KEY is absent
  *   RESEND_API_KEY      — (optional) for email on form submission
  *   SUPABASE_URL        — (optional) Supabase project URL
  *   SUPABASE_ANON_KEY   — (optional) Supabase publishable key
@@ -119,8 +120,10 @@ function mapProfileToFormKeys(profile, systemPrompt) {
 
 // ── Config ──────────────────────────────────────────────────────────
 
-const CHAT_MODEL = 'claude-sonnet-4-20250514';
-const FAST_MODEL = 'claude-haiku-4-5-20251001';
+const USE_GROQ = !process.env.ANTHROPIC_API_KEY && !!process.env.GROQ_API_KEY;
+
+const CHAT_MODEL = USE_GROQ ? 'llama-3.3-70b-versatile' : 'claude-sonnet-4-20250514';
+const FAST_MODEL = USE_GROQ ? 'llama-3.3-70b-versatile' : 'claude-haiku-4-5-20251001';
 const MAX_HISTORY = 40;          // max messages kept per session
 const SESSION_TTL_MS = 3600000;  // 1 hour inactivity → session expires
 
@@ -167,9 +170,16 @@ function splitMessage(text, limit) {
   return chunks;
 }
 
-// ── Anthropic API ───────────────────────────────────────────────────
+// ── LLM API (Anthropic with Groq fallback) ─────────────────────────
 
-async function callClaude(apiKey, messages, model, systemPrompt) {
+async function callLLM(apiKey, messages, model, systemPrompt) {
+  if (USE_GROQ) {
+    return callGroq(messages, model, systemPrompt);
+  }
+  return callAnthropic(apiKey, messages, model, systemPrompt);
+}
+
+async function callAnthropic(apiKey, messages, model, systemPrompt) {
   const payload = {
     model: model || CHAT_MODEL,
     max_tokens: 2048,
@@ -194,6 +204,35 @@ async function callClaude(apiKey, messages, model, systemPrompt) {
 
   const data = await res.json();
   return data.content?.map(b => b.text).join('') || '';
+}
+
+async function callGroq(messages, model, systemPrompt) {
+  const groqMessages = [];
+  if (systemPrompt) {
+    groqMessages.push({ role: 'system', content: systemPrompt });
+  }
+  groqMessages.push(...messages);
+
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: model || CHAT_MODEL,
+      max_tokens: 2048,
+      messages: groqMessages,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `Groq HTTP ${res.status}`);
+  }
+
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || '';
 }
 
 // ── Session store (/tmp file-based, persists within warm instances) ──
@@ -342,10 +381,10 @@ export default async function handler(req) {
   }
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY || process.env.GROQ_API_KEY;
 
   if (!token || !apiKey) {
-    console.error('Missing TELEGRAM_BOT_TOKEN or ANTHROPIC_API_KEY');
+    console.error('Missing TELEGRAM_BOT_TOKEN and ANTHROPIC_API_KEY/GROQ_API_KEY');
     return new Response('OK', { status: 200 });
   }
 
@@ -422,7 +461,7 @@ async function handleRouting(token, apiKey, chatId, text, session) {
     session.routingMessages = session.routingMessages.slice(-MAX_HISTORY);
   }
 
-  const reply = await callClaude(
+  const reply = await callLLM(
     apiKey,
     session.routingMessages,
     CHAT_MODEL,
@@ -526,7 +565,7 @@ async function handleEmailCollection(token, apiKey, chatId, text, session) {
     opener = `Start. The user's email is ${email}. Use this for any personal email or contact email field and do not ask for it again. Greet the user briefly and ask your first question.`;
   }
 
-  const openReply = await callClaude(
+  const openReply = await callLLM(
     apiKey,
     [{ role: 'user', content: opener }],
     CHAT_MODEL,
@@ -548,7 +587,7 @@ async function handleChat(token, apiKey, chatId, text, session) {
     session.messages = session.messages.slice(-MAX_HISTORY);
   }
 
-  const reply = await callClaude(
+  const reply = await callLLM(
     apiKey,
     session.messages,
     CHAT_MODEL,
@@ -590,7 +629,7 @@ async function handleFallbackExtraction(token, apiKey, chatId, session) {
     .map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
     .join('\n\n');
 
-  const extractReply = await callClaude(
+  const extractReply = await callLLM(
     apiKey,
     [{
       role: 'user',
