@@ -11,9 +11,111 @@
  *   TELEGRAM_BOT_TOKEN  — from @BotFather
  *   ANTHROPIC_API_KEY   — Anthropic API key
  *   RESEND_API_KEY      — (optional) for email on form submission
+ *   SUPABASE_URL        — (optional) Supabase project URL
+ *   SUPABASE_ANON_KEY   — (optional) Supabase publishable key
  */
 
 import { FORMS, SYSTEM_PROMPTS, ROUTING_PROMPT, CONCIERGE_PROMPT, FORM_DESCRIPTIONS } from './telegram-data.mjs';
+import { createClient } from '@supabase/supabase-js';
+
+// ── Supabase client ────────────────────────────────────────────────
+
+function getSupabase() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_ANON_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key);
+}
+
+// ── Field alias map (profile columns → form-specific keys) ─────────
+
+const FIELD_ALIASES = {
+  email:          ['email', 'contact-email', 'app-email', 'email-address'],
+  mobile:         ['mobile', 'cellular', 'contact-cell', 'contact-phone'],
+  telephone:      ['telephone', 'contact-telephone', 'home-tel'],
+  street_address: ['street-address', 'street', 'address', 'app-street'],
+  district:       ['district'],
+  parish:         ['parish', 'app-parish'],
+  postal_code:    ['postal-code', 'postal', 'postcode'],
+  first_name:     ['first-name'],
+  middle_name:    ['middle-name'],
+  last_name:      ['last-name'],
+  full_name:      ['full-name', 'fullName', 'fullname', 'app-name', 'ap-full-name'],
+  dob:            ['dob'],
+  nrn:            ['nrn'],
+  nis_number:     ['nis-number'],
+  gender:         ['gender'],
+  marital_status: ['marital-status'],
+};
+
+/** Extract saveable profile fields from form data (form keys → profile columns) */
+function extractProfileFields(formData) {
+  const profile = {};
+  for (const [canonical, aliases] of Object.entries(FIELD_ALIASES)) {
+    if (canonical === 'full_name') continue; // virtual field, handled below
+    for (const alias of aliases) {
+      if (formData[alias] && formData[alias] !== 'null') {
+        profile[canonical] = formData[alias];
+        break;
+      }
+    }
+  }
+  // If no first_name but a full-name variant exists, use it as first_name
+  if (!profile.first_name) {
+    for (const alias of FIELD_ALIASES.full_name) {
+      if (formData[alias] && formData[alias] !== 'null') {
+        profile.first_name = formData[alias];
+        break;
+      }
+    }
+  }
+  return profile;
+}
+
+/** Build a full name string from profile parts */
+function buildFullName(profile) {
+  return [profile.first_name, profile.middle_name, profile.last_name]
+    .filter(Boolean)
+    .join(' ');
+}
+
+/** Map saved profile data to the form-specific keys found in the system prompt */
+function mapProfileToFormKeys(profile, systemPrompt) {
+  const mapped = {};
+  // Extract all "keys: ..." declarations from the system prompt
+  const keysMatches = systemPrompt.matchAll(/keys?:\s*([a-zA-Z0-9_, -]+)/g);
+  const formKeys = new Set();
+  for (const match of keysMatches) {
+    match[1].split(',').forEach(k => formKeys.add(k.trim()));
+  }
+
+  for (const [canonical, aliases] of Object.entries(FIELD_ALIASES)) {
+    if (canonical === 'full_name') {
+      // Check if the form uses a full-name variant
+      const fullName = buildFullName(profile);
+      if (fullName) {
+        for (const alias of aliases) {
+          if (formKeys.has(alias)) {
+            mapped[alias] = fullName;
+            break;
+          }
+        }
+      }
+      continue;
+    }
+
+    const value = profile[canonical];
+    if (!value) continue;
+
+    for (const alias of aliases) {
+      if (formKeys.has(alias)) {
+        mapped[alias] = value;
+        break;
+      }
+    }
+  }
+  return mapped;
+}
 
 // ── Config ──────────────────────────────────────────────────────────
 
@@ -126,8 +228,11 @@ async function saveSession(chatId, session) {
 
 function newSession() {
   return {
-    phase: 'routing',     // routing | collecting-email | chat | extracting | submitted
+    phase: 'routing',     // routing | collecting-email | chat | extracting | offer-save | submitted
     verifiedEmail: null,   // confirmed email for confirmation delivery
+    profileLoaded: null,   // profile data from Supabase (if found)
+    pendingRefNumber: null, // ref number while asking about save
+    pendingFormData: null,  // form data while asking about save
     formId: null,
     formName: null,
     formRef: null,
@@ -283,6 +388,8 @@ export default async function handler(req) {
       await handleRouting(token, apiKey, chatId, text, session);
     } else if (session.phase === 'chat') {
       await handleChat(token, apiKey, chatId, text, session);
+    } else if (session.phase === 'offer-save') {
+      await handleOfferSave(token, chatId, text, session);
     } else if (session.phase === 'submitted') {
       // After submission, reset and route again
       const fresh = newSession();
@@ -388,9 +495,37 @@ async function handleEmailCollection(token, apiKey, chatId, text, session) {
   session.verifiedEmail = email;
   session.phase = 'chat';
 
-  // Start form chat with Claude, telling it the user's email so it doesn't ask again
+  // Check Supabase for a saved profile
+  const supabase = getSupabase();
+  let profile = null;
+  if (supabase) {
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('telegram_id', chatId)
+        .maybeSingle();
+      if (data) profile = data;
+    } catch {}
+  }
+  session.profileLoaded = profile;
+
+  // Build the opener — include pre-populated fields if profile exists
   await sendAction(token, chatId, 'typing');
-  const opener = `Start. The user's email is ${email}. Use this for any personal email or contact email field and do not ask for it again. Greet the user briefly and ask your first question.`;
+  let opener;
+  if (profile) {
+    const mapped = mapProfileToFormKeys(profile, session.systemPrompt);
+    // Always include email
+    mapped[Object.keys(mapped).find(k => FIELD_ALIASES.email.includes(k)) || 'email'] = email;
+    const fieldLines = Object.entries(mapped)
+      .filter(([, v]) => v)
+      .map(([k, v]) => `- ${k}: ${v}`)
+      .join('\n');
+    opener = `Start. The user has saved personal details from a previous form.\nThe following fields are already known — use these values and DO NOT ask for them again:\n${fieldLines}\nSkip these fields entirely. Greet the user briefly, confirm you have their details on file, and ask your first question for information you still need.`;
+  } else {
+    opener = `Start. The user's email is ${email}. Use this for any personal email or contact email field and do not ask for it again. Greet the user briefly and ask your first question.`;
+  }
+
   const openReply = await callClaude(
     apiKey,
     [{ role: 'user', content: opener }],
@@ -434,29 +569,7 @@ async function handleChat(token, apiKey, chatId, text, session) {
     }
 
     if (formData) {
-      // Inject verified email so confirmation is always sent
-      if (session.verifiedEmail) {
-        formData['submitter-email'] = session.verifiedEmail;
-      }
-
-      // Submit the form
-      session.phase = 'extracting';
-      await sendAction(token, chatId, 'typing');
-
-      const result = await submitForm(
-        session.formName,
-        session.formId,
-        session.formRef,
-        formData,
-        ''
-      );
-
-      session.phase = 'submitted';
-
-      await sendTelegram(
-        token, chatId,
-        `✅ *Form submitted!*\n\nYour reference number is:\n*${result.referenceNumber}*\n\nKeep this number safe. We'll be in touch if we need anything else.\n\nType /reset to complete another form.`
-      );
+      await handlePostSubmission(token, chatId, session, formData);
     } else {
       // Fallback extraction
       await handleFallbackExtraction(token, apiKey, chatId, session);
@@ -490,24 +603,7 @@ async function handleFallbackExtraction(token, apiKey, chatId, session) {
   const formData = tryParseJson(extractReply);
 
   if (formData) {
-    // Inject verified email so confirmation is always sent
-    if (session.verifiedEmail) {
-      formData['submitter-email'] = session.verifiedEmail;
-    }
-
-    const result = await submitForm(
-      session.formName,
-      session.formId,
-      session.formRef,
-      formData,
-      ''
-    );
-    session.phase = 'submitted';
-
-    await sendTelegram(
-      token, chatId,
-      `✅ *Form submitted!*\n\nYour reference number is:\n*${result.referenceNumber}*\n\nKeep this number safe. We'll be in touch if we need anything else.\n\nType /reset to complete another form.`
-    );
+    await handlePostSubmission(token, chatId, session, formData);
   } else {
     await sendTelegram(
       token, chatId,
@@ -515,6 +611,118 @@ async function handleFallbackExtraction(token, apiKey, chatId, session) {
     );
     session.phase = 'submitted';
   }
+}
+
+// ── Post-submission: log, offer save ───────────────────────────────
+
+async function handlePostSubmission(token, chatId, session, formData) {
+  // Inject verified email so confirmation is always sent
+  if (session.verifiedEmail) {
+    formData['submitter-email'] = session.verifiedEmail;
+  }
+
+  // Submit the form
+  session.phase = 'extracting';
+  await sendAction(token, chatId, 'typing');
+
+  const result = await submitForm(
+    session.formName,
+    session.formId,
+    session.formRef,
+    formData,
+    ''
+  );
+
+  // Log submission to Supabase (fire-and-forget)
+  const supabase = getSupabase();
+  if (supabase) {
+    supabase.from('submissions').insert({
+      telegram_id: chatId,
+      form_id: session.formId,
+      form_name: session.formName,
+      reference_number: result.referenceNumber,
+      form_data: formData,
+    }).then(() => {}).catch(() => {});
+  }
+
+  // Check if user already has a saved profile
+  let hasProfile = false;
+  if (supabase) {
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('telegram_id', chatId)
+        .maybeSingle();
+      hasProfile = !!data;
+    } catch {}
+  }
+
+  // If Supabase is available, offer to save details
+  if (supabase) {
+    session.pendingRefNumber = result.referenceNumber;
+    session.pendingFormData = formData;
+    session.phase = 'offer-save';
+
+    const saveMsg = hasProfile
+      ? `✅ *Form submitted!*\n\nYour reference number is:\n*${result.referenceNumber}*\n\nWould you like to update your saved details with any changes from this form? Reply *yes* or *no*.`
+      : `✅ *Form submitted!*\n\nYour reference number is:\n*${result.referenceNumber}*\n\nWould you like me to save your personal details so you don't have to enter them again next time? Reply *yes* or *no*.`;
+
+    await sendTelegram(token, chatId, saveMsg);
+  } else {
+    session.phase = 'submitted';
+    await sendTelegram(
+      token, chatId,
+      `✅ *Form submitted!*\n\nYour reference number is:\n*${result.referenceNumber}*\n\nKeep this number safe. We'll be in touch if we need anything else.\n\nType /reset to complete another form.`
+    );
+  }
+}
+
+// ── Offer-save phase ───────────────────────────────────────────────
+
+async function handleOfferSave(token, chatId, text, session) {
+  const answer = text.trim().toLowerCase();
+
+  if (answer === 'yes' || answer === 'y') {
+    const supabase = getSupabase();
+    if (supabase && session.pendingFormData) {
+      const profileFields = extractProfileFields(session.pendingFormData);
+      profileFields.email = session.verifiedEmail;
+
+      try {
+        await supabase.from('profiles').upsert({
+          telegram_id: chatId,
+          ...profileFields,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'telegram_id' });
+
+        await sendTelegram(
+          token, chatId,
+          `Saved! Next time you fill in a form, I'll remember your details.\n\nKeep your reference number safe: *${session.pendingRefNumber}*\n\nType /reset to complete another form.`
+        );
+      } catch {
+        await sendTelegram(
+          token, chatId,
+          `Sorry, I couldn't save your details this time. Your form was still submitted successfully.\n\nReference: *${session.pendingRefNumber}*\n\nType /reset to complete another form.`
+        );
+      }
+    }
+  } else if (answer === 'no' || answer === 'n') {
+    await sendTelegram(
+      token, chatId,
+      `No problem. Keep your reference number safe: *${session.pendingRefNumber}*\n\nType /reset to complete another form.`
+    );
+  } else {
+    await sendTelegram(
+      token, chatId,
+      'Reply *yes* to save your details for next time, or *no* to skip.'
+    );
+    return; // Stay in offer-save phase
+  }
+
+  session.pendingFormData = null;
+  session.pendingRefNumber = null;
+  session.phase = 'submitted';
 }
 
 export const config = {
