@@ -238,9 +238,12 @@
 
 <script src="../assets/govbb-framework.js"></script>
 <script src="../assets/bla-forms-data.js"></script>
+<script src="../assets/bla-new-forms-data.js"></script>
 <script src="../assets/caipo-forms-data.js"></script>
 <script src="../assets/immd-forms-data.js"></script>
 <script src="../assets/other-forms-data.js"></script>
+<script src="../assets/police-forms-data.js"></script>
+<script src="../assets/govt-forms-data.js"></script>
 <script>
 'use strict';
 
@@ -264,7 +267,7 @@ var FORMS = [
   { id:'secp', name:'Self-Employed Contributions Certificate',          ref:'SECP', agency:'National Insurance Scheme (NIS)' },
   { id:'tc',   name:'Termination Certificate',                          ref:'TC',   agency:'National Insurance Scheme (NIS)' },
   { id:'vep',  name:'Permit to Remove / Relocate Structure',            ref:'VEP',  agency:'Barbados Licensing Authority (BLA)' }
-].concat(window.BLA_FORMS || []).concat(window.CAIPO_FORMS || []).concat(window.IMMD_FORMS || []).concat(window.OTHER_FORMS || []);
+].concat(window.BLA_FORMS || []).concat(window.BLA_NEW_FORMS || []).concat(window.CAIPO_FORMS || []).concat(window.IMMD_FORMS || []).concat(window.OTHER_FORMS || []).concat(window.POLICE_FORMS || []).concat(window.GOVT_FORMS || []);
 
 /* ─────────────────────────────────────────
    SYSTEM PROMPTS
@@ -581,7 +584,7 @@ ${BASE_RULES}`
 };
 
 // Merge external system prompts, replacing <<BASE_RULES>> placeholder with the shared rules string
-[window.BLA_SYSTEM_PROMPTS, window.CAIPO_SYSTEM_PROMPTS, window.IMMD_SYSTEM_PROMPTS, window.OTHER_SYSTEM_PROMPTS].forEach(function(promptSet) {
+[window.BLA_SYSTEM_PROMPTS, window.BLA_NEW_SYSTEM_PROMPTS, window.CAIPO_SYSTEM_PROMPTS, window.IMMD_SYSTEM_PROMPTS, window.OTHER_SYSTEM_PROMPTS, window.POLICE_SYSTEM_PROMPTS, window.GOVT_SYSTEM_PROMPTS].forEach(function(promptSet) {
   if (promptSet) {
     Object.keys(promptSet).forEach(function(id) {
       SYSTEM_PROMPTS[id] = promptSet[id].replace('<<BASE_RULES>>', BASE_RULES);
