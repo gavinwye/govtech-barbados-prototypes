@@ -480,12 +480,11 @@ async function handleRouting(token, apiKey, chatId, text, session) {
     session.routingMessages = session.routingMessages.slice(-MAX_HISTORY);
   }
 
-  const reply = await callLLM(
-    apiKey,
-    session.routingMessages,
-    CHAT_MODEL,
-    CONCIERGE_PROMPT
-  );
+  // Use Groq for concierge routing (large prompt exceeds Anthropic rate limits)
+  const GROQ_CONCIERGE_MODEL = 'llama-3.3-70b-versatile';
+  const reply = process.env.GROQ_API_KEY
+    ? await callGroq(session.routingMessages, GROQ_CONCIERGE_MODEL, CONCIERGE_PROMPT)
+    : await callLLM(apiKey, session.routingMessages, CHAT_MODEL, CONCIERGE_PROMPT);
 
   // Check if the concierge wants to route to a specific form
   const routeMatch = reply.match(/##ROUTE:([a-z0-9-]+)##/);
