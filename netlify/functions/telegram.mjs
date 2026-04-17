@@ -480,11 +480,18 @@ async function handleRouting(token, apiKey, chatId, text, session) {
     session.routingMessages = session.routingMessages.slice(-MAX_HISTORY);
   }
 
-  // Use Groq for concierge routing (large prompt exceeds Anthropic rate limits)
-  const GROQ_CONCIERGE_MODEL = 'llama-3.3-70b-versatile';
-  const reply = process.env.GROQ_API_KEY
-    ? await callGroq(session.routingMessages, GROQ_CONCIERGE_MODEL, CONCIERGE_PROMPT)
-    : await callLLM(apiKey, session.routingMessages, CHAT_MODEL, CONCIERGE_PROMPT);
+  // Try Groq for concierge routing first (cheaper), fall back to Anthropic
+  let reply;
+  if (process.env.GROQ_API_KEY) {
+    try {
+      reply = await callGroq(session.routingMessages, 'llama-3.3-70b-versatile', CONCIERGE_PROMPT);
+    } catch {
+      // Groq failed (rate limit etc.) — fall back to Anthropic
+      reply = await callLLM(apiKey, session.routingMessages, CHAT_MODEL, CONCIERGE_PROMPT);
+    }
+  } else {
+    reply = await callLLM(apiKey, session.routingMessages, CHAT_MODEL, CONCIERGE_PROMPT);
+  }
 
   // Check if the concierge wants to route to a specific form
   const routeMatch = reply.match(/##ROUTE:([a-z0-9-]+)##/);
