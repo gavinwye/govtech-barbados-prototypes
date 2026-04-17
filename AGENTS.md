@@ -758,9 +758,3 @@ The user will provide a completed Form Specification document. Parse it as follo
 - [ ] Barbados-specific data formats (DD MM YYYY dates, parish list, phone format, postal codes)
 - [ ] Confirmation page with `window.__refNumber` fallback
 - [ ] Form name → prefix mapping added to `lib/reference.js`
-
----
-
-## Plans
-
-When you create an implementation plan, save it as a Markdown file in the `claude-plans/` folder. Use a descriptive kebab-case filename (e.g. `claude-plans/add-supabase-profiles.md`). Plans should include context, the approach, files to change, and a status checklist.
