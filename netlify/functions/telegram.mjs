@@ -13,7 +13,7 @@
  *   RESEND_API_KEY      — (optional) for email on form submission
  */
 
-import { FORMS, SYSTEM_PROMPTS, ROUTING_PROMPT, FORM_DESCRIPTIONS } from './telegram-data.mjs';
+import { FORMS, SYSTEM_PROMPTS, ROUTING_PROMPT, CONCIERGE_PROMPT, FORM_DESCRIPTIONS } from './telegram-data.mjs';
 
 // ── Config ──────────────────────────────────────────────────────────
 
@@ -126,12 +126,14 @@ async function saveSession(chatId, session) {
 
 function newSession() {
   return {
-    phase: 'routing',     // routing | chat | extracting | submitted
+    phase: 'routing',     // routing | collecting-email | chat | extracting | submitted
+    verifiedEmail: null,   // confirmed email for confirmation delivery
     formId: null,
     formName: null,
     formRef: null,
     systemPrompt: '',
-    messages: [],          // [{role, content}]
+    messages: [],          // [{role, content}] — form chat messages
+    routingMessages: [],   // [{role, content}] — concierge conversation
     lastActivity: Date.now(),
   };
 }
@@ -145,12 +147,12 @@ async function submitForm(formName, formId, formRef, formData, siteUrl) {
 
   if (!resendKey) return { referenceNumber, emailsSent: false };
 
-  const userEmail = formData['contact-email'] || formData['email'] || formData['app-email'] || '';
+  const userEmail = formData['submitter-email'] || formData['contact-email'] || formData['email'] || formData['app-email'] || formData['email-address'] || '';
   const deptEmail = `${(formId || 'general').replace(/[^a-z0-9-]/g, '')}@govtech.bb`;
   const fromAddress = 'Government of Barbados <onboarding@resend.dev>';
 
   const summaryRows = Object.entries(formData)
-    .filter(([, v]) => v !== null && v !== '' && v !== undefined)
+    .filter(([key, v]) => key !== 'submitter-email' && v !== null && v !== '' && v !== undefined)
     .map(([key, val]) => {
       const label = key.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       return `<tr><td style="padding:8px 12px;border-bottom:1px solid #e0e4e9;font-weight:600;vertical-align:top">${label}</td><td style="padding:8px 12px;border-bottom:1px solid #e0e4e9">${String(val)}</td></tr>`;
@@ -220,6 +222,13 @@ function cleanForTelegram(text) {
   return text;
 }
 
+// ── Email helpers ──────────────────────────────────────────────────
+
+function isValidEmail(str) {
+  const at = str.indexOf('@');
+  return at > 0 && str.indexOf('.', at) > at + 1 && str.length <= 254;
+}
+
 // ── Main handler ────────────────────────────────────────────────────
 
 export default async function handler(req) {
@@ -257,7 +266,7 @@ export default async function handler(req) {
     await saveSession(chatId, session);
     await sendTelegram(
       token, chatId,
-      'Hi! I\'m the Government of Barbados form assistant. 🇧🇧\n\nTell me what you need help with and I\'ll guide you through the right form.\n\nYou can type /reset at any time to start over.'
+      'Hi! I\'m the Government of Barbados assistant. 🇧🇧\n\nI can help you find government services, answer questions, and fill in forms — just tell me what you need.\n\nFor example, you could say:\n• "I need to register as self-employed"\n• "How do I get a birth certificate?"\n• "What services are available?"\n\nType /reset at any time to start over.'
     );
     return new Response('OK', { status: 200 });
   }
@@ -268,7 +277,9 @@ export default async function handler(req) {
   try {
     await sendAction(token, chatId, 'typing');
 
-    if (session.phase === 'routing') {
+    if (session.phase === 'collecting-email') {
+      await handleEmailCollection(token, apiKey, chatId, text, session);
+    } else if (session.phase === 'routing') {
       await handleRouting(token, apiKey, chatId, text, session);
     } else if (session.phase === 'chat') {
       await handleChat(token, apiKey, chatId, text, session);
@@ -290,56 +301,104 @@ export default async function handler(req) {
   return new Response('OK', { status: 200 });
 }
 
-// ── Routing phase ───────────────────────────────────────────────────
+// ── Routing phase (conversational concierge) ────────────────────────
 
 async function handleRouting(token, apiKey, chatId, text, session) {
+  // Ensure routingMessages exists (for sessions created before this update)
+  if (!session.routingMessages) session.routingMessages = [];
+
+  // Add the user's message to the routing conversation
+  session.routingMessages.push({ role: 'user', content: text });
+
+  // Trim routing history if too long
+  if (session.routingMessages.length > MAX_HISTORY) {
+    session.routingMessages = session.routingMessages.slice(-MAX_HISTORY);
+  }
+
   const reply = await callClaude(
     apiKey,
-    [{ role: 'user', content: text }],
-    FAST_MODEL,
-    ROUTING_PROMPT
+    session.routingMessages,
+    CHAT_MODEL,
+    CONCIERGE_PROMPT
   );
 
-  const formId = reply.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
-  const form = FORMS.find(f => f.id === formId);
+  // Check if the concierge wants to route to a specific form
+  const routeMatch = reply.match(/##ROUTE:([a-z0-9-]+)##/);
 
-  if (!form) {
+  if (routeMatch) {
+    const formId = routeMatch[1];
+    const form = FORMS.find(f => f.id === formId);
+    const sysPrompt = form ? SYSTEM_PROMPTS[form.id] : null;
+
+    if (form && sysPrompt) {
+      // Send the concierge's message (without the route marker)
+      const cleanReply = reply.replace(/##ROUTE:[a-z0-9-]+##/g, '').trim();
+      if (cleanReply) {
+        session.routingMessages.push({ role: 'assistant', content: cleanReply });
+        await sendTelegram(token, chatId, cleanReply);
+      }
+
+      // Store form details but transition to email collection first
+      session.phase = 'collecting-email';
+      session.formId = form.id;
+      session.formName = form.name;
+      session.formRef = form.ref;
+      session.systemPrompt = sysPrompt;
+      session.messages = [];
+      session.routingMessages = [];
+
+      await sendTelegram(
+        token, chatId,
+        'Before we begin, what\'s your email address? We\'ll send your confirmation there.'
+      );
+    } else if (form && !sysPrompt) {
+      const cleanReply = reply.replace(/##ROUTE:[a-z0-9-]+##/g, '').trim();
+      session.routingMessages.push({ role: 'assistant', content: cleanReply || `I found the *${form.name}* form, but I don't have it set up for chat yet. Sorry about that.` });
+      await sendTelegram(
+        token, chatId,
+        cleanReply || `I found the *${form.name}* form, but I don't have it set up for chat yet. Sorry about that.`
+      );
+    } else {
+      // Form ID not found — strip marker and send the message
+      const cleanReply = reply.replace(/##ROUTE:[a-z0-9-]+##/g, '').trim();
+      session.routingMessages.push({ role: 'assistant', content: cleanReply });
+      await sendTelegram(token, chatId, cleanReply || 'Sorry, I couldn\'t find that form. Could you tell me more about what you need?');
+    }
+  } else {
+    // No routing — just a conversational response
+    session.routingMessages.push({ role: 'assistant', content: reply });
+    await sendTelegram(token, chatId, reply);
+  }
+}
+
+// ── Email collection phase ─────────────────────────────────────────
+
+async function handleEmailCollection(token, apiKey, chatId, text, session) {
+  const email = text.trim().toLowerCase();
+
+  if (!isValidEmail(email)) {
     await sendTelegram(
       token, chatId,
-      'I\'m not sure which form you need. Could you say a bit more about what you\'re trying to do?'
+      'That doesn\'t look like a valid email address. Could you try again?'
     );
     return;
   }
 
-  const sysPrompt = SYSTEM_PROMPTS[form.id];
-  if (!sysPrompt) {
-    await sendTelegram(
-      token, chatId,
-      `I found the *${form.name}* form, but I don't have it set up for chat yet. Sorry about that.`
-    );
-    return;
-  }
-
-  // Start the form conversation
+  // Accept the email and start the form conversation
+  session.verifiedEmail = email;
   session.phase = 'chat';
-  session.formId = form.id;
-  session.formName = form.name;
-  session.formRef = form.ref;
-  session.systemPrompt = sysPrompt;
-  session.messages = [];
 
-  // Get the opening question from Claude
-  const opener = 'Start. Greet the user in one sentence, then ask your first question.';
+  // Start form chat with Claude, telling it the user's email so it doesn't ask again
+  await sendAction(token, chatId, 'typing');
+  const opener = `Start. The user's email is ${email}. Use this for any personal email or contact email field and do not ask for it again. Greet the user briefly and ask your first question.`;
   const openReply = await callClaude(
     apiKey,
     [{ role: 'user', content: opener }],
     CHAT_MODEL,
-    sysPrompt
+    session.systemPrompt
   );
 
-  // Store only the assistant reply (not the opener prompt)
   session.messages.push({ role: 'assistant', content: openReply });
-
   await sendTelegram(token, chatId, cleanForTelegram(openReply));
 }
 
@@ -375,6 +434,11 @@ async function handleChat(token, apiKey, chatId, text, session) {
     }
 
     if (formData) {
+      // Inject verified email so confirmation is always sent
+      if (session.verifiedEmail) {
+        formData['submitter-email'] = session.verifiedEmail;
+      }
+
       // Submit the form
       session.phase = 'extracting';
       await sendAction(token, chatId, 'typing');
@@ -426,6 +490,11 @@ async function handleFallbackExtraction(token, apiKey, chatId, session) {
   const formData = tryParseJson(extractReply);
 
   if (formData) {
+    // Inject verified email so confirmation is always sent
+    if (session.verifiedEmail) {
+      formData['submitter-email'] = session.verifiedEmail;
+    }
+
     const result = await submitForm(
       session.formName,
       session.formId,
