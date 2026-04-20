@@ -1,24 +1,60 @@
+const MAX_BODY_BYTES = 32 * 1024;
+
 export default async function handler(req) {
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 });
   }
 
-  const resendKey = process.env.RESEND_API_KEY;
-  if (!resendKey) {
+  const raw = await req.text();
+  if (raw.length > MAX_BODY_BYTES) {
     return Response.json(
-      { error: 'RESEND_API_KEY not configured on the server.' },
-      { status: 500 }
+      { error: { message: 'Request body too large.' } },
+      { status: 413 }
     );
   }
 
   let body;
   try {
-    body = await req.json();
+    body = JSON.parse(raw);
   } catch {
-    return Response.json({ error: 'Invalid JSON.' }, { status: 400 });
+    return Response.json(
+      { error: { message: 'Invalid JSON.' } },
+      { status: 400 }
+    );
+  }
+
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return Response.json(
+      { error: { message: 'Request body must be an object.' } },
+      { status: 400 }
+    );
   }
 
   const { formName, formId, formRef, formData, userEmail } = body;
+
+  if (formData !== undefined && (typeof formData !== 'object' || formData === null || Array.isArray(formData))) {
+    return Response.json(
+      { error: { message: 'formData must be an object when provided.' } },
+      { status: 400 }
+    );
+  }
+  for (const [key, val] of [['formName', formName], ['formId', formId], ['formRef', formRef], ['userEmail', userEmail]]) {
+    if (val !== undefined && typeof val !== 'string') {
+      return Response.json(
+        { error: { message: `${key} must be a string when provided.` } },
+        { status: 400 }
+      );
+    }
+  }
+
+  const resendKey = process.env.RESEND_API_KEY;
+  if (!resendKey) {
+    return Response.json(
+      { error: { message: 'RESEND_API_KEY not configured on the server.' } },
+      { status: 500 }
+    );
+  }
+
   const prefix = formRef || 'REF';
   const referenceNumber = prefix + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
@@ -33,8 +69,11 @@ export default async function handler(req) {
 
   const summaryTable = `<table style="width:100%;border-collapse:collapse;font-family:Figtree,sans-serif;font-size:15px">${summaryRows}</table>`;
 
-  // Derive the department email: form-id@govtech.bb
-  const deptEmail = `${(formId || 'general').replace(/[^a-z0-9-]/g, '')}@govtech.bb`;
+  // Demo-week override: all outbound mail is routed to a single hardcoded
+  // address. Remove after demo and restore per-form department routing.
+  const DEMO_RECIPIENT = 'harry.metcalfe@public.digital';
+  const deptEmail = DEMO_RECIPIENT;
+  const applicantRecipient = DEMO_RECIPIENT;
 
   const fromAddress = 'Government of Barbados <onboarding@resend.dev>';
 
@@ -86,7 +125,7 @@ export default async function handler(req) {
         },
         body: JSON.stringify({
           from: fromAddress,
-          to: userEmail,
+          to: applicantRecipient,
           subject: `We received your ${formName || 'form'} — ref ${referenceNumber}`,
           html: applicantHtml
         })
