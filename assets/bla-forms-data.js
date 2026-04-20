@@ -141,9 +141,9 @@
 
   // Each prompt contains <<BASE_RULES>> — replaced at runtime by chat-interface.html
   window.BLA_SYSTEM_PROMPTS = {
-  'change-of-engine': `You are a concise assistant helping a Barbados citizen complete the Change of Engine (COE form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'change-of-engine': `Change of Engine (COE) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Engine details (keys: old-engine, new-engine, engine-source):
 - old-engine — Old engine number
@@ -165,9 +165,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'change-of-use': `You are a concise assistant helping a Barbados citizen complete the Change of Use of Vehicle (COU form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'change-of-use': `Change of Use of Vehicle (COU) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Change of use (keys: current-use, new-use):
 - current-use: Private, Commercial, Public Service Vehicle, Other
@@ -187,9 +187,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'change-of-vehicle-colour': `You are a concise assistant helping a Barbados citizen complete the Request to Change the Colour of Vehicle (CVC form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'change-of-vehicle-colour': `Request to Change the Colour of Vehicle (CVC) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Colour change details (keys: currentColour, newColour):
 - currentColour — Current colour
@@ -217,9 +217,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'declaration-company-vehicle': `You are a concise assistant helping a Barbados citizen complete the Declaration Form – Company Vehicle Registration for Private Use (DC form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'declaration-company-vehicle': `Declaration Form – Company Vehicle Registration for Private Use (DC) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Authorised person (keys: auth-name):
 - auth-name — Full name of authorised person
@@ -249,9 +249,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'declaration-partnership-vehicle': `You are a concise assistant helping a Barbados citizen complete the Declaration Form – Partnership Vehicle Registration for Private Use (DP form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'declaration-partnership-vehicle': `Declaration Form – Partnership Vehicle Registration for Private Use (DP) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Authorised partner (keys: auth-name):
 - auth-name — Full name of authorised partner
@@ -281,9 +281,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'declaration-sole-trader-vehicle': `You are a concise assistant helping a Barbados citizen complete the Declaration Form – Sole Trader Vehicle Registration for Private Use (DST form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'declaration-sole-trader-vehicle': `Declaration Form – Sole Trader Vehicle Registration for Private Use (DST) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Your details (keys: auth-name):
 - auth-name — Full name
@@ -312,9 +312,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'duty-free-concession-business': `You are a concise assistant helping a Barbados citizen complete the Request for Duty Free Concession (Business) (DFB form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'duty-free-concession-business': `Request for Duty Free Concession (Business) (DFB) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Authorised person (keys: auth-name, auth-biz-name):
 - auth-name — Authorised person's full name
@@ -340,9 +340,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'duty-free-concession-individual': `You are a concise assistant helping a Barbados citizen complete the Request for Duty Free Concession (Individual) (DFI form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'duty-free-concession-individual': `Request for Duty Free Concession (Individual) (DFI) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Your details (keys: full-name, address, id-number, telephone, email):
 - full-name — Full name
@@ -365,9 +365,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'importation-of-vehicles': `You are a concise assistant helping a Barbados citizen complete the Application for the Importation of Vehicles into Barbados (IOV form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'importation-of-vehicles': `Application for the Importation of Vehicles into Barbados (IOV) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Your details (keys: app-name, app-address, app-telephone, app-email):
 - app-name — Full name or company name
@@ -400,9 +400,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'motor-vehicle-inspection': `You are a concise assistant helping a Barbados citizen complete the Apply for a Motor Vehicle Inspection (LA form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'motor-vehicle-inspection': `Apply for a Motor Vehicle Inspection (LA) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 What is the owner's address? (keys: ownerStreet, ownerParish, ownerPostalCode):
 - ownerStreet — Street address
@@ -466,9 +466,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'odometer-reading-validation': `You are a concise assistant helping a Barbados citizen complete the Odometer Reading Validation (OR form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'odometer-reading-validation': `Odometer Reading Validation (OR) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Odometer reading (keys: odometer):
 - odometer — Current odometer reading. Hint: Enter the current reading in kilometres
@@ -491,9 +491,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'registration-temporary-stay': `You are a concise assistant helping a Barbados citizen complete the Register Your Vehicle for a Temporary Stay in Barbados (RTS form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'registration-temporary-stay': `Register Your Vehicle for a Temporary Stay in Barbados (RTS) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Your details (keys: fullname, address, email, contact):
 - fullname — Full name
@@ -530,9 +530,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'request-for-graphics': `You are a concise assistant helping a Barbados citizen complete the Request for Graphics and/or Lettering on Vehicle (RFG form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'request-for-graphics': `Request for Graphics and/or Lettering on Vehicle (RFG) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Your details (keys: full-name, business-name, address, telephone):
 - full-name — Full name
@@ -555,9 +555,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'retention-of-registration-number': `You are a concise assistant helping a Barbados citizen complete the Retain Your Vehicle Registration Number (RON form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'retention-of-registration-number': `Retain Your Vehicle Registration Number (RON) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Your details (keys: full-name, address, contact-number, email-address):
 - full-name — Full name
@@ -575,9 +575,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'sale-of-vehicle-individual': `You are a concise assistant helping a Barbados citizen complete the Sale of Vehicle (Individual Owner) (SVI form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'sale-of-vehicle-individual': `Sale of Vehicle (Individual Owner) (SVI) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Buyer's details (keys: buyer-full-name, buyer-address):
 - buyer-full-name — Buyer's full name
@@ -607,9 +607,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'sale-of-vehicle-joint': `You are a concise assistant helping a Barbados citizen complete the Sale of Vehicle (Joint Owners) (SVJ form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'sale-of-vehicle-joint': `Sale of Vehicle (Joint Owners) (SVJ) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Buyer's details (keys: buyer-full-name, buyer-address):
 - buyer-full-name — Buyer's full name
@@ -646,9 +646,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'scrapping-of-vehicle': `You are a concise assistant helping a Barbados citizen complete the Scrap or Sell Vehicle in Parts (SOV form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'scrapping-of-vehicle': `Scrap or Sell Vehicle in Parts (SOV) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 What will happen to the vehicle? (keys: disposition):
 - disposition: scrapped, sold-in-parts
@@ -666,9 +666,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'transfer-of-vehicle-individual': `You are a concise assistant helping a Barbados citizen complete the Transfer of Vehicle (Individual Owner) (TVI form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'transfer-of-vehicle-individual': `Transfer of Vehicle (Individual Owner) (TVI) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Do you want to retain the registration number? (keys: retainReg):
 - retainReg: yes, no
@@ -701,9 +701,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'transfer-of-vehicle-joint': `You are a concise assistant helping a Barbados citizen complete the Transfer of Vehicle (Joint Owners) (TVJ form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'transfer-of-vehicle-joint': `Transfer of Vehicle (Joint Owners) (TVJ) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Do you want to retain the registration number? (keys: retainReg):
 - retainReg: yes, no
@@ -743,9 +743,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'vanity-plate-application': `You are a concise assistant helping a Barbados citizen complete the Application for an Approved Vanity Plate (VP form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'vanity-plate-application': `Application for an Approved Vanity Plate (VP) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Your details (keys: full-name, address, telephone, email):
 - full-name — Full name
@@ -770,9 +770,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'vehicle-investigation': `You are a concise assistant helping a Barbados citizen complete the Application for Vehicle Investigation (VI form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'vehicle-investigation': `Application for Vehicle Investigation (VI) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Is there a different contact person for this investigation? (keys: contact-name, contact-tel, hasDifferentContact):
 - contact-name — Contact person's name
@@ -807,9 +807,9 @@ VEHICLE-SPECIFIC VALIDATION:
 - If a vehicle number is optional and the owner is unsure, accept null
 <<BASE_RULES>>`,
 
-  'vehicle-registration-renewal': `You are a concise assistant helping a Barbados citizen complete the Register or Renew Your Motor Vehicle Licence (VRR form) for the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+  'vehicle-registration-renewal': `Register or Renew Your Motor Vehicle Licence (VRR) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Examiner's certificate (keys: certNumber, examinerName, certDateIssued):
 - certNumber — Certificate number

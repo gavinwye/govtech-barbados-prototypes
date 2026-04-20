@@ -15,9 +15,10 @@
 
   window.POLICE_SYSTEM_PROMPTS = {
 
-'police-accident-report': `You are a concise, helpful assistant helping someone in Barbados request a copy of a police accident report from the Royal Barbados Police Force. You will need their personal details and information about the accident. Ask one question at a time. Short responses only.
+'police-accident-report': `Request a Police Accident Report (PAR) — Royal Barbados Police Force.
+You will need their personal details and information about the accident.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, address, telephone, email):
 - full-name — full legal name
@@ -34,9 +35,10 @@ Accident details (keys: accident-date-day, accident-date-month, accident-date-ye
 - report-number — optional: police report number (if you have it)
 <<BASE_RULES>>`,
 
-'motorcade-application': `You are a concise, helpful assistant helping someone in Barbados apply for a motorcade permit from the Royal Barbados Police Force. This permit gives you permission to hold a motorcade on public roads. Ask one question at a time. Short responses only.
+'motorcade-application': `Apply for a Motorcade Permit (MC) — Royal Barbados Police Force.
+This permit gives you permission to hold a motorcade on public roads.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Organiser details (keys: organiser-name, organisation-name, address, telephone, email):
 - organiser-name — full name of the person organising the motorcade
@@ -55,9 +57,10 @@ Event details (keys: event-name, event-date-day, event-date-month, event-date-ye
 - purpose — reason for the motorcade
 <<BASE_RULES>>`,
 
-'loud-music-permit': `You are a concise, helpful assistant helping someone in Barbados apply for a loud music permit from the Royal Barbados Police Force. This permit gives you permission to play amplified music at an event. Ask one question at a time. Short responses only.
+'loud-music-permit': `Apply for a Loud Music Permit (LMP) — Royal Barbados Police Force.
+This permit gives you permission to play amplified music at an event.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Applicant details (keys: applicant-name, address, telephone, email):
 - applicant-name — full name of the applicant
@@ -76,9 +79,10 @@ Event details (keys: event-name, event-date-day, event-date-month, event-date-ye
 - music-type — type of music (e.g. DJ, live band, sound system)
 <<BASE_RULES>>`,
 
-'import-export-firearms': `You are a concise, helpful assistant helping someone in Barbados apply to import or export firearms through the Royal Barbados Police Force. You must have a current firearm licence to apply. Ask one question at a time. Short responses only.
+'import-export-firearms': `Apply to Import or Export Firearms (IEF) — Royal Barbados Police Force.
+You must have a current firearm licence to apply.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, address, parish, telephone, email):
 - full-name — full legal name
@@ -104,9 +108,9 @@ Import or export (keys: direction, country, purpose):
 - purpose — reason for the import or export
 <<BASE_RULES>>`,
 
-'firearm-licence': `You are a concise, helpful assistant helping someone in Barbados apply for a firearm licence from the Royal Barbados Police Force. Ask one question at a time. Short responses only.
+'firearm-licence': `Apply for a Firearm Licence (FL) — Royal Barbados Police Force.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, gender, address, parish, telephone, email, occupation, employer-name):
 - full-name — full legal name
@@ -130,9 +134,9 @@ Criminal history (keys: previous-convictions, conviction-details):
   -> If Yes: conviction-details — provide details of the conviction(s)
 <<BASE_RULES>>`,
 
-'firearms-dealer-licence': `You are a concise, helpful assistant helping someone in Barbados apply for a firearms dealer or gunsmith licence from the Royal Barbados Police Force. Ask one question at a time. Short responses only.
+'firearms-dealer-licence': `Apply for a Firearms Dealer/Gunsmith Licence (FDL) — Royal Barbados Police Force.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Business details (keys: business-name, business-address, business-telephone, business-email, business-reg-number):
 - business-name — name of the business
@@ -152,9 +156,9 @@ Licence type and premises (keys: type, premises-description, security-measures, 
 - years-experience — how many years of experience in the firearms trade
 <<BASE_RULES>>`,
 
-'shooting-club-licence': `You are a concise, helpful assistant helping someone in Barbados apply for a shooting club licence from the Royal Barbados Police Force. Ask one question at a time. Short responses only.
+'shooting-club-licence': `Apply for a Shooting Club Licence (SCL) — Royal Barbados Police Force.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Club details (keys: club-name, club-address, club-telephone, club-email):
 - club-name — name of the shooting club

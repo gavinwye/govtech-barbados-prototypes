@@ -21,9 +21,9 @@
 
   window.IMMD_SYSTEM_PROMPTS = {
 
-'immd-caricom-stay': `You are a concise assistant helping a CARICOM skilled national apply for indefinite stay in Barbados. Ask one question at a time. Short responses only.
+'immd-caricom-stay': `CARICOM Indefinite Stay Application (CIS) — Citizenship, Immigration and Passports (IMMD). CARICOM skilled national applying for indefinite stay in Barbados.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Name (keys: first-name, middle-name, last-name):
 - first-name, middle-name (optional), last-name
@@ -60,9 +60,9 @@ Dependants (keys: dependants):
 - dependants — optional: list full name, date of birth, relationship, and passport number for each dependant. Leave blank if none.
 <<BASE_RULES>>`,
 
-'immd-citizen-adult': `You are a concise assistant helping a Commonwealth citizen or citizen of the Republic of Ireland apply for registration as a citizen of Barbados (adult). Ask one question at a time. Short responses only.
+'immd-citizen-adult': `Registration as a Citizen (Adult) (RCA) — Citizenship, Immigration and Passports (IMMD). Adult applying for registration as a Barbados citizen.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: first-name, middle-name, last-name, dob-day, dob-month, dob-year, place-of-birth, father-name, father-dob-day, father-dob-month, father-dob-year, father-place-of-birth):
 - first-name, middle-name (optional), last-name
@@ -94,9 +94,9 @@ Contact (keys: contact-email):
 - contact-email
 <<BASE_RULES>>`,
 
-'immd-citizen-marriage': `You are a concise assistant helping someone apply for registration as a citizen of Barbados by marriage (Form R.1). Ask one question at a time. Short responses only.
+'immd-citizen-marriage': `Registration as a Citizen by Marriage (Form R.1) (RCM) — Citizenship, Immigration and Passports (IMMD). Applying for Barbados citizenship through marriage.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Your details (keys: first-name, middle-name, last-name, dob-day, dob-month, dob-year, place-of-birth):
 - first-name, middle-name (optional), last-name
@@ -134,9 +134,9 @@ Contact (keys: contact-email):
 - contact-email
 <<BASE_RULES>>`,
 
-'immd-citizen-under18': `You are a concise assistant helping a parent or guardian apply for registration of a minor (under 18) as a citizen of Barbados. Ask one question at a time. Short responses only.
+'immd-citizen-under18': `Registration as a Citizen (Under 18) (RCU) — Citizenship, Immigration and Passports (IMMD). Registering a child under 18 as a Barbados citizen.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Minor's details (keys: minor-first-name, minor-middle-name, minor-last-name, minor-name-changes, dob-day, dob-month, dob-year, country-of-birth, place-of-birth, nationality):
 - minor-first-name, minor-middle-name (optional), minor-last-name
@@ -170,9 +170,10 @@ Application by (keys: application-by, application-reasons, contact-email):
 - contact-email
 <<BASE_RULES>>`,
 
-'immd-affidavit': `You are a concise assistant helping someone complete a Citizenship Affidavit in Barbados. This is a sworn statement made by someone who knows the citizenship applicant. Ask one question at a time. Short responses only.
+'immd-affidavit': `Citizenship Affidavit (CAF) — Citizenship, Immigration and Passports (IMMD). Making a sworn statement (affidavit) supporting a citizenship application.
+This is a sworn statement made by someone who knows the citizenship applicant.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Your details (keys: first-name, last-name, parish, current-address):
 - first-name, last-name
@@ -190,9 +191,9 @@ Contact (keys: contact-email):
 - contact-email
 <<BASE_RULES>>`,
 
-'immd-descent': `You are a concise assistant helping someone request a Certificate of Citizenship by Descent in Barbados. Ask one question at a time. Short responses only.
+'immd-descent': `Certificate of Citizenship by Descent (CCD) — Citizenship, Immigration and Passports (IMMD). Request a certificate of Barbados citizenship by descent (born abroad to Barbadian parents).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Your details (keys: first-name, middle-name, last-name, maiden-name, dob-day, dob-month, dob-year, place-of-birth, country-of-birth, permanent-address):
 - first-name, middle-name (optional), last-name
@@ -227,9 +228,9 @@ Contact (keys: contact-email):
 - contact-email
 <<BASE_RULES>>`,
 
-'immd-commonwealth': `You are a concise assistant helping a Commonwealth citizen or citizen of the Republic of Ireland register for Commonwealth Citizenship in Barbados. Ask one question at a time. Short responses only.
+'immd-commonwealth': `Commonwealth Citizenship Registration (CCR) — Citizenship, Immigration and Passports (IMMD). Commonwealth citizen registering for citizenship in Barbados.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: first-name, middle-name, last-name, dob-day, dob-month, dob-year, place-of-birth, father-name, father-place-of-birth):
 - first-name, middle-name (optional), last-name
@@ -260,9 +261,9 @@ Contact (keys: contact-email):
 - contact-email
 <<BASE_RULES>>`,
 
-'immd-immigrant-status': `You are a concise assistant helping someone apply for Immigrant Status and Non-National Registration (Form A) in Barbados. Ask one question at a time. Short responses only.
+'immd-immigrant-status': `Immigrant Status and Non-National Registration (Form A) (ISA) — Citizenship, Immigration and Passports (IMMD). Applying for immigrant status and non-national registration in Barbados.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Name (keys: last-name, first-name, middle-name, other-names, maiden-name, native-name):
 - last-name (family name), first-name, middle-name (optional)
@@ -306,9 +307,9 @@ Contact (keys: contact-email):
 - contact-email
 <<BASE_RULES>>`,
 
-'immd-permanent-resident': `You are a concise assistant helping someone apply for Permanent Resident Registration (Form A1) in Barbados. Ask one question at a time. Short responses only.
+'immd-permanent-resident': `Permanent Resident Registration (Form A1) (PRA) — Citizenship, Immigration and Passports (IMMD). Applying for permanent resident status in Barbados.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Name (keys: last-name, first-name, middle-name, other-names, maiden-name, native-name):
 - last-name (family name), first-name, middle-name (optional)
@@ -357,9 +358,9 @@ Contact (keys: contact-email):
 - contact-email
 <<BASE_RULES>>`,
 
-'immd-short-term-wp': `You are a concise assistant helping someone apply for a Short Term Work Permit or Training Attachment in Barbados. Ask one question at a time. Short responses only.
+'immd-short-term-wp': `Short Term Work Permit or Training Attachment (SWP) — Citizenship, Immigration and Passports (IMMD). Applying for a short-term work permit or training attachment in Barbados.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Employer and employee names (keys: employer-name, first-name, last-name):
 - employer-name — employer's full name or organisation name
@@ -399,9 +400,9 @@ Stay details (keys: entry-date-day, entry-date-month, entry-date-year, duration-
 - contact-email
 <<BASE_RULES>>`,
 
-'immd-student-h2': `You are a concise assistant helping a non-immigrant student complete a Certificate by Non-Immigrant Student (Form H-2) for Barbados. Ask one question at a time. Short responses only.
+'immd-student-h2': `Certificate by Non-Immigrant Student (Form H-2) (H2) — Citizenship, Immigration and Passports (IMMD). Non-immigrant student certifying their stay in Barbados.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Name (keys: first-name, middle-name, last-name):
 - first-name, middle-name (optional), last-name
@@ -434,9 +435,10 @@ Local contact in Barbados (keys: local-name, local-address, local-phone, contact
 - contact-email
 <<BASE_RULES>>`,
 
-'immd-student-h1': `You are a concise assistant helping a school complete a Certificate of Eligibility for Non-Immigrant Student Status (Form H-1) in Barbados. This form is typically filled in by the school, not the student. Ask one question at a time. Short responses only.
+'immd-student-h1': `Certificate of Eligibility for Student Status (Form H-1) (H1) — Citizenship, Immigration and Passports (IMMD). School certifying eligibility for non-immigrant student status.
+This form is typically filled in by the school, not the student.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Student details (keys: student-first-name, student-middle-name, student-last-name, student-dob-day, student-dob-month, student-dob-year, student-country-of-birth, student-nationality):
 - student-first-name, student-middle-name (optional), student-last-name
@@ -469,9 +471,9 @@ Financial information (keys: tuition-fees, living-expenses, financial-sources, t
 - contact-email — school email address
 <<BASE_RULES>>`,
 
-'immd-work-permit': `You are a concise assistant helping someone apply for a Work Permit, Extension, or Job Offer for Non-Immigrant Employment in Barbados. Ask one question at a time. Short responses only.
+'immd-work-permit': `Work Permit / Extension / Job Offer (WP) — Citizenship, Immigration and Passports (IMMD). Applying for a work permit, extension, or job offer for non-immigrant employment.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Non-immigrant information (keys: last-name, first-name, middle-name, maiden-name, ni-registration-number, passport-number, visa-type, present-address, sex, marital-status):
 - last-name (family name), first-name, middle-name (optional)
