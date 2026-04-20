@@ -256,6 +256,12 @@
     .bubble-bot p:last-child { margin-bottom: 0; }
     .bubble-bot ul { margin: 0.4rem 0; padding-left: 1.2rem; }
     .bubble-bot li { margin-bottom: 0.25rem; }
+    .bubble-bot a {
+      color: var(--color-teal-00);
+      text-decoration: underline;
+      font-weight: 600;
+    }
+    .bubble-bot a:hover { text-decoration: none; }
     .bubble-user {
       background: var(--color-blue-10);
       border-radius: 14px 4px 14px 14px;
@@ -525,6 +531,7 @@
 <script src="assets/other-forms-data.js"></script>
 <script src="assets/police-forms-data.js"></script>
 <script src="assets/govt-forms-data.js"></script>
+<script src="assets/info-pages.js"></script>
 <script>
 'use strict';
 
@@ -1059,6 +1066,7 @@ function mdToHtml(text) {
   }
   if (!text) return '';
   var html = text
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .split('\n\n').map(function(para) {
@@ -1135,18 +1143,22 @@ var ROUTING_PROMPT =
   '- Every question should move toward a specific service. Don\'t ask the same thing twice in different words.\n' +
   '- GREEN LIGHT: the user\'s latest message clearly identifies ONE specific service — either because they named it, or because they said yes to a question of yours that was specific enough to pin it down. That\'s the go signal.\n' +
   '- Once you have the green light, your NEXT message is the handoff (format below) — sentinel + JSON, NOTHING ELSE.\n' +
-  '- Do NOT follow a user\'s "yes" to a narrowing question with another "Shall I start?" — that\'s the same check twice. One green light is enough. If the narrowing question already pinned down the service, the yes IS the green light.\n\n' +
-  'Every message you send is EITHER a single question OR the handoff — never both in the same message.\n\n' +
-  'HANDOFF FORMAT — when, and ONLY when, the user has confirmed:\n' +
+  '- Do NOT follow a user\'s "yes" to a narrowing question with another "Shall I start?" — that\'s the same check twice. One green light is enough. If the narrowing question already pinned down the service, the yes IS the green light.\n' +
+  '- SERVICES ALWAYS WIN. If any service in the list below could plausibly fit, prefer the service over an info page.\n' +
+  '- If NO service fits but an info page below matches what the user needs, redirect them with a markdown link. The link is MANDATORY — never name a page without also including its URL. Copy the exact [Title](URL) from the info-pages list below; do not paraphrase or summarise it away. Example: "Sounds like you need to register a birth — you can do that at [Register a birth](https://alpha.gov.bb/family-birth-relationships/register-a-birth). Anything else I can help you find?" Info-page redirects are plain messages, NOT handoffs — no sentinel, no JSON.\n' +
+  '- If neither a service nor an info page matches, say so briefly and ask if they can rephrase or try something else.\n\n' +
+  'Every message you send is EITHER a single question, an info-page redirect, OR the service handoff — never more than one in the same message.\n\n' +
+  'HANDOFF FORMAT — when, and ONLY when, the user has confirmed a service:\n' +
   '- Output ##ROUTED## on its own line.\n' +
-  '- On the very next line, output a single valid JSON object: {"serviceId": "<id>"} — where <id> is one of the IDs in the list below, exactly as written.\n' +
+  '- On the very next line, output a single valid JSON object: {"serviceId": "<id>"} — where <id> is one of the IDs in the services list below, exactly as written.\n' +
   '- Nothing else after the JSON.\n\n' +
-  'Be warm and brief. Use contractions. Always say "service", never "form". Don\'t offer anything outside the services below.\n\n' +
-  'Services:\n' +
+  'Be warm and brief. Use contractions. Always say "service", never "form". Don\'t offer anything outside the services and info pages below.\n\n' +
+  'Services (conversational — the chat will guide the user through filling these in):\n' +
   FORMS.map(function(f) {
     var desc = FORM_DESCRIPTIONS[f.id] || f.name;
     return f.id + ' — ' + f.name + ': ' + desc;
-  }).join('\n');
+  }).join('\n') +
+  (window.INFO_PAGES_TEXT ? '\n\nInfo pages (redirect the user to these ONLY when no service above fits — we can\'t fill these in conversationally):\n' + window.INFO_PAGES_TEXT : '');
 
 async function handleRouting(text) {
   typingStart();
