@@ -353,11 +353,6 @@
     }
 
     /* Summary / confirmation panels */
-    .summary-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
-    .summary-table tr { border-bottom: 1px solid var(--color-grey-00); }
-    .summary-table td { padding: 0.5rem 0.5rem; vertical-align: top; }
-    .summary-table td:first-child { font-weight: 600; color: var(--color-mid-grey-00); width: 40%; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.04em; }
-    .summary-table td:last-child { color: var(--color-black-00); }
     .confirm-panel {
       background: var(--color-teal-00); color: #fff;
       border-radius: 10px; padding: 1.75rem;
@@ -632,7 +627,7 @@ When you produce the final JSON, normalise to these canonical forms:
 Optional fields the user didn't provide → null.
 
 ─── FINISHING ───
-Once you have every required field, summarise in a short bullet list of the normalised values (grouped sensibly) and ask: "Does everything look right? Say 'yes' to submit, or tell me what to change."
+Once you have every required field, summarise in a short bullet list of the normalised values (grouped sensibly) and end with: "Confirm this is right and I'll submit it for you, or tell me what to change." Be explicit that a yes means immediate submission — no further chance to review.
 
 If they ask to change something, update it and re-confirm just the change, not everything.
 
@@ -937,7 +932,7 @@ ${BASE_RULES}`
    STATE
 ───────────────────────────────────────── */
 var state = {
-  phase: 'init',    // init | routing | chat | extracting | summary | submitted
+  phase: 'init',    // init | routing | chat | extracting | submitting | submitted
   form: null,
   messages: [],     // [{role, content}] — full chat history (no system msgs)
   systemPrompt: '', // current system prompt
@@ -1374,7 +1369,7 @@ async function extractAndShowSummary(completionReply) {
 
   if (jsonData) {
     state.formData = jsonData;
-    renderSummary();
+    await submitForm();
   } else {
     errorMsg('Something went wrong extracting your data. Please try again or start over.');
   }
@@ -1399,52 +1394,13 @@ function tryParseJson(text) {
 }
 
 /* ─────────────────────────────────────────
-   SUMMARY PHASE
-───────────────────────────────────────── */
-function renderSummary() {
-  state.phase = 'summary';
-  inputAreaEl.innerHTML = '';
-
-  var data = state.formData || {};
-  var entries = Object.entries(data).filter(function(e) { return e[1] !== null && e[1] !== '' && e[1] !== undefined; });
-
-  var tableHtml = '<table class="summary-table">';
-  entries.forEach(function(pair) {
-    var key = pair[0], val = pair[1];
-    var label = key.replace(/-/g,' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
-    tableHtml += '<tr><td>' + escH(label) + '</td><td>' + escH(String(val)) + '</td></tr>';
-  });
-  tableHtml += '</table>';
-
-  var summaryHtml =
-    '<div style="padding:1rem 0;">' +
-      '<p style="font-weight:700;margin-bottom:0.75rem;">Here\'s everything I\'ve collected:</p>' +
-      tableHtml +
-      '<div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">' +
-        '<button class="send-btn" onclick="submitForm()">Submit</button>' +
-        '<button onclick="goBackToChat()" style="border:2px solid var(--color-grey-00);background:#fff;border-radius:6px;padding:0.5rem 1rem;font-family:inherit;font-size:0.9375rem;cursor:pointer;">Make changes</button>' +
-      '</div>' +
-    '</div>';
-
-  inputAreaEl.innerHTML = summaryHtml;
-  scrollBottom();
-}
-
-function goBackToChat() {
-  state.phase = 'chat';
-  state.formData = null;
-  renderChatInput();
-  botMsg('<p>No problem — what would you like to change?</p>');
-  var ta = document.getElementById('chat-input');
-  if (ta) ta.focus();
-}
-
-/* ─────────────────────────────────────────
    SUBMISSION
 ───────────────────────────────────────── */
 async function submitForm() {
-  var btn = inputAreaEl.querySelector('.send-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+  state.phase = 'submitting';
+  inputAreaEl.innerHTML = '';
+  typingStart();
+  setBusy(true);
 
   var payload = {
     formName: state.form ? state.form.name : 'Unknown',
@@ -1472,6 +1428,8 @@ async function submitForm() {
     refNumber = prefix + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 
+  typingStop();
+  setBusy(false);
   renderConfirmation(refNumber);
 }
 
@@ -1492,7 +1450,7 @@ function renderConfirmation(refNumber) {
       '</div>' +
       '<div style="margin-top:1rem;color:var(--color-mid-grey-00);font-size:0.95rem;">' +
         '<p>Keep your reference number safe. We\'ll be in touch if we need anything else from you.</p>' +
-        '<p style="margin-top:0.5rem;">You can close this window or <button onclick="restartChat()" style="color:var(--color-teal-00);text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit;font-size:inherit;">start again</button>.</p>' +
+        '<button class="send-btn" onclick="restartChat()" style="margin-top:1rem;">Start a new chat</button>' +
       '</div>' +
     '</div>';
 
