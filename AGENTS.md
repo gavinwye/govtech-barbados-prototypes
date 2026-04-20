@@ -382,7 +382,7 @@ Every prototype must contain these pages, in order:
 - H1: the form name from the specification
 - Subtitle with last-updated date
 - A short introductory paragraph explaining what the form does and who is eligible
-- A "How to apply" section with a green primary button linking to the form: **"Complete the online form"** (styled as a teal `<a>` tag with button classes)
+- A "How to apply" section with a green primary button linking to the form: **"Start"** (styled as a teal `<a>` tag with button classes)
 - A "What you will need to share" section listing what the user should have ready
 - A Back link at the top
 - The standard page chrome: top bar, header, alpha banner, footer
@@ -632,7 +632,7 @@ The framework is loaded via `<script src="/assets/govbb-framework.js"></script>`
 - `GovBB.backLink()` — back link with left arrow
 - `GovBB.caption(text?)` — form section caption (defaults to formName)
 - `GovBB.continueBtn(label?)` — primary continue/submit button (default: "Continue")
-- `GovBB.startBtn(label?)` — start page link-button (default: "Complete the online form")
+- `GovBB.startBtn(label?)` — start page link-button (default: "Start")
 - `GovBB.textField(id, label, opts?)` — text input with label, hint, error placeholder
   - opts: `{ hint, width, inputmode, maxlength, placeholder }`
 - `GovBB.emailField(id, label, opts?)` — email input
