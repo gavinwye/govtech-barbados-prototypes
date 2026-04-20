@@ -37,9 +37,9 @@
 
   window.BLA_NEW_SYSTEM_PROMPTS = {
 
-'change-of-address': `You are a concise assistant helping a Barbados citizen update their address with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'change-of-address': `Change of Address (COA) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, registration-number):
 - full-name — Full name
@@ -54,9 +54,9 @@ Address details (keys: old-address, new-address, parish, telephone, email):
 - email — Email address
 <<BASE_RULES>>`,
 
-'stolen-vehicle': `You are a concise assistant helping someone in Barbados report a stolen vehicle to the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'stolen-vehicle': `Report a Stolen Vehicle (SV) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Owner details (keys: owner-name, owner-address, owner-telephone, owner-email, owner-nrn):
 - owner-name — Full name of the vehicle owner
@@ -80,9 +80,9 @@ Theft details (keys: date-stolen-day, date-stolen-month, date-stolen-year, locat
 - additional-details — optional: Any other details about the theft
 <<BASE_RULES>>`,
 
-'driving-exam-date-change': `You are a concise assistant helping someone in Barbados change their driving exam date with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'driving-exam-date-change': `Change Driving Exam Date (DEC) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, telephone, email):
 - full-name — Full name
@@ -96,9 +96,9 @@ Exam details (keys: current-exam-date-day, current-exam-date-month, current-exam
 - reason — Why do you need to change the date?
 <<BASE_RULES>>`,
 
-'lost-learner-permit': `You are a concise assistant helping someone in Barbados replace a lost learner permit with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'lost-learner-permit': `Replace Lost Learner Permit (LLP) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, address, parish, telephone, email):
 - full-name — Full name
@@ -115,25 +115,9 @@ Permit details (keys: permit-number, date-lost-day, date-lost-month, date-lost-y
 - circumstances — How did you lose the permit? Describe what happened
 <<BASE_RULES>>`,
 
-'change-driving-test-date': `You are a concise assistant helping someone in Barbados change their driving test date with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'change-driving-test-date': `Change Driving Test Date (CDT) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
-
-Personal details (keys: full-name, nrn, telephone, email):
-- full-name — Full name
-- nrn — National Registration Number (format YYMMDD-XXXX)
-- telephone — Phone number
-- email — Email address
-
-Test details (keys: current-test-date-day, current-test-date-month, current-test-date-year, preferred-date-day, preferred-date-month, preferred-date-year, reason):
-- current-test-date — Your current test date (DD MM YYYY)
-- preferred-date — Your preferred new date (DD MM YYYY)
-- reason — Why do you need to change the date?
-<<BASE_RULES>>`,
-
-'change-regulation-test-date': `You are a concise assistant helping someone in Barbados change their regulation test date with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
-
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, telephone, email):
 - full-name — Full name
@@ -147,9 +131,25 @@ Test details (keys: current-test-date-day, current-test-date-month, current-test
 - reason — Why do you need to change the date?
 <<BASE_RULES>>`,
 
-'driving-record': `You are a concise assistant helping someone in Barbados request their driving record from the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'change-regulation-test-date': `Change Regulation Test Date (CRT) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
+
+Personal details (keys: full-name, nrn, telephone, email):
+- full-name — Full name
+- nrn — National Registration Number (format YYMMDD-XXXX)
+- telephone — Phone number
+- email — Email address
+
+Test details (keys: current-test-date-day, current-test-date-month, current-test-date-year, preferred-date-day, preferred-date-month, preferred-date-year, reason):
+- current-test-date — Your current test date (DD MM YYYY)
+- preferred-date — Your preferred new date (DD MM YYYY)
+- reason — Why do you need to change the date?
+<<BASE_RULES>>`,
+
+'driving-record': `Request Driving Record (DR) — Barbados Licensing Authority (BLA).
+
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, address, parish, telephone, email):
 - full-name — Full name
@@ -165,9 +165,9 @@ Licence details (keys: licence-number, reason):
 - reason — Why do you need your driving record? For example, employment, insurance, legal matter
 <<BASE_RULES>>`,
 
-'duplicate-psv-licence': `You are a concise assistant helping someone in Barbados get a duplicate PSV (Public Service Vehicle) licence from the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'duplicate-psv-licence': `Duplicate PSV Licence (DPSV) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, address, parish, telephone, email):
 - full-name — Full name
@@ -184,9 +184,10 @@ Licence details (keys: psv-licence-number, reason-for-replacement, circumstances
 - circumstances — Describe what happened
 <<BASE_RULES>>`,
 
-'new-learner-permit': `You are a concise assistant helping someone in Barbados apply for a new learner permit from the Barbados Licensing Authority. You need to be at least 16 to apply. Ask one question at a time. Short responses only.
+'new-learner-permit': `New Learner Permit (NLP) — Barbados Licensing Authority (BLA).
+You need to be at least 16 to apply.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, gender, address, parish, postal-code, telephone, email):
 - full-name — Full name
@@ -205,9 +206,9 @@ Permit details (keys: vehicle-class, medical-declaration, medical-details):
   → If Yes: medical-details — Please describe your medical condition
 <<BASE_RULES>>`,
 
-'tint-vehicle': `You are a concise assistant helping someone in Barbados apply to tint their vehicle windows with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'tint-vehicle': `Tint Vehicle Windows (TV) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, address, telephone, email):
 - full-name — Full name
@@ -228,9 +229,9 @@ Tint details (keys: tint-percentage, windows-to-tint, reason):
 - reason — Why do you want to tint the windows? For example, medical reasons, privacy, sun protection
 <<BASE_RULES>>`,
 
-'reinstatement-driving-licence': `You are a concise assistant helping someone in Barbados apply to reinstate their driving licence with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'reinstatement-driving-licence': `Reinstatement of Driving Licence (RDL) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, address, parish, telephone, email):
 - full-name — Full name
@@ -248,9 +249,9 @@ Licence details (keys: licence-number, suspension-date-day, suspension-date-mont
 - reason-for-reinstatement — Why should your licence be reinstated?
 <<BASE_RULES>>`,
 
-'transfer-international-licence': `You are a concise assistant helping someone transfer their international driving licence to a Barbados licence with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'transfer-international-licence': `Transfer International Licence (TIL) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, nationality, address, parish, telephone, email):
 - full-name — Full name
@@ -270,9 +271,9 @@ International licence details (keys: current-licence-number, country-issued, lic
 - date-expiry — Date the licence expires (DD MM YYYY)
 <<BASE_RULES>>`,
 
-'disabled-parking-permit': `You are a concise, warm assistant helping someone in Barbados apply for a disabled parking permit from the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'disabled-parking-permit': `Disabled Parking Permit (DPP) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, address, parish, telephone, email):
 - full-name — Full name
@@ -293,9 +294,9 @@ Vehicle details (keys: registration-number):
 - registration-number — optional: Vehicle registration number if you have one
 <<BASE_RULES>>`,
 
-'regulation-test-appointment': `You are a concise assistant helping someone in Barbados book a regulation test appointment with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'regulation-test-appointment': `Regulation Test Appointment (RTA) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, telephone, email):
 - full-name — Full name
@@ -309,9 +310,9 @@ Appointment details (keys: preferred-date-day, preferred-date-month, preferred-d
 - test-type — Is this your first attempt or a re-sit? Options: First attempt or Re-sit
 <<BASE_RULES>>`,
 
-'register-bicycle-motorcycle': `You are a concise assistant helping someone in Barbados register a bicycle or motorcycle with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'register-bicycle-motorcycle': `Register Bicycle/Motorcycle (RBM) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Owner details (keys: owner-name, nrn, address, parish, telephone, email):
 - owner-name — Full name
@@ -333,9 +334,10 @@ Vehicle details (keys: vehicle-type, make, model, colour, frame-number, year-man
   - engine-capacity — Engine capacity (cc)
 <<BASE_RULES>>`,
 
-'transfer-vehicle-death': `You are a concise, warm assistant helping a beneficiary in Barbados transfer a vehicle after the death of the owner with the Barbados Licensing Authority. You will need a death certificate and grant of probate or letters of administration. Ask one question at a time. Short responses only.
+'transfer-vehicle-death': `Transfer Vehicle (Death of Owner) (TVD) — Barbados Licensing Authority (BLA).
+You will need a death certificate and grant of probate or letters of administration.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Deceased owner details (keys: deceased-name, deceased-nrn, deceased-address):
 - deceased-name — Full name of the deceased owner
@@ -357,9 +359,9 @@ Vehicle details (keys: registration-number, chassis-number, engine-number, vehic
 - vehicle-model — Model of the vehicle
 <<BASE_RULES>>`,
 
-'mo-plate-renewal': `You are a concise assistant helping a business in Barbados renew MO plates with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'mo-plate-renewal': `MO Plate Renewal (MO) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Business details (keys: business-name, business-address, business-telephone, business-email, contact-name):
 - business-name — Business name
@@ -373,9 +375,9 @@ Plate details (keys: plate-number, number-of-plates):
 - number-of-plates — How many plates are you renewing?
 <<BASE_RULES>>`,
 
-'drivers-licence': `You are a concise assistant helping someone in Barbados apply for a driver's licence from the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'drivers-licence': `Driver's Licence (DL) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, gender, address, parish, postal-code, telephone, email):
 - full-name — Full name
@@ -396,9 +398,10 @@ Licence details (keys: licence-class, application-type, existing-licence-number,
   → If No: medical-details — Please describe any medical conditions
 <<BASE_RULES>>`,
 
-'conductors-licence': `You are a concise assistant helping someone in Barbados apply for a conductor's licence from the Barbados Licensing Authority. A conductor's licence is needed to work as a bus conductor. Ask one question at a time. Short responses only.
+'conductors-licence': `Conductor's Licence (CL) — Barbados Licensing Authority (BLA).
+A conductor's licence is needed to work as a bus conductor.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, gender, address, parish, telephone, email):
 - full-name — Full name
@@ -419,9 +422,9 @@ Application details (keys: application-type, existing-licence):
   → If Renewal: existing-licence — Your current conductor's licence number
 <<BASE_RULES>>`,
 
-'taxi-driver-licence': `You are a concise assistant helping someone in Barbados apply for a taxi driver licence from the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'taxi-driver-licence': `Taxi Driver Licence (TDL) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, gender, address, parish, telephone, email):
 - full-name — Full name
@@ -441,9 +444,9 @@ Licence and vehicle details (keys: drivers-licence-number, vehicle-registration,
 - application-type — Is this a New licence or a Renewal?
 <<BASE_RULES>>`,
 
-'international-driving-permit': `You are a concise assistant helping someone in Barbados apply for an international driving permit from the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'international-driving-permit': `International Driving Permit (IDP) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, nationality, address, parish, telephone, email):
 - full-name — Full name
@@ -462,9 +465,10 @@ Permit details (keys: barbados-licence-number, licence-class, travel-destination
 - travel-date — When are you travelling? (DD MM YYYY)
 <<BASE_RULES>>`,
 
-'f-class-driving-licence': `You are a concise assistant helping someone in Barbados apply for an F-Class driving licence from the Barbados Licensing Authority. An F-Class licence is for driving heavy goods vehicles. Ask one question at a time. Short responses only.
+'f-class-driving-licence': `F-Class Driving Licence (FCL) — Barbados Licensing Authority (BLA).
+An F-Class licence is for driving heavy goods vehicles.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, gender, address, parish, telephone, email):
 - full-name — Full name
@@ -486,9 +490,10 @@ Licence details (keys: current-licence-number, current-licence-class, years-driv
   → If No: medical-details — Please describe any medical conditions
 <<BASE_RULES>>`,
 
-'vehicle-registration-private': `You are a concise assistant helping someone in Barbados register a private vehicle with the Barbados Licensing Authority. Have your vehicle documents and insurance details ready. Ask one question at a time. Short responses only.
+'vehicle-registration-private': `Register Private Vehicle (VRP) — Barbados Licensing Authority (BLA).
+Have your vehicle documents and insurance details ready.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Owner details (keys: owner-name, nrn, address, parish, postal-code, telephone, email):
 - owner-name — Full name
@@ -518,9 +523,9 @@ Insurance details (keys: insurance-company, policy-number, insurance-expiry-day,
 - insurance-expiry — Insurance expiry date (DD MM YYYY)
 <<BASE_RULES>>`,
 
-'tinted-window-exemption-business': `You are a concise assistant helping a business in Barbados apply for a tinted window exemption from the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'tinted-window-exemption-business': `Tinted Window Exemption (Business) (TWE) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Business details (keys: business-name, business-address, business-telephone, business-email, contact-name, business-reg-number):
 - business-name — Business name
@@ -538,9 +543,9 @@ Exemption details (keys: reason, vehicle-registration, vehicle-make, vehicle-mod
 - number-of-vehicles — How many vehicles need the exemption?
 <<BASE_RULES>>`,
 
-'approved-vehicle-garage': `You are a concise assistant helping a business in Barbados apply to become an approved vehicle garage with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'approved-vehicle-garage': `Approved Vehicle Garage (AVG) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Business details (keys: business-name, business-address, business-telephone, business-email, owner-name, owner-nrn, business-reg-number):
 - business-name — Business name
@@ -558,9 +563,9 @@ Garage details (keys: garage-type, number-of-bays, number-of-mechanics, years-in
 - years-in-operation — How many years has the garage been in operation?
 <<BASE_RULES>>`,
 
-'number-plate-manufacturer': `You are a concise assistant helping a business in Barbados apply to become a number plate manufacturer with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'number-plate-manufacturer': `Number Plate Manufacturer (NPM) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Business details (keys: business-name, business-address, business-telephone, business-email, contact-name, business-reg-number):
 - business-name — Business name
@@ -576,9 +581,9 @@ Manufacturing details (keys: manufacturing-process, production-capacity, equipme
 - equipment-description — Describe the equipment you use for manufacturing
 <<BASE_RULES>>`,
 
-'duty-free-vehicle': `You are a concise assistant helping someone in Barbados apply for a duty free vehicle concession from the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'duty-free-vehicle': `Duty Free Vehicle Concession (DFV) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, address, parish, telephone, email):
 - full-name — Full name
@@ -601,9 +606,9 @@ Concession details (keys: purpose, purpose-details):
   → If Other: purpose-details — Please explain your reason
 <<BASE_RULES>>`,
 
-'limited-trade-plates': `You are a concise assistant helping a business in Barbados apply for limited trade plates from the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'limited-trade-plates': `Limited Trade Plates (LTP) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Business details (keys: business-name, business-address, business-telephone, business-email, contact-name, contact-nrn, business-reg-number):
 - business-name — Business name
@@ -619,9 +624,9 @@ Plate details (keys: number-of-plates, reason):
 - reason — Why do you need limited trade plates?
 <<BASE_RULES>>`,
 
-'taxi-oral-test': `You are a concise assistant helping someone in Barbados book an oral test for a taxi licence with the Barbados Licensing Authority. Ask one question at a time. Short responses only.
+'taxi-oral-test': `Oral Test for Taxi Licence (TOT) — Barbados Licensing Authority (BLA).
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: full-name, nrn, dob-day, dob-month, dob-year, address, parish, telephone, email):
 - full-name — Full name

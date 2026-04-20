@@ -19,6 +19,8 @@ npx netlify dev   # http://localhost:8888
 
 Secrets go in `.env` at the repo root (gitignored). Functions read: `RESEND_API_KEY`, `ANTHROPIC_API_KEY` or `GROQ_API_KEY` (fallback), `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `TELEGRAM_BOT_TOKEN`.
 
+Start new features on a new working branch. 
+
 ## Smoketest
 
 ```bash
@@ -29,16 +31,14 @@ Expect `200`, and startup log should load all four functions: `submit`, `chat`, 
 
 ## Deploy
 
-- **Push to `main`** → auto-deploys to production at [alpha.gov.bb](https://alpha.gov.bb).
-- **Pull request** → preview deploy with a unique URL posted as a PR comment.
-- **Manual prod deploy:** `npx netlify deploy --prod` (requires the site to be linked — `netlify link` once).
+Push your working branch, make a PR, prompt user to merge on Github.
 
 ## Demo freeze (active until 2026-04-21 late afternoon)
 
 Live demo tomorrow afternoon. Ship each change as its own PR against a preview URL, smoke-test, then merge to main. Resend sender stays `onboarding@resend.dev` for demo week (domain not yet verified).
 
 **In scope pre-demo:**
-- Chat interface as front page (chat runtime now lives inline in root `index.html`; the form catalog is demoted to `/forms.html`; `Prototypes/chat-interface.html` is a redirect shell).
+- Chat interface as front page (chat runtime now lives inline in root `index.html`; the service catalog is demoted to `/services.html`; `Prototypes/chat-interface.html` is a redirect shell).
 - Security: HTML-escape interpolated values in `submit.mjs`; hardcode applicant email recipient for demo week; rename sender display.
 - Tiny HTTP-level smoke script at `tests/smoke.mjs` as a regression canary.
 - Chat UX polish — suggestion chips on the opening screen.

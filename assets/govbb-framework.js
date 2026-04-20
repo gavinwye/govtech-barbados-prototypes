@@ -333,7 +333,7 @@
   };
 
   GovBB.startBtn = function (label) {
-    return '<div class="mt-8"><a href="#" onclick="next();return false;" class="' + GovBB.BTN_CLS + ' no-underline">' + _esc(label || 'Complete the online form') + '</a></div>';
+    return '<div class="mt-8"><a href="#" onclick="next();return false;" class="' + GovBB.BTN_CLS + ' no-underline">' + _esc(label || 'Start') + '</a></div>';
   };
 
   GovBB.textField = function (id, label, opts) {

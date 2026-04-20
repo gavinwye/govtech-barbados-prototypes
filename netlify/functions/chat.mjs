@@ -1,6 +1,7 @@
 const MODEL = 'anthropic/claude-sonnet-4.6';
 const MAX_TOKENS_CAP = 2048;
 const MAX_BODY_BYTES = 32 * 1024;
+const TEMPERATURE = 0.3;
 
 export default async function handler(req) {
   if (req.method !== 'POST') {
@@ -68,6 +69,7 @@ export default async function handler(req) {
       body: JSON.stringify({
         model: MODEL,
         max_tokens: MAX_TOKENS_CAP,
+        temperature: TEMPERATURE,
         messages: openaiMessages
       })
     });

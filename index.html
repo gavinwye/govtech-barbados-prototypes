@@ -256,6 +256,12 @@
     .bubble-bot p:last-child { margin-bottom: 0; }
     .bubble-bot ul { margin: 0.4rem 0; padding-left: 1.2rem; }
     .bubble-bot li { margin-bottom: 0.25rem; }
+    .bubble-bot a {
+      color: var(--color-teal-00);
+      text-decoration: underline;
+      font-weight: 600;
+    }
+    .bubble-bot a:hover { text-decoration: none; }
     .bubble-user {
       background: var(--color-blue-10);
       border-radius: 14px 4px 14px 14px;
@@ -347,11 +353,6 @@
     }
 
     /* Summary / confirmation panels */
-    .summary-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
-    .summary-table tr { border-bottom: 1px solid var(--color-grey-00); }
-    .summary-table td { padding: 0.5rem 0.5rem; vertical-align: top; }
-    .summary-table td:first-child { font-weight: 600; color: var(--color-mid-grey-00); width: 40%; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.04em; }
-    .summary-table td:last-child { color: var(--color-black-00); }
     .confirm-panel {
       background: var(--color-teal-00); color: #fff;
       border-radius: 10px; padding: 1.75rem;
@@ -424,7 +425,7 @@
     </a>
     <nav aria-label="Primary" class="flex gap-5 text-[0.9375rem]">
       <a href="/" class="nav-link" aria-current="page">Home</a>
-      <a href="/forms.html" class="nav-link">Browse forms</a>
+      <a href="/services.html" class="nav-link">Browse services</a>
     </nav>
   </div>
 </header>
@@ -446,7 +447,7 @@
     <section id="hero" class="hero" aria-labelledby="greeting">
       <p class="hero-caption">Government of Barbados</p>
       <h1 id="greeting" class="hero-greeting">Hello. What do you need help with today?</h1>
-      <p class="hero-lede">Tell us in your own words. We'll find the right form and help you fill it in — in a conversation, not a stack of PDFs.</p>
+      <p class="hero-lede">Renew a licence, register a business, apply for a benefit. Tell us what you need to do in your own words, and we'll walk you through it.</p>
 
       <form id="compose-form" aria-label="Ask the assistant" autocomplete="off">
         <div class="compose">
@@ -484,7 +485,7 @@
 
       <p class="browse-link-row">
         <span>Would rather see a list?</span>
-        <a href="/forms.html">Browse all forms →</a>
+        <a href="/services.html">Browse all services →</a>
       </p>
     </section>
 
@@ -495,7 +496,7 @@
         <div id="input-area"></div>
       </div>
       <div class="chat-footer">
-        <a href="/forms.html">Browse all forms →</a>
+        <a href="/services.html">Browse all services →</a>
         <button id="restart-btn" onclick="restartChat()" style="display:none">Start again</button>
       </div>
     </section>
@@ -525,6 +526,7 @@
 <script src="assets/other-forms-data.js"></script>
 <script src="assets/police-forms-data.js"></script>
 <script src="assets/govt-forms-data.js"></script>
+<script src="assets/info-pages.js"></script>
 <script>
 'use strict';
 
@@ -554,38 +556,95 @@ var FORMS = [
    SYSTEM PROMPTS
 ───────────────────────────────────────── */
 var BASE_RULES = `
-STYLE — follow these rules strictly:
-- Keep every response SHORT. One or two sentences max per turn.
-- Ask only ONE question per message, two at most if they're closely related (like first and last name).
-- No preamble. Do not start with "Of course!", "Great!", "Sure!", "Absolutely!" or any filler.
-- No summaries mid-conversation. Just ask the next question.
-- Acknowledge an answer in at most 3 words before moving on ("Got it.", "Thanks.", "Perfect.") — or skip the acknowledgement entirely.
-- Use contractions and plain language.
+You are a helpful, warm assistant guiding a Barbados citizen through the service described above. Your job: collect the listed fields, confirm everything looks right, then output clean data for submission.
 
-VALIDATION:
-- NIS number: exactly 6 digits (e.g. 123456) — found on the NIS card
-- NRN: format YYMMDD-XXXX (e.g. 870315-1234) — on the national ID card
-- Email: must look like a valid email address
-- Postal code: BB followed by 5 digits (e.g. BB11000)
-- Amounts: numbers only (e.g. 1500 or 1500.50)
-- Dates: accept any reasonable format, store as "DD MM YYYY"
-- Year: 4-digit only
-- If an answer is invalid, correct in one short sentence and re-ask
-- If a user skips an optional field, accept it
-PARISHES: Christ Church, St. Andrew, St. George, St. James, St. John, St. Joseph, St. Lucy, St. Michael, St. Peter, St. Philip, St. Thomas
+─── WORDING ───
+Always refer to these processes as "services", never "forms", when you speak to the user. Even if the description above or a field hint uses the word "form", you should say "service" (or name the specific thing, e.g. "your registration", "your application") in your own replies.
 
-FINISHING:
-Once all required fields are collected, give a brief summary (a few bullet points) and ask: "Does everything look right? Say 'yes' to submit, or tell me what to change."
+─── FIRST MESSAGE ───
+The service has already been picked and confirmed with the user before you got here, so don't re-confirm. Your very first message is a brief scope/prep preamble (one or two short sentences), then straight into the first field question. Cover:
+
+1. Rough scope — roughly how many questions (count the fields listed above), plus a time estimate ("a few minutes" for under 10 fields, "about 10 minutes" for 10–25, "15 minutes or so" for more).
+2. Anything useful to have handy — infer from the field list (e.g. NIS card, passport, bank statement, vehicle registration number).
+
+Then ask the first field question on a new line.
+
+Example: "About 5 questions and should take under 5 minutes — have your current plate number and contact details handy.
+
+What's your full name?"
+
+─── HOW TO TALK ───
+Be warm, plain-spoken, and brief. Use contractions. Talk like a friendly civil servant, not a paperwork robot. No preamble ("Of course!", "Absolutely!", "Great!"), no lecturing, no running summaries of everything collected so far. Acknowledge an answer in three words or fewer — or skip the acknowledgement entirely.
+
+─── HOW TO ASK ───
+Default: one question at a time, in the order the fields are listed. Two closely related questions (first + last name) can go together.
+
+Flex: if the user gives you several fields in one message, capture them ALL and jump to the next missing field. Never re-ask something they've already told you. If they paste a blob or dump their info, parse out every field you recognise, briefly confirm the captures in one short line ("Got your name, email, and NIS number."), then ask for the next missing item.
+
+─── HOW TO LISTEN (IMPORTANT) ───
+Citizens won't type in the exact format you have in mind. Accept any reasonable shape (punctuation, spacing, casing, prefixes) and normalise silently. But don't confuse flexibility with completeness — a half-typed address or a first name on its own is still missing information. See COMPLETENESS below.
+
+NEVER bounce a value back over punctuation, spacing, casing, country codes, or prefixes. NEVER lecture about format.
+
+Accept all of these without comment:
+- Phone: "246-123-4567", "2461234567", "(246) 123-4567", "123 4567" — fine.
+- Dates: "27th March 1990", "27/3/90", "1990-03-27", "March 27 1990" — fine.
+- NIS: "123456", "123 456", "123-456" — fine.
+- NRN: "870315-1234", "8703151234", "870315 1234" — fine.
+- Postal: "11000", "BB 11000", "bb11000" — fine, normalise to "BB11000".
+- Parish: "st james", "St. James", "saint james", "James" — match to canonical list.
+- Amounts: "$1500", "1,500", "1500 bbd", "fifteen hundred" — fine.
+
+Only ask for clarification if the input is genuinely unparseable. When you do, stay plain and short: "Sorry, I couldn't read that — what's your [X]?" Don't explain the format you want.
+
+─── COMPLETENESS (just as important as flexibility) ───
+Flexibility is about format, not content. Every required field still needs a complete answer.
+- Name field with only a first name → ask for the rest.
+- Address that's only a street and number → ask for area/district/parish.
+- Date missing the year, phone with too few digits, email without a domain, postcode that isn't plausible → ask for what's missing.
+- "I don't know" / "skip" on a REQUIRED field → don't accept. One-line reason why it's needed, then re-ask.
+
+If a value is obviously incomplete for the real-world thing it represents, re-ask briefly — not a format lecture: "Got the street — which area or parish?" / "What's your surname?"
+
+─── HUMAN AFFORDANCES ───
+- Optional field, user says "skip" / "none" / "don't have one" / "N/A" → accept it and move on.
+- "Why do you need this?" → one-line answer, then ask again.
+- "Go back" / "change X to Y" / mid-flow correction → update silently and continue. Don't re-verify everything.
+- User seems confused → offer a concrete example in one short line.
+- Never invent a value the user didn't provide.
+
+─── RIGOUR (FOR THE FINAL JSON OUTPUT ONLY — NEVER FOR USER INPUT) ───
+When you produce the final JSON, normalise to these canonical forms:
+- NIS number: 6 digits, no separators (e.g. "123456")
+- NRN: "YYMMDD-XXXX"
+- Postal code: "BB" + 5 digits (e.g. "BB11000")
+- Dates: "DD MM YYYY"
+- Year: 4 digits
+- Amounts: numeric string, decimal dot (e.g. "1500" or "1500.50")
+- Parish: canonical spelling — Christ Church, St. Andrew, St. George, St. James, St. John, St. Joseph, St. Lucy, St. Michael, St. Peter, St. Philip, St. Thomas
+- Phone: keep whatever the user gave — don't force a format
+- Email: lowercase
+Optional fields the user didn't provide → null.
+
+─── FINISHING ───
+Once you have every required field, summarise the normalised values as a short bullet list (grouped sensibly). End the message with this line, word-for-word or very close to it:
+
+"Confirm this is right, and I'll submit it for you. Otherwise, tell me what to change."
+
+Do NOT write "Say yes to submit", "Does everything look right?", "Please confirm", or any stiff form-robot phrasing. The wording above is natural and makes it clear that confirming means immediate submission — there's no summary screen or extra review after this point.
+
+If they ask to change something, update it and re-confirm just the change, not everything.
+
 When the user confirms:
-- Output ##COMPLETE## on its own line
-- On the very next line, output a single valid JSON object with all collected data using the exact field keys listed. Use null for optional fields not provided.
+- Output ##COMPLETE## on its own line.
+- On the very next line, output a single valid JSON object with every listed field key. Use null for optional fields that weren't provided.
 - Nothing else after the JSON.`;
 
 var SYSTEM_PROMPTS = {
 
-se: `You are a concise assistant helping a Barbados citizen complete the Self-Employment Registration form (SE) for NIS. Ask one question at a time. Short responses only.
+se: `Self-Employment Registration (SE) — National Insurance Scheme (NIS). Register as self-employed with NIS.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: title, first-name, middle-name, last-name, marital-status, maiden-name, gender, dob, nis-number, id-type, nrn, passport-number, passport-issued, passport-expiry, passport-country):
 - title — optional: Mr, Mrs, Miss, Ms, Professor, Doctor, Sir, or Dame
@@ -613,13 +672,13 @@ Business (keys: business-name, business-nature, business-start, monthly-income, 
 - business-nature — brief description of what the business does
 - business-start — date the business started
 - monthly-income — estimated monthly income in BBD
-- field-officer — Did an NIS Field Officer assist with this form? Yes or No
+- field-officer — Did an NIS Field Officer assist with this registration? Yes or No
   → If Yes: officer-code (1–2 digit number on the officer's badge)
 ${BASE_RULES}`,
 
-oss: `You are a concise assistant helping a Barbados citizen register for NIS Online Services (OSS). Ask one question at a time. Short responses only.
+oss: `NIS Online Service Registration (OSS) — National Insurance Scheme (NIS). Set up an NIS online account / access NIS services online.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Identity (keys: residency, id-type, nrn, passport-number, passport-issued, passport-expiry, passport-country, nis-number):
 - residency: "In Barbados" or "Overseas"
@@ -652,9 +711,9 @@ If overseas (keys: notary-name):
 - notary-name — only if residency is Overseas: ask for the name of the Notary Public certifying their documents. Mention they'll also need to upload the notary's stamp (but note you can't handle file uploads in chat — they should attach it when submitting).
 ${BASE_RULES}`,
 
-dd: `You are a concise assistant helping a Barbados citizen set up direct deposit for NIS benefits (DD form). Ask one question at a time. Short responses only.
+dd: `Direct Deposit Form (DD) — National Insurance Scheme (NIS). Receive NIS benefit payments directly into a bank account.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: first-name, middle-name, last-name, nis-number, nrn, tamis-number):
 - first-name, middle-name (optional), last-name
@@ -690,9 +749,9 @@ Bank details (keys: account-holder-name, financial-institution, institution-othe
 Note: tell the user they'll also need to upload the top section of a recent bank statement when they formally submit — you can't handle file uploads in chat.
 ${BASE_RULES}`,
 
-dp10: `You are a concise assistant helping a Barbados employer complete the NIS Contributions Certificate (D.P. 10 form). Ask one question at a time. Short responses only.
+dp10: `NIS Contributions Certificate (D.P. 10) (DP10) — National Insurance Scheme (NIS). Employer submitting monthly NIS contributions for staff.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Employer details (keys: employer-reg, employer-name, trading-name, street, district, parish, postal, contact-person, contact-email, contact-telephone, contact-cell):
 - employer-reg — NIS employer registration number
@@ -723,9 +782,9 @@ Payment details (keys: payee-name, payee-role, payee-nis):
 - payee-nis — optional NIS number
 ${BASE_RULES}`,
 
-pd: `You are a concise assistant helping a Barbados pensioner complete the Pensioner Declaration (PD form) for the Central Bank. Ask one question at a time. Short responses only.
+pd: `Pensioner Declaration (PD) — Central Bank of Barbados. Pensioner over 60 declaring status to avoid tax on savings bond interest.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: nis-number, first-name, last-name, dob, nrn, street-address, parish, postal-code, email, telephone):
 - nis-number — 6-digit NIS number
@@ -748,9 +807,9 @@ Dependents (keys: has-dependents, dependent-names):
   → If Yes: dependent-names — names of dependents
 ${BASE_RULES}`,
 
-ub: `You are a concise, empathetic assistant helping a Barbados citizen claim Unemployment Benefit (UB form) from NIS. Ask one question at a time. Short responses only. Be warm but brief.
+ub: `Claim for Unemployment Benefit (UB) — National Insurance Scheme (NIS). Claim unemployment benefit after losing a job.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: first-name, last-name, nis-number, nrn, dob, street-address, parish, postal-code, email, telephone):
 - first-name, last-name
@@ -782,9 +841,9 @@ Current status (keys: date-unemployed, currently-employed, seeking-employment, s
   → If Yes: seek-details — how are they looking (job sites, agencies, word of mouth, etc.)
 ${BASE_RULES}`,
 
-secp: `You are a concise assistant helping a self-employed person in Barbados complete the Contributions Payment Certificate (SECP) for NIS. Ask one question at a time. Short responses only.
+secp: `Self-Employed Contributions Certificate (SECP) — National Insurance Scheme (NIS). Self-employed person paying their annual NIS contributions.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: first-name, last-name, nis-number, nrn, street-address, parish, postal-code, email):
 - first-name, last-name
@@ -807,9 +866,9 @@ Payment details (keys: payer-name, payment-method, bank-reference):
   → If Bank transfer: bank-reference (bank reference number)
 ${BASE_RULES}`,
 
-tc: `You are a concise assistant helping a Barbados employer complete the Termination Certificate (TC form) for NIS. Ask one question at a time. Short responses only.
+tc: `Termination Certificate (TC) — National Insurance Scheme (NIS). Employer reporting that an employee's job has ended.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Employee details (keys: emp-first-name, emp-middle-name, emp-last-name, emp-nrn, emp-nis, emp-street, emp-district, emp-parish, emp-postal, emp-telephone, emp-cell):
 - emp-first-name, emp-middle-name (optional), emp-last-name
@@ -837,9 +896,9 @@ Termination details (keys: termination-type, termination-other, employment-start
 - outstanding-dues — optional: any outstanding payments (unpaid wages, vacation pay, etc.)
 ${BASE_RULES}`,
 
-vep: `You are a concise assistant helping someone in Barbados apply for a Permit to Remove or Relocate a Structure (VEP form) from the BLA. Ask one question at a time. Short responses only.
+vep: `Permit to Remove / Relocate Structure (VEP) — Barbados Licensing Authority (BLA). Permission to move a house, building, or boat on public roads.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Applicant details (keys: app-first-name, app-last-name, app-email, app-telephone):
 - app-first-name, app-last-name
@@ -877,7 +936,7 @@ ${BASE_RULES}`
    STATE
 ───────────────────────────────────────── */
 var state = {
-  phase: 'init',    // init | routing | chat | extracting | summary | submitted
+  phase: 'init',    // init | routing | chat | extracting | submitting | submitted
   form: null,
   messages: [],     // [{role, content}] — full chat history (no system msgs)
   systemPrompt: '', // current system prompt
@@ -1006,6 +1065,7 @@ function mdToHtml(text) {
   }
   if (!text) return '';
   var html = text
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .split('\n\n').map(function(para) {
@@ -1061,53 +1121,83 @@ var FORM_DESCRIPTIONS = {
   'immd-immigrant-status': 'applying for immigrant status and non-national registration in Barbados',
   'immd-permanent-resident': 'applying for permanent resident status in Barbados',
   'immd-short-term-wp': 'applying for a short-term work permit or training attachment in Barbados',
-  'immd-student-h2': 'non-immigrant student certifying their stay in Barbados',
-  'immd-student-h1': 'school certifying eligibility for non-immigrant student status',
+  'immd-student-h2': 'foreign student in Barbados filling in their own certificate of stay (student completes this, for immigration)',
+  'immd-student-h1': 'school certifying a student is eligible for non-immigrant status (school completes this, not the student)',
   'immd-work-permit': 'applying for a work permit, extension, or job offer for non-immigrant employment',
   // NAB
   'nab-home-care': 'apply for home care services for an elderly or disabled person',
   'nab-seniors-rec': 'apply for the seniors recreational activities programme',
   // NIS (additional)
-  'nisss-edu-status': 'confirm student enrolment status with NIS',
+  'nisss-edu-status': 'confirming student enrolment status with NIS, usually to maintain eligibility for survivor or other benefits (not immigration)',
   'nisss-employer-reg': 'register as an employer for NIS online services',
   'nisss-life-cert': 'complete NIS life certificate to confirm you are alive and eligible for benefits',
   'nisss-old-age': 'claim old age contributory pension from NIS'
 };
 
 var ROUTING_PROMPT =
-  'You are a routing assistant for the Government of Barbados. ' +
-  'Based on what the user says they want to do, identify which form they need. ' +
-  'Reply with ONLY the form ID — nothing else.\n\n' +
-  'Forms:\n' +
+  'You help citizens of Barbados find the right government service for what they need to do, in plain conversation.\n\n' +
+  'HOW YOU WORK:\n' +
+  'You have a short conversation to figure out which ONE service the user needs. Then you hand off.\n\n' +
+  '- Ask questions to narrow down. One question at a time. Plain language, no filler ("Of course!", "Absolutely!", "Great!").\n' +
+  '- Every question should move toward a specific service. Don\'t ask the same thing twice in different words.\n' +
+  '- GREEN LIGHT: the user\'s latest message clearly identifies ONE specific service — either because they named it, or because they said yes to a question of yours that was specific enough to pin it down. That\'s the go signal.\n' +
+  '- Once you have the green light, your NEXT message is the handoff (format below) — sentinel + JSON, NOTHING ELSE.\n' +
+  '- Do NOT follow a user\'s "yes" to a narrowing question with another "Shall I start?" — that\'s the same check twice. One green light is enough. If the narrowing question already pinned down the service, the yes IS the green light.\n' +
+  '- SERVICES ALWAYS WIN. If any service in the list below could plausibly fit, prefer the service over an info page.\n' +
+  '- If NO service fits but an info page below matches what the user needs, redirect them with a markdown link. The link is MANDATORY — never name a page without also including its URL. Copy the exact [Title](URL) from the info-pages list below; do not paraphrase or summarise it away. Example: "Sounds like you need to register a birth — you can do that at [Register a birth](https://alpha.gov.bb/family-birth-relationships/register-a-birth). Anything else I can help you find?" Info-page redirects are plain messages, NOT handoffs — no sentinel, no JSON.\n' +
+  '- If neither a service nor an info page matches, say so briefly and ask if they can rephrase or try something else.\n\n' +
+  'Every message you send is EITHER a single question, an info-page redirect, OR the service handoff — never more than one in the same message.\n\n' +
+  'HANDOFF FORMAT — when, and ONLY when, the user has confirmed a service:\n' +
+  '- Output ##ROUTED## on its own line.\n' +
+  '- On the very next line, output a single valid JSON object: {"serviceId": "<id>"} — where <id> is one of the IDs in the services list below, exactly as written.\n' +
+  '- Nothing else after the JSON.\n\n' +
+  'Be warm and brief. Use contractions. Always say "service", never "form". Don\'t offer anything outside the services and info pages below.\n\n' +
+  'Services (conversational — the chat will guide the user through filling these in):\n' +
   FORMS.map(function(f) {
     var desc = FORM_DESCRIPTIONS[f.id] || f.name;
     return f.id + ' — ' + f.name + ': ' + desc;
   }).join('\n') +
-  '\n\nIf you can identify the form reply with its ID exactly as listed above. If you cannot, reply with "unknown".';
+  (window.INFO_PAGES_TEXT ? '\n\nInfo pages (redirect the user to these ONLY when no service above fits — we can\'t fill these in conversationally):\n' + window.INFO_PAGES_TEXT : '');
 
 async function handleRouting(text) {
   typingStart();
   setBusy(true);
 
+  state.messages.push({ role: 'user', content: text });
+
   try {
-    var reply = await callClaude([
-      { role: 'user', content: text }
-    ], FAST_MODEL, ROUTING_PROMPT);
-
+    var reply = await callClaude(state.messages, FAST_MODEL, ROUTING_PROMPT);
     typingStop();
-    var formId = reply.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
-    var form = null;
-    for (var i = 0; i < FORMS.length; i++) {
-      if (FORMS[i].id === formId) { form = FORMS[i]; break; }
+    state.messages.push({ role: 'assistant', content: reply });
+
+    var markerIdx = reply.indexOf('##ROUTED##');
+    if (markerIdx !== -1) {
+      var beforeMarker = reply.substring(0, markerIdx).trim();
+      var afterMarker = reply.substring(markerIdx + '##ROUTED##'.length).trim();
+      var parsed = tryParseJson(afterMarker);
+      var chosen = null;
+      if (parsed && typeof parsed.serviceId === 'string') {
+        for (var i = 0; i < FORMS.length; i++) {
+          if (FORMS[i].id === parsed.serviceId) { chosen = FORMS[i]; break; }
+        }
+      }
+      if (chosen) {
+        if (beforeMarker) botMsg(mdToHtml(beforeMarker));
+        setBusy(false);
+        await startForm(chosen);
+        return;
+      }
+      // Marker present but payload invalid or unknown id — show any preamble and stay in routing.
+      var fallback = beforeMarker || 'Sorry, I couldn\'t quite pin down which service matches. Could you say a bit more about what you need?';
+      botMsg(mdToHtml(fallback));
+      setBusy(false);
+      return;
     }
 
-    if (form) {
-      setBusy(false);
-      await startForm(form);
-    } else {
-      setBusy(false);
-      botMsg('<p>I\'m not sure which form you need. Could you say a bit more?</p>');
-    }
+    // No marker → clarifying question or confirmation. Render as a bot message.
+    setBusy(false);
+    var html = mdToHtml(reply);
+    if (html) botMsg(html);
   } catch(err) {
     typingStop();
     setBusy(false);
@@ -1129,13 +1219,13 @@ async function startForm(form) {
 
   var sysPrompt = SYSTEM_PROMPTS[form.id];
   if (!sysPrompt) {
-    botMsg('<p>Sorry, I don\'t have a prompt set up for that form yet.</p>');
+    botMsg('<p>Sorry, I don\'t have a prompt set up for that service yet.</p>');
     return;
   }
 
   state.systemPrompt = sysPrompt;
 
-  var opener = 'Start. Greet the user in one sentence, then ask your first question.';
+  var opener = 'Start. Give the user a brief scope/prep preamble — roughly how many questions, a time estimate, and anything to have handy — then go straight into the first field question on a new line. The service has already been confirmed, so do not re-confirm. Remember: say "service", not "form".';
   state.messages.push({ role: 'user', content: opener });
 
   typingStart();
@@ -1283,7 +1373,7 @@ async function extractAndShowSummary(completionReply) {
 
   if (jsonData) {
     state.formData = jsonData;
-    renderSummary();
+    await submitForm();
   } else {
     errorMsg('Something went wrong extracting your data. Please try again or start over.');
   }
@@ -1308,52 +1398,13 @@ function tryParseJson(text) {
 }
 
 /* ─────────────────────────────────────────
-   SUMMARY PHASE
-───────────────────────────────────────── */
-function renderSummary() {
-  state.phase = 'summary';
-  inputAreaEl.innerHTML = '';
-
-  var data = state.formData || {};
-  var entries = Object.entries(data).filter(function(e) { return e[1] !== null && e[1] !== '' && e[1] !== undefined; });
-
-  var tableHtml = '<table class="summary-table">';
-  entries.forEach(function(pair) {
-    var key = pair[0], val = pair[1];
-    var label = key.replace(/-/g,' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
-    tableHtml += '<tr><td>' + escH(label) + '</td><td>' + escH(String(val)) + '</td></tr>';
-  });
-  tableHtml += '</table>';
-
-  var summaryHtml =
-    '<div style="padding:1rem 0;">' +
-      '<p style="font-weight:700;margin-bottom:0.75rem;">Here\'s everything I\'ve collected:</p>' +
-      tableHtml +
-      '<div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">' +
-        '<button class="send-btn" onclick="submitForm()">Submit form</button>' +
-        '<button onclick="goBackToChat()" style="border:2px solid var(--color-grey-00);background:#fff;border-radius:6px;padding:0.5rem 1rem;font-family:inherit;font-size:0.9375rem;cursor:pointer;">Make changes</button>' +
-      '</div>' +
-    '</div>';
-
-  inputAreaEl.innerHTML = summaryHtml;
-  scrollBottom();
-}
-
-function goBackToChat() {
-  state.phase = 'chat';
-  state.formData = null;
-  renderChatInput();
-  botMsg('<p>No problem — what would you like to change?</p>');
-  var ta = document.getElementById('chat-input');
-  if (ta) ta.focus();
-}
-
-/* ─────────────────────────────────────────
    SUBMISSION
 ───────────────────────────────────────── */
 async function submitForm() {
-  var btn = inputAreaEl.querySelector('.send-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+  state.phase = 'submitting';
+  inputAreaEl.innerHTML = '';
+  typingStart();
+  setBusy(true);
 
   var payload = {
     formName: state.form ? state.form.name : 'Unknown',
@@ -1381,6 +1432,8 @@ async function submitForm() {
     refNumber = prefix + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 
+  typingStop();
+  setBusy(false);
   renderConfirmation(refNumber);
 }
 
@@ -1389,19 +1442,19 @@ function renderConfirmation(refNumber) {
   inputAreaEl.innerHTML = '';
   messagesEl.innerHTML = '';
 
-  var formName = state.form ? state.form.name : 'your form';
+  var formName = state.form ? state.form.name : 'your request';
 
   var html =
     '<div style="padding:1.25rem 0;">' +
       '<div class="confirm-panel">' +
-        '<h2>Form submitted</h2>' +
+        '<h2>Submitted</h2>' +
         '<p style="margin:0.25rem 0 0.75rem;opacity:0.9;">Your ' + escH(formName) + ' has been received.</p>' +
         '<p style="font-size:0.875rem;opacity:0.8;margin-bottom:0.375rem;">Your reference number</p>' +
         '<p class="ref-number">' + escH(refNumber) + '</p>' +
       '</div>' +
       '<div style="margin-top:1rem;color:var(--color-mid-grey-00);font-size:0.95rem;">' +
         '<p>Keep your reference number safe. We\'ll be in touch if we need anything else from you.</p>' +
-        '<p style="margin-top:0.5rem;">You can close this window or <button onclick="restartChat()" style="color:var(--color-teal-00);text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit;font-size:inherit;">start again</button>.</p>' +
+        '<button class="send-btn" onclick="restartChat()" style="margin-top:1rem;">Start a new chat</button>' +
       '</div>' +
     '</div>';
 
