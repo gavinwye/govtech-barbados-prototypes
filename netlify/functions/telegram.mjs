@@ -421,7 +421,7 @@ export default async function handler(req) {
     await saveSession(chatId, session);
     await sendTelegram(
       token, chatId,
-      'Hi! I\'m the Government of Barbados assistant. 🇧🇧\n\nI can help you find government services, answer questions, and fill in forms — just tell me what you need.\n\nFor example, you could say:\n• "I need to register as self-employed"\n• "How do I get a birth certificate?"\n• "What services are available?"\n\nType /reset at any time to start over.'
+      'Hi! I\'m the Government of Barbados assistant. 🇧🇧\n\nI can help you find government services, answer your questions, and walk you through them — just tell me what you need.\n\nFor example, you could say:\n• "I need to register as self-employed"\n• "How do I get a birth certificate?"\n• "What services are available?"\n\nType /reset at any time to start over.'
     );
     return new Response('OK', { status: 200 });
   }
