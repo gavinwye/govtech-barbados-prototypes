@@ -424,7 +424,7 @@
     </a>
     <nav aria-label="Primary" class="flex gap-5 text-[0.9375rem]">
       <a href="/" class="nav-link" aria-current="page">Home</a>
-      <a href="/forms.html" class="nav-link">Browse forms</a>
+      <a href="/services.html" class="nav-link">Browse services</a>
     </nav>
   </div>
 </header>
@@ -484,7 +484,7 @@
 
       <p class="browse-link-row">
         <span>Would rather see a list?</span>
-        <a href="/forms.html">Browse all forms →</a>
+        <a href="/services.html">Browse all services →</a>
       </p>
     </section>
 
@@ -495,7 +495,7 @@
         <div id="input-area"></div>
       </div>
       <div class="chat-footer">
-        <a href="/forms.html">Browse all forms →</a>
+        <a href="/services.html">Browse all services →</a>
         <button id="restart-btn" onclick="restartChat()" style="display:none">Start again</button>
       </div>
     </section>
@@ -560,16 +560,16 @@ You are a helpful, warm assistant guiding a Barbados citizen through the service
 Always refer to these processes as "services", never "forms", when you speak to the user. Even if the description above or a field hint uses the word "form", you should say "service" (or name the specific thing, e.g. "your registration", "your application") in your own replies.
 
 ─── FIRST MESSAGE ───
-On your very first message, give the user a short preamble so they know what they're in for, then ask them to confirm before you start asking fields. Cover:
+The service has already been picked and confirmed with the user before you got here, so don't re-confirm. Your very first message is a brief scope/prep preamble (one or two short sentences), then straight into the first field question. Cover:
 
-1. The service's name and what it's for, in one plain-English sentence.
-2. A rough sense of scope — roughly how many questions (count the fields listed above), plus a time estimate ("a few minutes" for under 10 fields, "about 10 minutes" for 10–25, "15 minutes or so" for more).
-3. Anything useful to have handy — infer from the field list (e.g. NIS card, passport, bank statement, vehicle registration number).
-4. A one-line "ready to start?" check.
+1. Rough scope — roughly how many questions (count the fields listed above), plus a time estimate ("a few minutes" for under 10 fields, "about 10 minutes" for 10–25, "15 minutes or so" for more).
+2. Anything useful to have handy — infer from the field list (e.g. NIS card, passport, bank statement, vehicle registration number).
 
-Keep it to 3–4 short sentences total, not an essay. Wait for a yes before asking any field questions. If they say no or they've picked the wrong service, apologise briefly and ask them to click Restart to pick a different one.
+Then ask the first field question on a new line.
 
-Example: "I'll help you retain your vehicle registration number — this is the service that lets you keep your current plate when you change vehicles. It's about 5 questions and should take under 5 minutes. Have your current plate number and contact details handy. Ready to start?"
+Example: "About 5 questions and should take under 5 minutes — have your current plate number and contact details handy.
+
+What's your full name?"
 
 ─── HOW TO TALK ───
 Be warm, plain-spoken, and brief. Use contractions. Talk like a friendly civil servant, not a paperwork robot. No preamble ("Of course!", "Absolutely!", "Great!"), no lecturing, no running summaries of everything collected so far. Acknowledge an answer in three words or fewer — or skip the acknowledgement entirely.
@@ -1128,39 +1128,65 @@ var FORM_DESCRIPTIONS = {
 };
 
 var ROUTING_PROMPT =
-  'You are a routing assistant for the Government of Barbados. ' +
-  'Based on what the user says they want to do, identify which form they need. ' +
-  'Reply with ONLY the form ID — nothing else.\n\n' +
-  'Forms:\n' +
+  'You help citizens of Barbados find the right government service for what they need to do, in plain conversation.\n\n' +
+  'HOW YOU WORK:\n' +
+  'You have a short conversation to figure out which ONE service the user needs. Then you hand off.\n\n' +
+  '- Ask questions to narrow down. One question at a time. Plain language, no filler ("Of course!", "Absolutely!", "Great!").\n' +
+  '- Every question should move toward a specific service. Don\'t ask the same thing twice in different words.\n' +
+  '- GREEN LIGHT: the user\'s latest message clearly identifies ONE specific service — either because they named it, or because they said yes to a question of yours that was specific enough to pin it down. That\'s the go signal.\n' +
+  '- Once you have the green light, your NEXT message is the handoff (format below) — sentinel + JSON, NOTHING ELSE.\n' +
+  '- Do NOT follow a user\'s "yes" to a narrowing question with another "Shall I start?" — that\'s the same check twice. One green light is enough. If the narrowing question already pinned down the service, the yes IS the green light.\n\n' +
+  'Every message you send is EITHER a single question OR the handoff — never both in the same message.\n\n' +
+  'HANDOFF FORMAT — when, and ONLY when, the user has confirmed:\n' +
+  '- Output ##ROUTED## on its own line.\n' +
+  '- On the very next line, output a single valid JSON object: {"serviceId": "<id>"} — where <id> is one of the IDs in the list below, exactly as written.\n' +
+  '- Nothing else after the JSON.\n\n' +
+  'Be warm and brief. Use contractions. Always say "service", never "form". Don\'t offer anything outside the services below.\n\n' +
+  'Services:\n' +
   FORMS.map(function(f) {
     var desc = FORM_DESCRIPTIONS[f.id] || f.name;
     return f.id + ' — ' + f.name + ': ' + desc;
-  }).join('\n') +
-  '\n\nIf you can identify the form reply with its ID exactly as listed above. If you cannot, reply with "unknown".';
+  }).join('\n');
 
 async function handleRouting(text) {
   typingStart();
   setBusy(true);
 
+  state.messages.push({ role: 'user', content: text });
+
   try {
-    var reply = await callClaude([
-      { role: 'user', content: text }
-    ], FAST_MODEL, ROUTING_PROMPT);
-
+    var reply = await callClaude(state.messages, FAST_MODEL, ROUTING_PROMPT);
     typingStop();
-    var formId = reply.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
-    var form = null;
-    for (var i = 0; i < FORMS.length; i++) {
-      if (FORMS[i].id === formId) { form = FORMS[i]; break; }
+    state.messages.push({ role: 'assistant', content: reply });
+
+    var markerIdx = reply.indexOf('##ROUTED##');
+    if (markerIdx !== -1) {
+      var beforeMarker = reply.substring(0, markerIdx).trim();
+      var afterMarker = reply.substring(markerIdx + '##ROUTED##'.length).trim();
+      var parsed = tryParseJson(afterMarker);
+      var chosen = null;
+      if (parsed && typeof parsed.serviceId === 'string') {
+        for (var i = 0; i < FORMS.length; i++) {
+          if (FORMS[i].id === parsed.serviceId) { chosen = FORMS[i]; break; }
+        }
+      }
+      if (chosen) {
+        if (beforeMarker) botMsg(mdToHtml(beforeMarker));
+        setBusy(false);
+        await startForm(chosen);
+        return;
+      }
+      // Marker present but payload invalid or unknown id — show any preamble and stay in routing.
+      var fallback = beforeMarker || 'Sorry, I couldn\'t quite pin down which service matches. Could you say a bit more about what you need?';
+      botMsg(mdToHtml(fallback));
+      setBusy(false);
+      return;
     }
 
-    if (form) {
-      setBusy(false);
-      await startForm(form);
-    } else {
-      setBusy(false);
-      botMsg('<p>I\'m not sure which service you need. Could you say a bit more?</p>');
-    }
+    // No marker → clarifying question or confirmation. Render as a bot message.
+    setBusy(false);
+    var html = mdToHtml(reply);
+    if (html) botMsg(html);
   } catch(err) {
     typingStop();
     setBusy(false);
@@ -1188,7 +1214,7 @@ async function startForm(form) {
 
   state.systemPrompt = sysPrompt;
 
-  var opener = 'Start. Give the user a short preamble — what the service is for, roughly how many questions, a time estimate, and anything to have handy — then ask them to confirm before you begin. Do not ask any field questions yet. Remember: say "service", not "form".';
+  var opener = 'Start. Give the user a brief scope/prep preamble — roughly how many questions, a time estimate, and anything to have handy — then go straight into the first field question on a new line. The service has already been confirmed, so do not re-confirm. Remember: say "service", not "form".';
   state.messages.push({ role: 'user', content: opener });
 
   typingStart();
