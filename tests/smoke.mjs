@@ -67,8 +67,9 @@ test('/api/submit returns a referenceNumber on valid payload', async (t) => {
     formRef: 'SMK',
     formData: { test: 'yes' }
   });
-  if (r.status === 500 && /RESEND_API_KEY/.test(r.body?.error?.message || '')) {
-    t.skip('RESEND_API_KEY not configured — skipping happy-path assertion');
+  const errMsg = r.body?.error?.message || '';
+  if (r.status === 500 && /RESEND_API_KEY|DEMO_RECIPIENT/.test(errMsg)) {
+    t.skip(`Config missing (${errMsg}) — skipping happy-path assertion`);
     return;
   }
   assert.equal(r.status, 200);
