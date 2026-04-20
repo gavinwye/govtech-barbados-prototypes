@@ -123,3 +123,51 @@ test('/api/chat returns an assistant message on valid payload', async (t) => {
   assert.equal(r.body.content[0]?.type, 'text');
   assert.equal(typeof r.body.content[0]?.text, 'string');
 });
+
+test('/api/chat handles a browser-style routing call', async (t) => {
+  // Simulates the first LLM call the homepage chat runtime makes when a
+  // user submits their opening message: a routing classifier that returns
+  // a short form-id token. Uses a minimal inlined routing prompt — not
+  // the full FORMS list — so the test stays decoupled from the catalog.
+  const routingSystem = [
+    'You are a routing assistant for the Government of Barbados.',
+    'Based on what the user says they want to do, identify which form they need.',
+    'Reply with ONLY the form ID — nothing else.',
+    '',
+    'Forms:',
+    'se — register as self-employed with NIS',
+    'ub — claim unemployment benefit after losing a job',
+    'nisss-old-age — claim old age contributory pension from NIS',
+    'vep — permission to move a house or building on public roads',
+    '',
+    'If you cannot identify the form reply "unknown".'
+  ].join('\n');
+
+  const r = await post('/api/chat', {
+    system: routingSystem,
+    messages: [{ role: 'user', content: 'I want to claim my pension' }]
+  });
+  if (r.status === 500 && /OPENROUTER_API_KEY/.test(r.body?.error?.message || '')) {
+    t.skip('OPENROUTER_API_KEY not configured — skipping happy-path assertion');
+    return;
+  }
+  assert.equal(r.status, 200);
+  assert.equal(r.body?.role, 'assistant');
+  assert.equal(Array.isArray(r.body?.content), true);
+  const text = (r.body.content || [])
+    .filter((b) => b.type === 'text')
+    .map((b) => b.text)
+    .join('')
+    .trim();
+  assert.ok(text.length > 0, 'expected a non-empty routing reply');
+  // A routing response should be a form-id slug (or "unknown") — never a paragraph.
+  assert.ok(
+    text.length < 40,
+    `expected short routing token, got ${text.length} chars: "${text}"`
+  );
+  assert.match(
+    text.toLowerCase(),
+    /^[a-z0-9\- ."'`]+$/,
+    `expected slug-like routing token, got "${text}"`
+  );
+});

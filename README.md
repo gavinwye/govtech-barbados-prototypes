@@ -36,7 +36,8 @@ Each prototype is a single HTML file. It runs in a browser with no server depend
 
 ```
 .
-├── index.html                  # Home page — searchable form catalog
+├── index.html                  # Homepage — conversational assistant (chat + routing)
+├── forms.html                  # Full form catalog — secondary browse path
 ├── Prototypes/                 # 164 individual form HTML files
 ├── assets/
 │   ├── govbb-tailwind-config.js  # Tailwind config with bb- colour namespace
@@ -203,7 +204,7 @@ The happy-path test for `/api/submit` sends one real email via Resend per run (r
    ```javascript
    'My New Form': 'MNF',
    ```
-3. **Add the form to the catalog** in the relevant `assets/*-forms-data.js` file so it appears on the home page.
+3. **Add the form to the catalog** in the relevant `assets/*-forms-data.js` file so it appears on the `/forms.html` catalog and is discoverable by the chat assistant.
 
 See [CLAUDE.md](CLAUDE.md) for the full prototype builder reference — design system, component patterns, writing style, form structure rules, validation patterns, and the GovBB framework API.
 

@@ -38,13 +38,13 @@ Expect `200`, and startup log should load all four functions: `submit`, `chat`, 
 Live demo tomorrow afternoon. Ship each change as its own PR against a preview URL, smoke-test, then merge to main. Resend sender stays `onboarding@resend.dev` for demo week (domain not yet verified).
 
 **In scope pre-demo:**
-- Chat interface as front page (`Prototypes/chat-interface.html`), catalog demoted to a secondary route but reachable.
+- Chat interface as front page (chat runtime now lives inline in root `index.html`; the form catalog is demoted to `/forms.html`; `Prototypes/chat-interface.html` is a redirect shell).
 - Security: HTML-escape interpolated values in `submit.mjs`; hardcode applicant email recipient for demo week; rename sender display.
 - Tiny HTTP-level smoke script at `tests/smoke.mjs` as a regression canary.
 - Chat UX polish — suggestion chips on the opening screen.
 
 **Out of scope pre-demo** (treat as blocked unless explicitly unblocked):
-- Unifying prompt sources (`chat-interface.html` inline vs `server/data/prompts.js` generated).
+- Unifying prompt sources (`index.html` inline vs `server/data/prompts.js` generated).
 - JSON Schema / Ajv validation on `/api/submit`.
 - Renaming/restructuring `assets/*-forms-data.js`.
 - Rate limiting functions.
