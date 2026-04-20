@@ -19,6 +19,8 @@ npx netlify dev   # http://localhost:8888
 
 Secrets go in `.env` at the repo root (gitignored). Functions read: `RESEND_API_KEY`, `ANTHROPIC_API_KEY` or `GROQ_API_KEY` (fallback), `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `TELEGRAM_BOT_TOKEN`.
 
+Start new features on a new working branch. 
+
 ## Smoketest
 
 ```bash
@@ -29,9 +31,7 @@ Expect `200`, and startup log should load all four functions: `submit`, `chat`, 
 
 ## Deploy
 
-- **Push to `main`** → auto-deploys to production at [alpha.gov.bb](https://alpha.gov.bb).
-- **Pull request** → preview deploy with a unique URL posted as a PR comment.
-- **Manual prod deploy:** `npx netlify deploy --prod` (requires the site to be linked — `netlify link` once).
+Push your working branch, make a PR, prompt user to merge on Github.
 
 ## Demo freeze (active until 2026-04-21 late afternoon)
 
