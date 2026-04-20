@@ -113,12 +113,12 @@ Emergency contact (keys: emergency-name, emergency-number, emergency-address):
 - emergency-address
 
 Application info (keys: completing-name, application-date-day, application-date-month, application-date-year):
-- completing-name — optional: name of person completing this form (only if filling in on behalf of someone else)
+- completing-name — optional: name of the person completing this on someone else's behalf (only if applicable)
 - application-date — date of application (DD MM YYYY)
 <<BASE_RULES>>`,
 
 'nisss-edu-status': `NIS Educational Status Form (ESF) — National Insurance Scheme (NIS). Confirm student enrolment status with NIS.
-This form confirms a student's enrolment status with NIS.
+This service confirms a student's enrolment status with NIS.
 
 FIELDS:
 
@@ -161,7 +161,7 @@ Contact details (keys: contact-name, contact-phone, contact-email, confirm-email
 <<BASE_RULES>>`,
 
 'nisss-life-cert': `NIS Life Certificate (LC) — National Insurance Scheme (NIS). Complete NIS life certificate to confirm you are alive and eligible for benefits.
-This form confirms the beneficiary is alive and still eligible for their benefit.
+This service confirms the beneficiary is alive and still eligible for their benefit.
 
 FIELDS:
 
@@ -187,7 +187,7 @@ Witness declaration (keys: alive-date-day, alive-date-month, alive-date-year, wi
 - witness-profession — witness profession or title (e.g. Justice of the Peace)
 - witness-date — date the witness signed (DD MM YYYY)
 
-Note: mention the form needs to be witnessed by a Justice of the Peace, Notary Public, or similar authority.
+Note: mention this needs to be witnessed by a Justice of the Peace, Notary Public, or similar authority.
 <<BASE_RULES>>`,
 
 'nisss-old-age': `Claim for Old Age Contributory Pension (OAP) — National Insurance Scheme (NIS). Claim old age contributory pension from NIS.

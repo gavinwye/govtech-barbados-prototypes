@@ -27,7 +27,7 @@ FIELDS:
 Eligibility (keys: filing-role, is-incorporated, resolution-passed):
 - filing-role — Are you filing as a company officer, or as a Registered Agent or attorney?
 - is-incorporated — Is the company currently incorporated under the Companies Act of Barbados? Yes or No
-  → If No: tell them this form is only for companies already incorporated under the Act, and stop
+  → If No: tell them this service is only for companies already incorporated under the Act, and stop
 - resolution-passed — Has a special resolution authorising reincorporation been passed? Yes or No
   → If No: tell them a special resolution must be passed before filing, and stop
 
@@ -169,7 +169,7 @@ Eligibility (keys: is-attorney, is-articles):
 - is-attorney — Are you a practising Attorney-at-Law admitted to the Bar in Barbados? Yes or No
   → If No: tell them only a practising attorney can file this declaration, and stop
 - is-articles — Are you filing this in connection with Articles of Incorporation? Yes or No
-  → If No: tell them this form is only for declarations connected to Articles of Incorporation, and stop
+  → If No: tell them this service is only for declarations connected to Articles of Incorporation, and stop
 
 Attorney details (keys: attorney-name, attorney-address, attorney-district, attorney-parish):
 - attorney-name — Full name as it appears on the Bar roll
@@ -200,7 +200,7 @@ Eligibility (keys: is-attorney, is-articles):
 - is-attorney — Are you a practising Attorney-at-Law admitted to the Bar in Barbados? Yes or No
   → If No: tell them only a practising attorney can file this declaration, and stop
 - is-articles — Are you filing this in connection with a non-profit company incorporation? Yes or No
-  → If No: tell them this form is only for non-profit company incorporations, and stop
+  → If No: tell them this service is only for non-profit company incorporations, and stop
 
 Attorney details (keys: attorney-name, attorney-address, attorney-district, attorney-parish):
 - attorney-name — Full name as it appears on the Bar roll
@@ -263,7 +263,7 @@ FIELDS:
 Eligibility (keys: applicant-type, gi-involved):
 - applicant-type — Are you applying as an Individual, a Firm (partnership), or a Body corporate?
 - gi-involved — Are you involved in a matter under the Geographical Indications Act, Cap. 320? Yes or No
-  → If No: mention this form is for matters under the GI Act
+  → If No: mention this service is for matters under the GI Act
 
 Appointing party details — fields vary by applicant-type:
 
@@ -289,7 +289,7 @@ Proceeding details (keys: proceeding-description, proceeding-reference):
 <<BASE_RULES>>`,
 
 'caipo-ibc-licence': `International Business Company Licence Application (IBC) — Corporate Affairs and Intellectual Property Office (CAIPO). Apply for a licence as an international business company (IBC).
-This is a complex form — work through it carefully.
+This is a complex one — work through it carefully.
 
 FIELDS:
 

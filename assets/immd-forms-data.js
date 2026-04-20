@@ -436,7 +436,7 @@ Local contact in Barbados (keys: local-name, local-address, local-phone, contact
 <<BASE_RULES>>`,
 
 'immd-student-h1': `Certificate of Eligibility for Student Status (Form H-1) (H1) — Citizenship, Immigration and Passports (IMMD). School certifying eligibility for non-immigrant student status.
-This form is typically filled in by the school, not the student.
+This is typically filled in by the school, not the student.
 
 FIELDS:
 
