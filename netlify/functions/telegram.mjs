@@ -17,6 +17,7 @@
  */
 
 import { FORMS, SYSTEM_PROMPTS, ROUTING_PROMPT, CONCIERGE_PROMPT, FORM_DESCRIPTIONS } from './telegram-data.mjs';
+import { esc, EMAIL_FROM } from './_shared.mjs';
 let createClient;
 try {
   createClient = (await import('@supabase/supabase-js')).createClient;
@@ -305,20 +306,24 @@ function newSession() {
 
 async function submitForm(formName, formId, formRef, formData, siteUrl) {
   const resendKey = process.env.RESEND_API_KEY;
+  const demoRecipient = process.env.DEMO_RECIPIENT;
   const prefix = formRef || 'REF';
   const referenceNumber = prefix + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
-  if (!resendKey) return { referenceNumber, emailsSent: false };
+  // Skip mail silently if either piece of config is missing. The form
+  // conversation still completes and the ref number is returned.
+  if (!resendKey || !demoRecipient) return { referenceNumber, emailsSent: false };
 
   const userEmail = formData['submitter-email'] || formData['contact-email'] || formData['email'] || formData['app-email'] || formData['email-address'] || '';
-  const deptEmail = `${(formId || 'general').replace(/[^a-z0-9-]/g, '')}@govtech.bb`;
-  const fromAddress = 'Government of Barbados <onboarding@resend.dev>';
+  const deptEmail = demoRecipient;
+  const applicantRecipient = demoRecipient;
+  const fromAddress = EMAIL_FROM;
 
   const summaryRows = Object.entries(formData)
     .filter(([key, v]) => key !== 'submitter-email' && v !== null && v !== '' && v !== undefined)
     .map(([key, val]) => {
       const label = key.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-      return `<tr><td style="padding:8px 12px;border-bottom:1px solid #e0e4e9;font-weight:600;vertical-align:top">${label}</td><td style="padding:8px 12px;border-bottom:1px solid #e0e4e9">${String(val)}</td></tr>`;
+      return `<tr><td style="padding:8px 12px;border-bottom:1px solid #e0e4e9;font-weight:600;vertical-align:top">${esc(label)}</td><td style="padding:8px 12px;border-bottom:1px solid #e0e4e9">${esc(val)}</td></tr>`;
     })
     .join('');
 
@@ -326,7 +331,9 @@ async function submitForm(formName, formId, formRef, formData, siteUrl) {
 
   const errors = [];
 
-  // Send applicant confirmation
+  // Applicant confirmation — routed to the fixed demo inbox, never the
+  // user-supplied address. Gate on userEmail only so we preserve the
+  // "a confirmation was intended" signal in logs.
   if (userEmail) {
     try {
       const res = await fetch('https://api.resend.com/emails', {
@@ -334,9 +341,9 @@ async function submitForm(formName, formId, formRef, formData, siteUrl) {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
         body: JSON.stringify({
           from: fromAddress,
-          to: userEmail,
+          to: applicantRecipient,
           subject: `We received your ${formName} — ref ${referenceNumber}`,
-          html: `<div style="font-family:Figtree,sans-serif;max-width:600px;margin:0 auto"><div style="background:#0e5f64;color:#fff;padding:24px;border-radius:6px 6px 0 0"><h1 style="margin:0;font-size:22px">We received your ${formName}</h1></div><div style="padding:24px;background:#fff;border:1px solid #e0e4e9;border-top:none;border-radius:0 0 6px 6px"><p>Your reference number is:</p><p style="font-size:24px;font-weight:700;color:#0e5f64">${referenceNumber}</p><h2 style="font-size:17px;border-bottom:2px solid #e0e4e9;padding-bottom:8px">What you told us</h2>${summaryTable}<h2 style="font-size:17px;margin-top:24px;border-bottom:2px solid #e0e4e9;padding-bottom:8px">What happens next</h2><p>We will review your submission and contact you if we need anything else. This usually takes up to 5 working days.</p></div></div>`,
+          html: `<div style="font-family:Figtree,sans-serif;max-width:600px;margin:0 auto"><div style="background:#0e5f64;color:#fff;padding:24px;border-radius:6px 6px 0 0"><h1 style="margin:0;font-size:22px">We received your ${esc(formName)}</h1></div><div style="padding:24px;background:#fff;border:1px solid #e0e4e9;border-top:none;border-radius:0 0 6px 6px"><p>Your reference number is:</p><p style="font-size:24px;font-weight:700;color:#0e5f64">${esc(referenceNumber)}</p><h2 style="font-size:17px;border-bottom:2px solid #e0e4e9;padding-bottom:8px">What you told us</h2>${summaryTable}<h2 style="font-size:17px;margin-top:24px;border-bottom:2px solid #e0e4e9;padding-bottom:8px">What happens next</h2><p>We will review your submission and contact you if we need anything else. This usually takes up to 5 working days.</p><hr style="border:none;border-top:1px solid #e0e4e9;margin:24px 0"><p style="font-size:13px;color:#595959">Prototype — alpha.gov.bb. This is not an official Government of Barbados service.</p></div></div>`,
         }),
       });
       if (!res.ok) errors.push('Applicant email failed');
@@ -352,7 +359,7 @@ async function submitForm(formName, formId, formRef, formData, siteUrl) {
         from: fromAddress,
         to: deptEmail,
         subject: `New submission: ${formName} — ${referenceNumber}`,
-        html: `<div style="font-family:Figtree,sans-serif;max-width:600px;margin:0 auto"><div style="background:#00267f;color:#fff;padding:24px;border-radius:6px 6px 0 0"><h1 style="margin:0;font-size:22px">New submission: ${formName}</h1></div><div style="padding:24px;background:#fff;border:1px solid #e0e4e9;border-top:none;border-radius:0 0 6px 6px"><p><strong>Reference:</strong> ${referenceNumber}</p><p><strong>Source:</strong> Telegram</p><h2 style="font-size:17px;border-bottom:2px solid #e0e4e9;padding-bottom:8px">Form data</h2>${summaryTable}</div></div>`,
+        html: `<div style="font-family:Figtree,sans-serif;max-width:600px;margin:0 auto"><div style="background:#00267f;color:#fff;padding:24px;border-radius:6px 6px 0 0"><h1 style="margin:0;font-size:22px">New submission: ${esc(formName)}</h1></div><div style="padding:24px;background:#fff;border:1px solid #e0e4e9;border-top:none;border-radius:0 0 6px 6px"><p><strong>Reference:</strong> ${esc(referenceNumber)}</p><p><strong>Source:</strong> Telegram</p><p><strong>Applicant email:</strong> ${esc(userEmail || 'Not provided')}</p><h2 style="font-size:17px;border-bottom:2px solid #e0e4e9;padding-bottom:8px">Form data</h2>${summaryTable}</div></div>`,
       }),
     });
     if (!res.ok) errors.push('Department email failed');
@@ -399,6 +406,18 @@ export default async function handler(req) {
     return new Response('OK', { status: 200 });
   }
 
+  // Verify the request actually came from Telegram. The secret_token is set
+  // when registering the webhook via setWebhook and echoed back in this
+  // header on every delivery. Without it, anyone who guesses the URL can
+  // spoof "Telegram messages" and drive the bot.
+  const expectedWebhookSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
+  if (expectedWebhookSecret) {
+    const provided = req.headers.get('x-telegram-bot-api-secret-token');
+    if (provided !== expectedWebhookSecret) {
+      return new Response('OK', { status: 200 });
+    }
+  }
+
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const apiKey = process.env.ANTHROPIC_API_KEY || process.env.GROQ_API_KEY;
 
@@ -420,7 +439,13 @@ export default async function handler(req) {
     return new Response('OK', { status: 200 });
   }
 
-  const chatId = message.chat.id;
+  // chatId is used as a filesystem path component for session state. Reject
+  // anything that isn't a Telegram integer id to prevent path traversal.
+  const chatId = message.chat?.id;
+  if (!Number.isInteger(chatId)) {
+    return new Response('OK', { status: 200 });
+  }
+
   const text = message.text.trim();
 
   // Handle /start and /reset commands
