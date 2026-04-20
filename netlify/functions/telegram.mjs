@@ -8,12 +8,13 @@
  * Session state is stored in Netlify Blobs (built-in, no extra config).
  *
  * Environment variables required:
- *   TELEGRAM_BOT_TOKEN  — from @BotFather
- *   ANTHROPIC_API_KEY   — Anthropic API key (or use GROQ_API_KEY as fallback)
- *   GROQ_API_KEY        — (optional) Groq API key, used when ANTHROPIC_API_KEY is absent
- *   RESEND_API_KEY      — (optional) for email on form submission
- *   SUPABASE_URL        — (optional) Supabase project URL
- *   SUPABASE_ANON_KEY   — (optional) Supabase publishable key
+ *   TELEGRAM_BOT_TOKEN      — from @BotFather
+ *   OPENROUTER_API_KEY      — OpenRouter API key (serves Claude via OpenAI-shaped API)
+ *   TELEGRAM_WEBHOOK_SECRET — (optional) if set, x-telegram-bot-api-secret-token must match
+ *   RESEND_API_KEY          — (optional) for email on form submission
+ *   DEMO_RECIPIENT          — (optional) fixed recipient for demo-week mail
+ *   SUPABASE_URL            — (optional) Supabase project URL
+ *   SUPABASE_ANON_KEY       — (optional) Supabase publishable key
  */
 
 import { FORMS, SYSTEM_PROMPTS, ROUTING_PROMPT, CONCIERGE_PROMPT, FORM_DESCRIPTIONS } from './telegram-data.mjs';
@@ -127,10 +128,7 @@ function mapProfileToFormKeys(profile, systemPrompt) {
 
 // ── Config ──────────────────────────────────────────────────────────
 
-const USE_GROQ = !process.env.ANTHROPIC_API_KEY && !!process.env.GROQ_API_KEY;
-
-const CHAT_MODEL = USE_GROQ ? 'llama-3.3-70b-versatile' : 'claude-sonnet-4-20250514';
-const FAST_MODEL = USE_GROQ ? 'llama-3.3-70b-versatile' : 'claude-haiku-4-5-20251001';
+const CHAT_MODEL = 'anthropic/claude-sonnet-4.6';
 const MAX_HISTORY = 40;          // max messages kept per session
 const SESSION_TTL_MS = 3600000;  // 1 hour inactivity → session expires
 
@@ -190,65 +188,33 @@ function splitMessage(text, limit) {
   return chunks;
 }
 
-// ── LLM API (Anthropic with Groq fallback) ─────────────────────────
+// ── LLM API (OpenRouter, OpenAI-compatible) ────────────────────────
 
-async function callLLM(apiKey, messages, model, systemPrompt) {
-  if (USE_GROQ) {
-    return callGroq(messages, model, systemPrompt);
-  }
-  return callAnthropic(apiKey, messages, model, systemPrompt);
-}
-
-async function callAnthropic(apiKey, messages, model, systemPrompt) {
-  const payload = {
-    model: model || CHAT_MODEL,
-    max_tokens: 2048,
-    messages,
-  };
-  if (systemPrompt) payload.system = systemPrompt;
-
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `Anthropic HTTP ${res.status}`);
-  }
-
-  const data = await res.json();
-  return data.content?.map(b => b.text).join('') || '';
-}
-
-async function callGroq(messages, model, systemPrompt) {
-  const groqMessages = [];
+async function callLLM(apiKey, messages, systemPrompt) {
+  const openaiMessages = [];
   if (systemPrompt) {
-    groqMessages.push({ role: 'system', content: systemPrompt });
+    openaiMessages.push({ role: 'system', content: systemPrompt });
   }
-  groqMessages.push(...messages);
+  openaiMessages.push(...messages);
 
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
+      'HTTP-Referer': 'https://alpha.gov.bb',
+      'X-Title': 'GovTech Barbados Prototype',
     },
     body: JSON.stringify({
-      model: model || CHAT_MODEL,
+      model: CHAT_MODEL,
       max_tokens: 2048,
-      messages: groqMessages,
+      messages: openaiMessages,
     }),
   });
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `Groq HTTP ${res.status}`);
+    throw new Error(err?.error?.message || `OpenRouter HTTP ${res.status}`);
   }
 
   const data = await res.json();
@@ -419,10 +385,10 @@ export default async function handler(req) {
   }
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  const apiKey = process.env.ANTHROPIC_API_KEY || process.env.GROQ_API_KEY;
+  const apiKey = process.env.OPENROUTER_API_KEY;
 
   if (!token || !apiKey) {
-    console.error('Missing TELEGRAM_BOT_TOKEN and ANTHROPIC_API_KEY/GROQ_API_KEY');
+    console.error('Missing TELEGRAM_BOT_TOKEN or OPENROUTER_API_KEY');
     return new Response('OK', { status: 200 });
   }
 
@@ -505,18 +471,7 @@ async function handleRouting(token, apiKey, chatId, text, session) {
     session.routingMessages = session.routingMessages.slice(-MAX_HISTORY);
   }
 
-  // Try Groq for concierge routing first (cheaper), fall back to Anthropic
-  let reply;
-  if (process.env.GROQ_API_KEY) {
-    try {
-      reply = await callGroq(session.routingMessages, 'llama-3.3-70b-versatile', CONCIERGE_PROMPT);
-    } catch {
-      // Groq failed (rate limit etc.) — fall back to Anthropic
-      reply = await callLLM(apiKey, session.routingMessages, CHAT_MODEL, CONCIERGE_PROMPT);
-    }
-  } else {
-    reply = await callLLM(apiKey, session.routingMessages, CHAT_MODEL, CONCIERGE_PROMPT);
-  }
+  const reply = await callLLM(apiKey, session.routingMessages, CONCIERGE_PROMPT);
 
   // Check if the concierge wants to route to a specific form
   const routeMatch = reply.match(/##ROUTE:([a-z0-9-]+)##/);
@@ -618,7 +573,6 @@ async function handleEmailCollection(token, apiKey, chatId, text, session) {
   const openReply = await callLLM(
     apiKey,
     [{ role: 'user', content: opener }],
-    CHAT_MODEL,
     session.systemPrompt
   );
 
@@ -640,7 +594,6 @@ async function handleChat(token, apiKey, chatId, text, session) {
   const reply = await callLLM(
     apiKey,
     session.messages,
-    CHAT_MODEL,
     session.systemPrompt
   );
 
@@ -685,7 +638,6 @@ async function handleFallbackExtraction(token, apiKey, chatId, session) {
       role: 'user',
       content: `Extract all collected form data from this conversation as a JSON object. Use null for any field not provided.\n\nConversation:\n${convText}`,
     }],
-    FAST_MODEL,
     'You are a data extraction assistant. Extract form data from conversations and output ONLY a valid JSON object. No explanation, no markdown, just raw JSON.'
   );
 
