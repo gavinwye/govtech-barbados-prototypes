@@ -154,6 +154,7 @@ The site will be available at `http://localhost:8888`.
 | Variable | Purpose |
 |---|---|
 | `RESEND_API_KEY` | Email delivery via Resend |
+| `OPENROUTER_API_KEY` | Chat LLM calls via OpenRouter (Sonnet 4.6) |
 | `SUPABASE_URL` | Supabase project URL (if used) |
 | `SUPABASE_ANON_KEY` | Supabase anon key (if used) |
 
@@ -171,6 +172,27 @@ Manual deploy:
 ```bash
 npx netlify deploy --prod
 ```
+
+---
+
+## Running tests
+
+A small HTTP-level smoke canary lives at `tests/smoke.mjs`. It hits `/api/chat` and `/api/submit` and asserts status codes and response shape — no deps beyond Node's built-in test runner. Happy-path tests skip gracefully if the matching upstream key is not configured.
+
+With a local dev server up:
+
+```bash
+npx netlify dev              # in one terminal
+node --test tests/smoke.mjs  # in another
+```
+
+To run against a preview URL:
+
+```bash
+BASE_URL=https://your-preview.netlify.app node --test tests/smoke.mjs
+```
+
+The happy-path test for `/api/submit` sends one real email via Resend per run (routed to the demo-week hardcoded recipient).
 
 ---
 
