@@ -208,6 +208,7 @@ async function callLLM(apiKey, messages, systemPrompt) {
     body: JSON.stringify({
       model: CHAT_MODEL,
       max_tokens: 2048,
+      temperature: 0.3,
       messages: openaiMessages,
     }),
   });
