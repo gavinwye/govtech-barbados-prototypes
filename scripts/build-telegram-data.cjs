@@ -5,9 +5,14 @@
  * build-telegram-data.js
  *
  * Reads the browser-side form data files (which set window.* globals)
- * and the inline prompts from chat-interface.html, then outputs a single
+ * and the inline prompts from index.html, then outputs a single
  * ESM module at netlify/functions/telegram-data.mjs that the Telegram
  * webhook function can import.
+ *
+ * NOTE: The chat runtime was moved from Prototypes/chat-interface.html
+ * into index.html at the root. /Prototypes/chat-interface.html is now a
+ * redirect shell; it no longer contains BASE_RULES / FORMS / SYSTEM_PROMPTS
+ * / FORM_DESCRIPTIONS.
  *
  * Usage:  source ~/.nvm/nvm.sh && nvm use 22 && node scripts/build-telegram-data.cjs
  */
@@ -39,21 +44,21 @@ for (const rel of dataFiles) {
   vm.runInContext(code, context);
 }
 
-// ── 2. Extract inline data from chat-interface.html ──
+// ── 2. Extract inline data from index.html ──
 
 const html = fs.readFileSync(
-  path.join(ROOT, 'Prototypes', 'chat-interface.html'),
+  path.join(ROOT, 'index.html'),
   'utf8'
 );
 
 // Extract the BASE_RULES string
 const baseRulesMatch = html.match(/var BASE_RULES\s*=\s*`([\s\S]*?)`;/);
-if (!baseRulesMatch) throw new Error('Could not find BASE_RULES in chat-interface.html');
+if (!baseRulesMatch) throw new Error('Could not find BASE_RULES in index.html');
 const BASE_RULES = baseRulesMatch[1];
 
 // Extract inline FORMS array (the 9 core forms)
 const formsMatch = html.match(/var FORMS\s*=\s*\[([\s\S]*?)\]\.concat/);
-if (!formsMatch) throw new Error('Could not find FORMS in chat-interface.html');
+if (!formsMatch) throw new Error('Could not find FORMS in index.html');
 const coreForms = JSON.parse('[' + formsMatch[1].replace(/'/g, '"').replace(/(\w+):/g, '"$1":').replace(/,\s*\]/g, ']') + ']');
 
 // Actually, let's just eval the FORMS properly using a simpler approach
@@ -89,7 +94,7 @@ const allForms = [
 
 // Extract inline SYSTEM_PROMPTS
 const promptsMatch = html.match(/var SYSTEM_PROMPTS\s*=\s*\{([\s\S]*?)\n\};/);
-if (!promptsMatch) throw new Error('Could not find SYSTEM_PROMPTS in chat-interface.html');
+if (!promptsMatch) throw new Error('Could not find SYSTEM_PROMPTS in index.html');
 
 // Use a sandboxed eval to parse the prompts object
 const promptsSandbox = vm.createContext({ BASE_RULES });
@@ -118,10 +123,10 @@ for (const set of externalSets) {
 
 // Extract FORM_DESCRIPTIONS
 const descMatch = html.match(/var FORM_DESCRIPTIONS\s*=\s*\{([\s\S]*?)\n\};/);
-if (!descMatch) throw new Error('Could not find FORM_DESCRIPTIONS in chat-interface.html');
+if (!descMatch) throw new Error('Could not find FORM_DESCRIPTIONS in index.html');
 const descriptions = vm.runInContext('({' + descMatch[1] + '})', vm.createContext({}));
 
-// Build the routing prompt (same logic as chat-interface.html)
+// Build the routing prompt (same logic as index.html)
 const routingLines = allForms.map(f => {
   const desc = descriptions[f.id] || f.name;
   return `${f.id} — ${f.name}: ${desc}`;
