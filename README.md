@@ -36,7 +36,8 @@ Each prototype is a single HTML file. It runs in a browser with no server depend
 
 ```
 .
-├── index.html                  # Home page — searchable form catalog
+├── index.html                  # Homepage — conversational assistant (chat + routing)
+├── services.html               # Full service catalog — secondary browse path
 ├── Prototypes/                 # 164 individual form HTML files
 ├── assets/
 │   ├── govbb-tailwind-config.js  # Tailwind config with bb- colour namespace
@@ -154,6 +155,7 @@ The site will be available at `http://localhost:8888`.
 | Variable | Purpose |
 |---|---|
 | `RESEND_API_KEY` | Email delivery via Resend |
+| `OPENROUTER_API_KEY` | Chat LLM calls via OpenRouter (Sonnet 4.6) |
 | `SUPABASE_URL` | Supabase project URL (if used) |
 | `SUPABASE_ANON_KEY` | Supabase anon key (if used) |
 
@@ -174,6 +176,27 @@ npx netlify deploy --prod
 
 ---
 
+## Running tests
+
+A small HTTP-level smoke canary lives at `tests/smoke.mjs`. It hits `/api/chat` and `/api/submit` and asserts status codes and response shape — no deps beyond Node's built-in test runner. Happy-path tests skip gracefully if the matching upstream key is not configured.
+
+With a local dev server up:
+
+```bash
+npx netlify dev              # in one terminal
+node --test tests/smoke.mjs  # in another
+```
+
+To run against a preview URL:
+
+```bash
+BASE_URL=https://your-preview.netlify.app node --test tests/smoke.mjs
+```
+
+The happy-path test for `/api/submit` sends one real email via Resend per run (routed to the demo-week hardcoded recipient).
+
+---
+
 ## Adding a new prototype
 
 1. **Create the HTML file** in `Prototypes/` following the skeleton in [CLAUDE.md](CLAUDE.md).
@@ -181,7 +204,7 @@ npx netlify deploy --prod
    ```javascript
    'My New Form': 'MNF',
    ```
-3. **Add the form to the catalog** in the relevant `assets/*-forms-data.js` file so it appears on the home page.
+3. **Add the service to the catalog** in the relevant `assets/*-forms-data.js` file so it appears on the `/services.html` catalog and is discoverable by the chat assistant.
 
 See [CLAUDE.md](CLAUDE.md) for the full prototype builder reference — design system, component patterns, writing style, form structure rules, validation patterns, and the GovBB framework API.
 

@@ -5,9 +5,14 @@
  * build-telegram-data.js
  *
  * Reads the browser-side form data files (which set window.* globals)
- * and the inline prompts from chat-interface.html, then outputs a single
+ * and the inline prompts from index.html, then outputs a single
  * ESM module at netlify/functions/telegram-data.mjs that the Telegram
  * webhook function can import.
+ *
+ * NOTE: The chat runtime was moved from Prototypes/chat-interface.html
+ * into index.html at the root. /Prototypes/chat-interface.html is now a
+ * redirect shell; it no longer contains BASE_RULES / FORMS / SYSTEM_PROMPTS
+ * / FORM_DESCRIPTIONS.
  *
  * Usage:  source ~/.nvm/nvm.sh && nvm use 22 && node scripts/build-telegram-data.cjs
  */
@@ -39,21 +44,21 @@ for (const rel of dataFiles) {
   vm.runInContext(code, context);
 }
 
-// ── 2. Extract inline data from chat-interface.html ──
+// ── 2. Extract inline data from index.html ──
 
 const html = fs.readFileSync(
-  path.join(ROOT, 'Prototypes', 'chat-interface.html'),
+  path.join(ROOT, 'index.html'),
   'utf8'
 );
 
 // Extract the BASE_RULES string
 const baseRulesMatch = html.match(/var BASE_RULES\s*=\s*`([\s\S]*?)`;/);
-if (!baseRulesMatch) throw new Error('Could not find BASE_RULES in chat-interface.html');
+if (!baseRulesMatch) throw new Error('Could not find BASE_RULES in index.html');
 const BASE_RULES = baseRulesMatch[1];
 
 // Extract inline FORMS array (the 9 core forms)
 const formsMatch = html.match(/var FORMS\s*=\s*\[([\s\S]*?)\]\.concat/);
-if (!formsMatch) throw new Error('Could not find FORMS in chat-interface.html');
+if (!formsMatch) throw new Error('Could not find FORMS in index.html');
 const coreForms = JSON.parse('[' + formsMatch[1].replace(/'/g, '"').replace(/(\w+):/g, '"$1":').replace(/,\s*\]/g, ']') + ']');
 
 // Actually, let's just eval the FORMS properly using a simpler approach
@@ -89,7 +94,7 @@ const allForms = [
 
 // Extract inline SYSTEM_PROMPTS
 const promptsMatch = html.match(/var SYSTEM_PROMPTS\s*=\s*\{([\s\S]*?)\n\};/);
-if (!promptsMatch) throw new Error('Could not find SYSTEM_PROMPTS in chat-interface.html');
+if (!promptsMatch) throw new Error('Could not find SYSTEM_PROMPTS in index.html');
 
 // Use a sandboxed eval to parse the prompts object
 const promptsSandbox = vm.createContext({ BASE_RULES });
@@ -118,21 +123,54 @@ for (const set of externalSets) {
 
 // Extract FORM_DESCRIPTIONS
 const descMatch = html.match(/var FORM_DESCRIPTIONS\s*=\s*\{([\s\S]*?)\n\};/);
-if (!descMatch) throw new Error('Could not find FORM_DESCRIPTIONS in chat-interface.html');
+if (!descMatch) throw new Error('Could not find FORM_DESCRIPTIONS in index.html');
 const descriptions = vm.runInContext('({' + descMatch[1] + '})', vm.createContext({}));
 
-// Build the routing prompt (same logic as chat-interface.html)
+// Build the routing prompt (same logic as index.html)
 const routingLines = allForms.map(f => {
   const desc = descriptions[f.id] || f.name;
   return `${f.id} — ${f.name}: ${desc}`;
 });
+
+// ── Load the info-pages list used as a fallback in routing ──
+
+let INFO_PAGES_TEXT = '';
+try {
+  const raw = fs.readFileSync(path.join(ROOT, 'docs', 'alpha-services-for-prompt.md'), 'utf8');
+  // Skip the doc header + preface; keep from the first "## " onward.
+  const firstSection = raw.indexOf('\n## ');
+  const body = (firstSection === -1 ? raw : raw.slice(firstSection + 1)).trim();
+  // Reformat each "- **Title:** Description. URL" line into "- [Title](URL) — Description."
+  // so the model mirrors the link shape when redirecting.
+  INFO_PAGES_TEXT = body.replace(
+    /^- \*\*([^*]+):\*\* (.+?)\s+(https?:\/\/\S+)\s*$/gm,
+    '- [$1]($3) — $2'
+  );
+} catch (err) {
+  console.warn('Warning: Could not read info-pages source:', err.message);
+}
+
 const ROUTING_PROMPT =
-  'You are a routing assistant for the Government of Barbados. ' +
-  'Based on what the user says they want to do, identify which form they need. ' +
-  'Reply with ONLY the form ID — nothing else.\n\n' +
-  'Forms:\n' +
+  'You help citizens of Barbados find the right government service for what they need to do, in plain conversation.\n\n' +
+  'HOW YOU WORK:\n' +
+  'You have a short conversation to figure out which ONE service the user needs. Then you hand off.\n\n' +
+  '- Ask questions to narrow down. One question at a time. Plain language, no filler ("Of course!", "Absolutely!", "Great!").\n' +
+  '- Every question should move toward a specific service. Don\'t ask the same thing twice in different words.\n' +
+  '- GREEN LIGHT: the user\'s latest message clearly identifies ONE specific service — either because they named it, or because they said yes to a question of yours that was specific enough to pin it down. That\'s the go signal.\n' +
+  '- Once you have the green light, your NEXT message is the handoff (format below) — sentinel + JSON, NOTHING ELSE.\n' +
+  '- Do NOT follow a user\'s "yes" to a narrowing question with another "Shall I start?" — that\'s the same check twice. One green light is enough. If the narrowing question already pinned down the service, the yes IS the green light.\n' +
+  '- SERVICES ALWAYS WIN. If any service in the list below could plausibly fit, prefer the service over an info page.\n' +
+  '- If NO service fits but an info page below matches what the user needs, redirect them with a markdown link. The link is MANDATORY — never name a page without also including its URL. Copy the exact [Title](URL) from the info-pages list below; do not paraphrase or summarise it away. Example: "Sounds like you need to register a birth — you can do that at [Register a birth](https://alpha.gov.bb/family-birth-relationships/register-a-birth). Anything else I can help you find?" Info-page redirects are plain messages, NOT handoffs — no sentinel, no JSON.\n' +
+  '- If neither a service nor an info page matches, say so briefly and ask if they can rephrase or try something else.\n\n' +
+  'Every message you send is EITHER a single question, an info-page redirect, OR the service handoff — never more than one in the same message.\n\n' +
+  'HANDOFF FORMAT — when, and ONLY when, the user has confirmed a service:\n' +
+  '- Output ##ROUTED## on its own line.\n' +
+  '- On the very next line, output a single valid JSON object: {"serviceId": "<id>"} — where <id> is one of the IDs in the services list below, exactly as written.\n' +
+  '- Nothing else after the JSON.\n\n' +
+  'Be warm and brief. Use contractions. Always say "service", never "form". Don\'t offer anything outside the services and info pages below.\n\n' +
+  'Services (conversational — the chat will guide the user through filling these in):\n' +
   routingLines.join('\n') +
-  '\n\nIf you can identify the form reply with its ID exactly as listed above. If you cannot, reply with "unknown".';
+  (INFO_PAGES_TEXT ? '\n\nInfo pages (redirect the user to these ONLY when no service above fits — we can\'t fill these in conversationally):\n' + INFO_PAGES_TEXT : '');
 
 // ── Load alpha.gov.bb service content from markdown files ──
 
@@ -188,7 +226,7 @@ const completableFormsList = Object.entries(formsByAgency)
 const CONCIERGE_PROMPT = `You are a friendly, helpful assistant for the Government of Barbados. You help people find and access government services.
 
 You can help people in three ways:
-1. FILL IN GOVERNMENT FORMS — you can walk people through completing ${allForms.length} government forms conversationally
+1. COMPLETE GOVERNMENT SERVICES — you can walk people through ${allForms.length} government services conversationally
 2. ANSWER QUESTIONS ABOUT SERVICES — you have detailed knowledge about government services from alpha.gov.bb, including requirements, fees, documents needed, eligibility, and processing times
 3. POINT PEOPLE TO SERVICES — for things you can't help with directly, you can explain what's available and where to go
 
@@ -199,29 +237,30 @@ TONE AND STYLE:
 - Use Barbadian context (parishes, local references) when relevant
 - Don't use filler phrases like "Of course!", "Absolutely!", "Great question!"
 - Be direct and practical
+- Always say "service", never "form", when talking to the user
 
 WHEN SOMEONE ASKS WHAT YOU CAN HELP WITH:
-Briefly explain you can help with government forms and services. Give a few examples from different categories (don't list everything). Ask what they need help with.
+Briefly explain you can help with government services. Give a few examples from different categories (don't list everything). Ask what they need help with.
 
 WHEN SOMEONE DESCRIBES A NEED:
-- If it matches one of the forms you can fill in, tell them briefly what the form is for and that you can help them complete it right now. Then output the marker ##ROUTE:<formid>## on its own line at the END of your message.
+- If it matches one of the services you can help with, tell them briefly what the service is for and that you can help them complete it right now. Then output the marker ##ROUTE:<serviceId>## on its own line at the END of your message.
 - If they're asking about a service (requirements, fees, documents, eligibility, processing times), answer from the detailed service knowledge below. Be specific — cite actual fees, documents needed, and timelines. Always include the alpha.gov.bb URL.
-- If the service has an associated form you can fill in, proactively tell the user: "I can help you complete this form right now if you'd like."
+- If the service is one you can help with conversationally, proactively tell the user: "I can help you complete this right now if you'd like."
 - If it could match multiple things, ask a clarifying question to narrow it down.
 - If you're not sure, ask them to tell you more. Suggest some possibilities based on what they said.
 
 IMPORTANT RULES:
-- Only output ##ROUTE:<formid>## when you are confident which form the user needs AND they want to proceed with it. Never route on a vague query.
-- If the user is just asking questions or browsing, keep chatting — don't try to force them into a form.
+- Only output ##ROUTE:<serviceId>## when you are confident which service the user needs AND they want to proceed with it. Never route on a vague query.
+- If the user is just asking questions or browsing, keep chatting — don't try to push them into a service.
 - You can answer detailed questions about government services using the knowledge base below.
 - If someone asks about something you don't know about, say so honestly and suggest they visit alpha.gov.bb or contact the relevant department.
 
-FORMS YOU CAN HELP FILL IN (${allForms.length} forms):
+SERVICES YOU CAN HELP COMPLETE (${allForms.length} services):
 ${formList}
 
-FORMS YOU CAN COMPLETE VIA CHAT (grouped by agency):
+SERVICES YOU CAN COMPLETE VIA CHAT (grouped by agency):
 ${completableFormsList}
-When a user asks about one of these services, tell them you can help them fill in the form right now.
+When a user asks about one of these, tell them you can help them complete it right now.
 
 ${SERVICES_KNOWLEDGE}`;
 
@@ -245,4 +284,14 @@ export const FORM_DESCRIPTIONS = ${JSON.stringify(descriptions, null, 2)};
 
 fs.writeFileSync(OUT, output, 'utf8');
 
+// ── 4. Emit info-pages.js for the browser-side routing prompt ──
+
+const INFO_PAGES_OUT = path.join(ROOT, 'assets', 'info-pages.js');
+const infoPagesJs = `// AUTO-GENERATED by scripts/build-telegram-data.cjs — do not edit by hand.
+// Source: docs/alpha-services-for-prompt.md
+window.INFO_PAGES_TEXT = ${JSON.stringify(INFO_PAGES_TEXT)};
+`;
+fs.writeFileSync(INFO_PAGES_OUT, infoPagesJs, 'utf8');
+
 console.log(`Wrote ${allForms.length} forms and ${Object.keys(allPrompts).length} prompts to ${path.relative(ROOT, OUT)}`);
+console.log(`Wrote ${INFO_PAGES_TEXT.length} chars of info-pages text to ${path.relative(ROOT, INFO_PAGES_OUT)}`);

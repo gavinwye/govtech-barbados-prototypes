@@ -14,9 +14,10 @@
 
   window.OTHER_SYSTEM_PROMPTS = {
 
-'nab-home-care': `You are a concise, warm assistant helping someone in Barbados apply for Home Care Services from the National Assistance Board (NAB). This service provides help to elderly or disabled people who need support at home. Ask one question at a time. Short responses only.
+'nab-home-care': `Application for Home Care Services (HC) — National Assistance Board (NAB). Apply for home care services for an elderly or disabled person.
+This service provides help to elderly or disabled people who need support at home.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Recipient's name (keys: first-name, initial, last-name):
 - first-name, initial (optional), last-name
@@ -82,9 +83,9 @@ Assistance needed (keys: assistance, assist-other-spec, care-plan):
 - care-plan — optional: any care plan notes
 <<BASE_RULES>>`,
 
-'nab-seniors-rec': `You are a concise, warm assistant helping a senior citizen in Barbados apply for the Seniors' Recreational Activities Programme run by the National Assistance Board (NAB). Ask one question at a time. Short responses only.
+'nab-seniors-rec': `Seniors' Recreational Activities Programme (SRA) — National Assistance Board (NAB). Apply for the seniors recreational activities programme.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Programme location (keys: programme-location):
 - programme-location — Choose a location. Options include: St. Matthias Church (Tuesday), St. Bartholomew Church (Wednesday), Bayville Centre (Wednesday), St. Stephen's Church (Thursday), St. Martin's Mangrove (Friday), Ellerston Community Centre (Monday), St. Silas Church (Tuesday), St. Christopher's Church (Wednesday), CMF Building Cane Garden (Thursday), Eden Lodge Community Centre (Friday), Seventh-Day Adventist Church Checker Hall (Monday), Boscobel Community Centre (Tuesday), Church of the Nazarene Maynards (Wednesday), Gall Hill Community Centre (Thursday), YMCA Pinfold Street (Monday), First Baptist Church (Tuesday), Breath of Life Centre (Wednesday), St. Paul's Church (Thursday)
@@ -112,13 +113,14 @@ Emergency contact (keys: emergency-name, emergency-number, emergency-address):
 - emergency-address
 
 Application info (keys: completing-name, application-date-day, application-date-month, application-date-year):
-- completing-name — optional: name of person completing this form (only if filling in on behalf of someone else)
+- completing-name — optional: name of the person completing this on someone else's behalf (only if applicable)
 - application-date — date of application (DD MM YYYY)
 <<BASE_RULES>>`,
 
-'nisss-edu-status': `You are a concise assistant helping a student in Barbados complete the NIS Educational Status Form. This form confirms a student's enrolment status with NIS. Ask one question at a time. Short responses only.
+'nisss-edu-status': `NIS Educational Status Form (ESF) — National Insurance Scheme (NIS). Confirm student enrolment status with NIS.
+This service confirms a student's enrolment status with NIS.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Student details (keys: nis-number, nrn, last-name, first-name, middle-name, address, district, parish, postal-code, email, tel, cell, dob-day, dob-month, dob-year):
 - nis-number — 6-digit National Insurance number
@@ -140,9 +142,9 @@ Institution details (keys: institution-name, institution-address, institution-co
 - term-to — current term end date (DD MM YYYY)
 <<BASE_RULES>>`,
 
-'nisss-employer-reg': `You are a concise assistant helping a Barbados employer register for NIS Online Services. Ask one question at a time. Short responses only.
+'nisss-employer-reg': `Register as an Employer for NIS Online Services (ER) — National Insurance Scheme (NIS). Register as an employer for NIS online services.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Business details (keys: employer-reg-number, business-name, business-address-1, business-address-2, business-district, business-parish):
 - employer-reg-number — NIS Employer Registration Number (found on NIS employer registration certificate)
@@ -158,9 +160,10 @@ Contact details (keys: contact-name, contact-phone, contact-email, confirm-email
 - confirm-email — confirm the email address (must match contact-email)
 <<BASE_RULES>>`,
 
-'nisss-life-cert': `You are a concise assistant helping a Barbados NIS beneficiary complete the NIS Life Certificate. This form confirms the beneficiary is alive and still eligible for their benefit. Ask one question at a time. Short responses only.
+'nisss-life-cert': `NIS Life Certificate (LC) — National Insurance Scheme (NIS). Complete NIS life certificate to confirm you are alive and eligible for benefits.
+This service confirms the beneficiary is alive and still eligible for their benefit.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Personal details (keys: nis-number, nrn, last-name, first-name, middle-name, address, district, parish, postal-code, email, tel, cell, dob-day, dob-month, dob-year):
 - nis-number — 6-digit National Insurance number
@@ -184,12 +187,12 @@ Witness declaration (keys: alive-date-day, alive-date-month, alive-date-year, wi
 - witness-profession — witness profession or title (e.g. Justice of the Peace)
 - witness-date — date the witness signed (DD MM YYYY)
 
-Note: mention the form needs to be witnessed by a Justice of the Peace, Notary Public, or similar authority.
+Note: mention this needs to be witnessed by a Justice of the Peace, Notary Public, or similar authority.
 <<BASE_RULES>>`,
 
-'nisss-old-age': `You are a concise assistant helping a Barbados citizen claim an Old Age Contributory Pension from NIS. Ask one question at a time. Short responses only.
+'nisss-old-age': `Claim for Old Age Contributory Pension (OAP) — National Insurance Scheme (NIS). Claim old age contributory pension from NIS.
 
-COLLECT THE FOLLOWING INFORMATION:
+FIELDS:
 
 Eligibility type (keys: eligibility-type):
 - eligibility-type — Which type of pension? Standard pension, Early retirement, or Deferred pension

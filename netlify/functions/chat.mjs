@@ -1,21 +1,24 @@
-const USE_GROQ = !process.env.ANTHROPIC_API_KEY && !!process.env.GROQ_API_KEY;
+const MODEL = 'anthropic/claude-sonnet-4.6';
+const MAX_TOKENS_CAP = 2048;
+const MAX_BODY_BYTES = 32 * 1024;
+const TEMPERATURE = 0.3;
 
 export default async function handler(req) {
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY || process.env.GROQ_API_KEY;
-  if (!apiKey) {
+  const raw = await req.text();
+  if (raw.length > MAX_BODY_BYTES) {
     return Response.json(
-      { error: { message: 'No API key configured (ANTHROPIC_API_KEY or GROQ_API_KEY).' } },
-      { status: 500 }
+      { error: { message: 'Request body too large.' } },
+      { status: 413 }
     );
   }
 
   let body;
   try {
-    body = await req.json();
+    body = JSON.parse(raw);
   } catch {
     return Response.json(
       { error: { message: 'Invalid JSON in request body.' } },
@@ -23,78 +26,76 @@ export default async function handler(req) {
     );
   }
 
-  const { messages, model, max_tokens, system } = body;
-
-  let response;
-
-  if (USE_GROQ) {
-    // Groq uses OpenAI-compatible format
-    const groqMessages = [];
-    if (system) groqMessages.push({ role: 'system', content: system });
-    groqMessages.push(...messages);
-
-    response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        max_tokens: max_tokens || 2048,
-        messages: groqMessages,
-      }),
-    });
-
-    if (!response.ok) {
-      let errBody = {};
-      try { errBody = await response.json(); } catch {}
-      const msg = (errBody.error && errBody.error.message) || `HTTP ${response.status}`;
-      return Response.json({ error: { message: msg } }, { status: response.status });
-    }
-
-    // Convert Groq/OpenAI response to Anthropic format (chat-interface.html expects it)
-    const groqData = await response.json();
-    const text = groqData.choices?.[0]?.message?.content || '';
-    return Response.json({
-      content: [{ type: 'text', text }],
-      model: groqData.model,
-      role: 'assistant',
-    });
-  }
-
-  // Anthropic path
-  const anthropicBody = {
-    model: model || 'claude-sonnet-4-20250514',
-    max_tokens: max_tokens || 2048,
-    messages: messages
-  };
-  if (system) {
-    anthropicBody.system = system;
-  }
-
-  response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify(anthropicBody)
-  });
-
-  if (!response.ok) {
-    let errBody = {};
-    try { errBody = await response.json(); } catch {}
-    const msg = (errBody.error && errBody.error.message) || `HTTP ${response.status}`;
+  const { messages, system } = body;
+  if (!Array.isArray(messages) || messages.length === 0) {
     return Response.json(
-      { error: { message: msg } },
-      { status: response.status }
+      { error: { message: 'messages must be a non-empty array.' } },
+      { status: 400 }
     );
   }
 
-  const data = await response.json();
-  return Response.json(data);
+  const openaiMessages = [];
+  if (typeof system === 'string' && system.length > 0) {
+    openaiMessages.push({ role: 'system', content: system });
+  }
+  for (const m of messages) {
+    if (!m || typeof m.role !== 'string' || typeof m.content !== 'string') {
+      return Response.json(
+        { error: { message: 'Each message must have role and content strings.' } },
+        { status: 400 }
+      );
+    }
+    openaiMessages.push({ role: m.role, content: m.content });
+  }
+
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    return Response.json(
+      { error: { message: 'OPENROUTER_API_KEY not configured on the server.' } },
+      { status: 500 }
+    );
+  }
+
+  let upstream;
+  try {
+    upstream = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+        'HTTP-Referer': 'https://alpha.gov.bb',
+        'X-Title': 'GovTech Barbados Prototype'
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        max_tokens: MAX_TOKENS_CAP,
+        temperature: TEMPERATURE,
+        messages: openaiMessages
+      })
+    });
+  } catch (e) {
+    return Response.json(
+      { error: { message: `Upstream request failed: ${e.message}` } },
+      { status: 502 }
+    );
+  }
+
+  if (!upstream.ok) {
+    let errBody = {};
+    try { errBody = await upstream.json(); } catch {}
+    const msg = (errBody.error && errBody.error.message) || `HTTP ${upstream.status}`;
+    return Response.json({ error: { message: msg } }, { status: upstream.status });
+  }
+
+  const data = await upstream.json();
+  const text = data.choices?.[0]?.message?.content || '';
+
+  // Client expects Anthropic-shaped responses; reshape OpenRouter's OpenAI-compatible payload.
+  return Response.json({
+    content: [{ type: 'text', text }],
+    model: data.model,
+    role: 'assistant'
+  });
 }
 
 export const config = {
