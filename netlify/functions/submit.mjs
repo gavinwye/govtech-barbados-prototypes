@@ -49,29 +49,30 @@ export default async function handler(req) {
     }
   }
 
-  const resendKey = process.env.RESEND_API_KEY;
-  if (!resendKey) {
-    return Response.json(
-      { error: { message: 'RESEND_API_KEY not configured on the server.' } },
-      { status: 500 }
-    );
-  }
+  const {
+    RESEND_API_KEY,
+    DEMO_RECIPIENT,
+    DEPT_CONTACT_EMAIL,
+    DEPT_CONTACT_PHONE
+  } = process.env;
 
-  // Demo-week override: all outbound mail is routed to a single recipient.
-  // Set via env var so the address isn't checked into git. Post-demo this
-  // goes away and per-form department routing is restored.
-  const demoRecipient = process.env.DEMO_RECIPIENT;
-  if (!demoRecipient) {
-    return Response.json(
-      { error: { message: 'DEMO_RECIPIENT not configured on the server.' } },
-      { status: 500 }
-    );
+  for (const [name, val] of Object.entries({
+    RESEND_API_KEY,
+    DEMO_RECIPIENT,
+    DEPT_CONTACT_EMAIL,
+    DEPT_CONTACT_PHONE
+  })) {
+    if (!val) {
+      return Response.json(
+        { error: { message: `${name} not configured on the server.` } },
+        { status: 500 }
+      );
+    }
   }
 
   const prefix = formRef || 'REF';
   const referenceNumber = prefix + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
-  // Build a readable summary of the form data
   const summaryRows = Object.entries(formData || {})
     .filter(([, v]) => v !== null && v !== '' && v !== undefined)
     .map(([key, val]) => {
@@ -82,11 +83,7 @@ export default async function handler(req) {
 
   const summaryTable = `<table style="width:100%;border-collapse:collapse;font-family:Figtree,sans-serif;font-size:15px">${summaryRows}</table>`;
 
-  const deptEmail = demoRecipient;
-  const applicantRecipient = demoRecipient;
-  const fromAddress = EMAIL_FROM;
-
-  // --- Email 1: Confirmation to the applicant ---
+  // --- Email 1: Confirmation to the applicant (slim, no PII, no form summary) ---
   const applicantHtml = `
     <div style="font-family:Figtree,sans-serif;max-width:600px;margin:0 auto">
       <div style="background:#0e5f64;color:#fff;padding:24px;border-radius:6px 6px 0 0">
@@ -96,16 +93,17 @@ export default async function handler(req) {
         <p style="margin:0 0 8px">Your reference number is:</p>
         <p style="font-size:24px;font-weight:700;margin:0 0 20px;color:#0e5f64">${esc(referenceNumber)}</p>
         <p>Keep this number safe. You may need it if you contact us about your application.</p>
-        <h2 style="font-size:17px;margin:24px 0 12px;border-bottom:2px solid #e0e4e9;padding-bottom:8px">What you told us</h2>
-        ${summaryTable}
         <h2 style="font-size:17px;margin:24px 0 12px;border-bottom:2px solid #e0e4e9;padding-bottom:8px">What happens next</h2>
         <p>We will review your submission and contact you if we need anything else. This usually takes up to 5 working days.</p>
+        <h2 style="font-size:17px;margin:24px 0 12px;border-bottom:2px solid #e0e4e9;padding-bottom:8px">If you have questions</h2>
+        <p style="margin:0 0 6px">Email: <a href="mailto:${esc(DEPT_CONTACT_EMAIL)}" style="color:#0e5f64">${esc(DEPT_CONTACT_EMAIL)}</a></p>
+        <p style="margin:0">Phone: ${esc(DEPT_CONTACT_PHONE)}</p>
         <hr style="border:none;border-top:1px solid #e0e4e9;margin:24px 0">
         <p style="font-size:13px;color:#595959">Prototype — alpha.gov.bb. This is not an official Government of Barbados service.</p>
       </div>
     </div>`;
 
-  // --- Email 2: Notification to the department ---
+  // --- Email 2: Internal notification with full form data ---
   const deptHtml = `
     <div style="font-family:Figtree,sans-serif;max-width:600px;margin:0 auto">
       <div style="background:#00267f;color:#fff;padding:24px;border-radius:6px 6px 0 0">
@@ -123,50 +121,39 @@ export default async function handler(req) {
 
   const errors = [];
 
-  // Send confirmation to applicant (if we have their email)
+  const sendEmail = async ({ to, subject, html }) => {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${RESEND_API_KEY}`
+      },
+      body: JSON.stringify({ from: EMAIL_FROM, to, subject, html })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Resend ${res.status}`);
+    }
+  };
+
   if (userEmail) {
     try {
-      const res = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${resendKey}`
-        },
-        body: JSON.stringify({
-          from: fromAddress,
-          to: applicantRecipient,
-          subject: `We received your ${formName || 'form'} — ref ${referenceNumber}`,
-          html: applicantHtml
-        })
+      await sendEmail({
+        to: userEmail,
+        subject: `We received your ${formName || 'form'} — ref ${referenceNumber}`,
+        html: applicantHtml
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        errors.push(`Applicant email failed: ${err.message || res.status}`);
-      }
     } catch (e) {
       errors.push(`Applicant email failed: ${e.message}`);
     }
   }
 
-  // Send notification to department
   try {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${resendKey}`
-      },
-      body: JSON.stringify({
-        from: fromAddress,
-        to: deptEmail,
-        subject: `New submission: ${formName || 'Unknown'} — ${referenceNumber}`,
-        html: deptHtml
-      })
+    await sendEmail({
+      to: DEMO_RECIPIENT,
+      subject: `New submission: ${formName || 'Unknown'} — ${referenceNumber}`,
+      html: deptHtml
     });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      errors.push(`Department email failed: ${err.message || res.status}`);
-    }
   } catch (e) {
     errors.push(`Department email failed: ${e.message}`);
   }
