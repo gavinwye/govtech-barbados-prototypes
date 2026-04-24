@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publicity consent – Get Hired Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'Get Hired Programme 2026',
+  storeKey: 'ydp_get_hired',
+  pageId: 'publicity-consent',
+  nextUrl: 'check.html',
+  validate: () => GovBB.D['publicity-consent'] ? [] : [{id:'publicity-consent', msg:'Choose an option'}],
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Publicity consent</h1>
+      <div class="space-y-8">
+        <div class="bg-bb-blue-10 p-6 rounded-sm space-y-4 text-[1.25rem]">
+          <p>We sometimes take photos or video of people on the programme for marketing and promotion. While we try to make sure coverage is positive, we cannot control what a journalist or social media user may post.</p>
+          <p>We only share your details with other people if you say yes, or if the law requires it. Any photo, video or story may be used for up to three years.</p>
+          <p>To withdraw consent, email <a href="mailto:mysce.pti@barbados.gov.bb" class="${GovBB.LINK_CLS}">mysce.pti@barbados.gov.bb</a>.</p>
+          <p>You have the right to see any information we hold about you.</p>
+        </div>
+        ${GovBB.radioGroup('publicity-consent', 'Do you give consent for your photo or story to be used?', ['I give consent','I do not give consent'])}
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+</script>
+</body>
+</html>

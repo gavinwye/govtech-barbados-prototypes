@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical information – Youth Achieving Results (Visual Arts)</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+const CONDITIONS = ['Asthma','Diabetes','Hypertension','Epilepsy','Allergies','Physical Disability','Learning Disability','Behavioural Challenge','Mental Health Challenge','None'];
+
+YDP.initPage({
+  formName: 'Youth Achieving Results (Visual Arts)',
+  storeKey: 'ydp_yar_va',
+  pageId: 'medical',
+  nextUrl: 'emergency-contact.html',
+  validate: () => {
+    if (YDP.collectChecks('conditions').length === 0 && !GovBB.D['conditions__Other']) {
+      return [{id:'conditions__Asthma', msg:'Choose an option, or None'}];
+    }
+    return [];
+  },
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Medical information</h1>
+      <p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">We keep this information confidential. Only authorised programme staff see it, and only to help look after you.</p>
+      <div class="space-y-8">
+        ${YDP.checkboxGroup('conditions', 'Do you have any of these medical conditions?', CONDITIONS, { includeOther: true, hint: 'Choose all that apply.' })}
+        ${GovBB.textareaField('medications', 'What medication do you take, if any?', { hint: 'Leave blank if none', rows: 4 })}
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+</script>
+</body>
+</html>

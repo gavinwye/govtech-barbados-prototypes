@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check your answers – Get Hired Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+function row(label, value, changeUrl) {
+  const v = YDP.formatVal(value);
+  return `<div class="summary-row">
+    <dt class="font-semibold text-[1rem]">${YDP.esc(label)}</dt>
+    <dd class="text-[1rem]">${YDP.esc(v)}</dd>
+    <div><a href="${changeUrl}" class="${GovBB.LINK_CLS} text-[1rem]">Change<span class="sr-only"> ${YDP.esc(label)}</span></a></div>
+  </div>`;
+}
+
+function withOther(field) {
+  const D = GovBB.D;
+  return D[field] === 'Other' ? (D[field + '-other'] || 'Other') : D[field];
+}
+
+function checksWithOther(prefix) {
+  const list = YDP.collectChecks(prefix);
+  if (GovBB.D[prefix + '__Other']) {
+    const other = GovBB.D[prefix + '-other'] || 'Other';
+    return list.filter(v => v !== 'Other').concat(other);
+  }
+  return list;
+}
+
+function fmtDob() {
+  const D = GovBB.D;
+  if (!D['dob-day']) return '—';
+  return `${D['dob-day']} ${D['dob-month']} ${D['dob-year']}`;
+}
+
+YDP.initPage({
+  formName: 'Get Hired Programme 2026',
+  storeKey: 'ydp_get_hired',
+  pageId: 'check',
+  template: () => {
+    const D = GovBB.D;
+    return `
+    <div class="space-y-8">
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15]">Check your answers before sending</h1>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">Your information</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('Name', D['full-name'], 'personal-info.html')}
+        ${row('Age', D['age'], 'personal-info.html')}
+        ${row('Date of birth', fmtDob(), 'personal-info.html')}
+        ${row('Gender', withOther('gender'), 'personal-info.html')}
+        ${row('Address', D['address'], 'personal-info.html')}
+        ${row('Parish', D['parish'], 'personal-info.html')}
+        ${row('Telephone', D['telephone'], 'personal-info.html')}
+        ${row('Email', D['email'], 'personal-info.html')}
+        ${row('Religion', D['religion'], 'personal-info.html')}
+      </dl>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">Citizenship and right to work</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('Country of birth', D['country-of-birth'], 'citizenship.html')}
+        ${row('Nationality', withOther('nationality'), 'citizenship.html')}
+        ${row('Right to work in Barbados', withOther('right-to-work'), 'citizenship.html')}
+      </dl>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">Required information</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('National Registration Number', D['nrn'], 'required-info.html')}
+        ${row('Has a TAMIS Number', D['has-tamis'], 'required-info.html')}
+        ${row('Has an NIS Number', D['has-nis'], 'required-info.html')}
+        ${row('Has a bank account', D['has-bank'], 'required-info.html')}
+      </dl>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">Education and work</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('Highest education', checksWithOther('education'), 'socio-economic.html')}
+        ${row('Highest qualification', withOther('qualification'), 'socio-economic.html')}
+        ${row('Currently', checksWithOther('current-status'), 'socio-economic.html')}
+      </dl>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">Medical history</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('Medical conditions', checksWithOther('conditions'), 'medical.html')}
+        ${row('Medications', D['medications'], 'medical.html')}
+      </dl>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">Emergency contact</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('Name', D['ec-name'], 'emergency-contact.html')}
+        ${row('Relationship', D['ec-relationship'], 'emergency-contact.html')}
+        ${row('Address', D['ec-address'], 'emergency-contact.html')}
+        ${row('Phone', D['ec-phone'], 'emergency-contact.html')}
+        ${row('Email', D['ec-email'], 'emergency-contact.html')}
+      </dl>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">Area of interest</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('Hospitality roles', YDP.collectChecks('interests'), 'area-of-interest.html')}
+      </dl>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">CV</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('CV file', D['cv-filename'], 'cv-upload.html')}
+      </dl>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">Publicity consent</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('Publicity consent', D['publicity-consent'], 'publicity-consent.html')}
+      </dl>
+
+      <div class="mt-8 flex gap-4">
+        <button type="button" onclick="YDP.submit('confirmation.html')" class="${GovBB.BTN_CLS}">Submit application</button>
+      </div>
+    </div>`;
+  }
+});
+</script>
+</body>
+</html>
