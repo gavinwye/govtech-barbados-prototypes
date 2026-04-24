@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Education and work – Get Hired Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'Get Hired Programme 2026',
+  storeKey: 'ydp_get_hired',
+  pageId: 'socio-economic',
+  nextUrl: 'medical.html',
+  validate: () => {
+    const errs = [];
+    if (YDP.collectChecks('education').length === 0 && !GovBB.D['education__Other'])
+      errs.push({id:'education__Primary School', msg:'Choose your highest level of education'});
+    if (!GovBB.D['qualification']) errs.push({id:'qualification', msg:'Choose your highest qualification'});
+    if (YDP.collectChecks('current-status').length === 0 && !GovBB.D['current-status__Other'])
+      errs.push({id:'current-status__Employed (Full-time)', msg:'Choose what you are doing now'});
+    return errs;
+  },
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">About your education and work</h1>
+      <div class="space-y-8">
+        ${YDP.checkboxGroup('education', 'Highest level of education', ['Primary School','Secondary School','Post Secondary / Tertiary Education','Undergraduate','Graduate'], { includeOther: true, hint: 'Choose all that apply.' })}
+        ${YDP.radioWithOther('qualification', 'Highest qualification', ['CCSLC','CXC/CSEC','CAPE','CVQs','NVQs','GCE-O-Level','City & Guilds','Certificate','Diploma','Professional Qualification (e.g. ACCA)','Associates','Bachelors','Masters','Doctorate'])}
+        ${YDP.checkboxGroup('current-status', 'I am currently', ['Employed (Full-time)','Employed (Part-time)','Self-employed','Unemployed','In School (Full-time)','In School (Part-time)'], { includeOther: true, hint: 'Choose all that apply.' })}
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+</script>
+</body>
+</html>

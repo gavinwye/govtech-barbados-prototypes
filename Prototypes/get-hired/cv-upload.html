@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload your CV – Get Hired Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'Get Hired Programme 2026',
+  storeKey: 'ydp_get_hired',
+  pageId: 'cv-upload',
+  nextUrl: 'publicity-consent.html',
+  validate: () => {
+    if (!GovBB.D['cv-filename']) return [{id:'cv', msg:'Choose a file to upload'}];
+    return [];
+  },
+  template: () => {
+    const prev = GovBB.D['cv-filename'] || '';
+    const note = prev ? `<p class="text-[1rem] text-bb-mid-grey-00 mt-xs">You uploaded: <span class="font-semibold">${YDP.esc(prev)}</span>. Choose a new file to replace it.</p>` : '';
+    return `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Upload your CV</h1>
+      <p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">We need a copy of your curriculum vitae (CV).</p>
+      <div class="space-y-8">
+        <div class="field-group flex flex-col gap-xs w-full items-start">
+          <label for="cv" class="block text-[1.25rem] leading-normal font-bold text-bb-black-00">Your CV file</label>
+          <p class="text-[1.25rem] leading-normal text-bb-mid-grey-00">PDF, Word or plain text.</p>
+          <input type="file" id="cv" name="cv" class="text-[1.125rem] py-s" accept=".pdf,.doc,.docx,.odt,.rtf,.txt" onchange="GovBB.D['cv-filename']=this.files[0]?this.files[0].name:''; YDP.saveData();">
+          ${note}
+        </div>
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`;
+  }
+});
+</script>
+</body>
+</html>

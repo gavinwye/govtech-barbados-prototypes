@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Area of interest – Get Hired Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'Get Hired Programme 2026',
+  storeKey: 'ydp_get_hired',
+  pageId: 'area-of-interest',
+  nextUrl: 'cv-upload.html',
+  validate: () => {
+    if (YDP.collectChecks('interests').length === 0)
+      return [{id:'interests__Bartender', msg:'Choose at least one role'}];
+    return [];
+  },
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Which hospitality role interests you?</h1>
+      <div class="space-y-8">
+        ${YDP.checkboxGroup('interests', 'Choose all that apply', ['Bartender','Cook','Front Desk Clerk','Hostess','Kitchen Steward','Pastry Cook','Server'])}
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You have chosen not to register – National Community Cultural Training Programme 2025</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'National Community Cultural Training Programme 2025',
+  storeKey: 'ydp_ncctp',
+  pageId: 'no-consent',
+  template: () => {
+    try { sessionStorage.removeItem('ydp_ncctp'); } catch(e) {}
+    return `
+    <div class="space-y-8">
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15]">You have chosen not to register</h1>
+      <p class="text-[1.25rem]">You chose not to continue with this form. Your information has not been saved.</p>
+      <p class="text-[1.25rem]">If you change your mind, you can start again from the beginning.</p>
+      <div class="mt-8">
+        <a href="index.html" class="${GovBB.BTN_CLS} no-underline">Back to the start</a>
+      </div>
+    </div>`;
+  }
+});
+</script>
+</body>
+</html>
