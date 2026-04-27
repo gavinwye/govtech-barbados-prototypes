@@ -124,14 +124,16 @@ export default async function handler(req) {
 
   const errors = [];
 
-  const sendEmail = async ({ to, subject, html }) => {
+  const sendEmail = async ({ to, cc, subject, html }) => {
+    const payload = { from: EMAIL_FROM, to, subject, html };
+    if (cc) payload.cc = cc;
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${RESEND_API_KEY}`
       },
-      body: JSON.stringify({ from: EMAIL_FROM, to, subject, html })
+      body: JSON.stringify(payload)
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
@@ -152,8 +154,11 @@ export default async function handler(req) {
   }
 
   try {
+    const internalTo = deptContactEmail || DEMO_RECIPIENT;
+    const internalCc = deptContactEmail && deptContactEmail !== DEMO_RECIPIENT ? [DEMO_RECIPIENT] : undefined;
     await sendEmail({
-      to: DEMO_RECIPIENT,
+      to: internalTo,
+      cc: internalCc,
       subject: `New submission: ${formName || 'Unknown'} — ${referenceNumber}`,
       html: deptHtml
     });
