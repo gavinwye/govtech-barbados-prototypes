@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Youth Achieving Results (Performing Arts) – Division of Youth Affairs</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'Youth Achieving Results (Performing Arts)',
+  storeKey: 'ydp_yar_pa',
+  pageId: 'start',
+  nextUrl: 'consent.html',
+  template: () => `
+    <div class="space-y-8">
+      <a href="../../index.html" class="inline-flex items-center gap-xs outline-none underline-offset-2 underline hover:no-underline active:bg-bb-yellow-100 focus-visible:bg-bb-yellow-100 text-bb-teal-00 hover:text-bb-black-00 hover:bg-bb-teal-10">← Back</a>
+      <div>
+        <h1 class="font-bold text-[3.5rem] leading-[1.15]">Register for Youth Achieving Results (Performing Arts)</h1>
+        <p class="text-bb-mid-grey-00 mt-2">Last updated: January 2026</p>
+      </div>
+      <p>Youth Achieving Results (Performing Arts) is run by the Ministry of Youth, Sports and Community Empowerment. Everyone on the programme takes part in music and voice training, dance, drama, technical theatre and personal development.</p>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Who can register</h2>
+        <p>You can register if you are aged 17 to 30.</p>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">What you will need</h2>
+        <ul class="list-disc pl-6 space-y-2">
+          <li>Your National Registration Number (NRN)</li>
+          <li>Your TAMIS Number</li>
+          <li>Your email address</li>
+          <li>Details of your education</li>
+        </ul>
+      </div>
+      <p>It takes about 10 minutes to complete this form.</p>
+      ${GovBB.startBtn('Complete the online form')}
+    </div>`
+});
+</script>
+</body>
+</html>

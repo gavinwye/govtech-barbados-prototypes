@@ -14,4 +14,4 @@ export function esc(s) {
     .replace(/'/g, '&#39;');
 }
 
-export const EMAIL_FROM = 'alpha.gov.bb prototype <onboarding@resend.dev>';
+export const EMAIL_FROM = process.env.EMAIL_FROM || 'alpha.gov.bb prototype <onboarding@resend.dev>';

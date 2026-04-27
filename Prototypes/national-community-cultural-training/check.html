@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check your answers – National Community Cultural Training Programme 2025</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+function row(label, value, changeUrl) {
+  const v = YDP.formatVal(value);
+  return `<div class="summary-row">
+    <dt class="font-semibold text-[1rem]">${YDP.esc(label)}</dt>
+    <dd class="text-[1rem]">${YDP.esc(v)}</dd>
+    <div><a href="${changeUrl}" class="${GovBB.LINK_CLS} text-[1rem]">Change<span class="sr-only"> ${YDP.esc(label)}</span></a></div>
+  </div>`;
+}
+
+function fmtGender() {
+  const D = GovBB.D;
+  return D['gender'] === 'Other' ? (D['gender-other'] || 'Other') : D['gender'];
+}
+function fmtNationality() {
+  const D = GovBB.D;
+  return D['nationality'] === 'Other' ? (D['nationality-other'] || 'Other') : D['nationality'];
+}
+function fmtEmployment() {
+  const D = GovBB.D;
+  return D['employment-status'] === 'Other' ? (D['employment-status-other'] || 'Other') : D['employment-status'];
+}
+function fmtDob() {
+  const D = GovBB.D;
+  if (!D['dob-day']) return '—';
+  return `${D['dob-day']} ${D['dob-month']} ${D['dob-year']}`;
+}
+function fmtConditions() {
+  const list = YDP.collectChecks('conditions');
+  if (GovBB.D['conditions__Other']) list.push(GovBB.D['conditions-other'] || 'Other');
+  return list;
+}
+function fmtHowHeard() {
+  const list = YDP.collectChecks('how-heard');
+  if (GovBB.D['how-heard__Other']) list.push(GovBB.D['how-heard-other'] || 'Other');
+  return list;
+}
+function fmtExperience() {
+  const D = GovBB.D;
+  if (D['has-experience'] !== 'Yes') return D['has-experience'] || '—';
+  const lvl = D['experience-level'] === 'Other' ? (D['experience-level-other'] || 'Other') : D['experience-level'];
+  return `Yes — ${lvl || '?'}; ${D['experience-years'] || '?'} years; trained at ${D['experience-location'] || '?'}`;
+}
+
+YDP.initPage({
+  formName: 'National Community Cultural Training Programme 2025',
+  storeKey: 'ydp_ncctp',
+  pageId: 'check',
+  template: () => {
+    const D = GovBB.D;
+    return `
+    <div class="space-y-8">
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15]">Check your answers before sending</h1>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">Your information</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('Name', D['full-name'], 'personal-info.html')}
+        ${row('Gender', fmtGender(), 'personal-info.html')}
+        ${row('Age', D['age'], 'personal-info.html')}
+        ${row('Date of birth', fmtDob(), 'personal-info.html')}
+        ${row('Address', D['address'], 'personal-info.html')}
+        ${row('Parish', D['parish'], 'personal-info.html')}
+        ${row('Telephone', D['telephone'], 'personal-info.html')}
+        ${row('Email', D['email'], 'personal-info.html')}
+        ${row('Country of birth', D['country-of-birth'], 'personal-info.html')}
+        ${row('Nationality', fmtNationality(), 'personal-info.html')}
+        ${row('Current status', fmtEmployment(), 'personal-info.html')}
+        ${row('Highest qualification', D['qualification'], 'personal-info.html')}
+        ${row('School or institution', D['institution'], 'personal-info.html')}
+      </dl>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">Required and course information</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('National Registration Number', D['nrn'], 'required-and-course-info.html')}
+        ${row('Disciplines', YDP.collectChecks('disciplines'), 'required-and-course-info.html')}
+        ${row('Experience', fmtExperience(), 'required-and-course-info.html')}
+      </dl>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">Medical information</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('Medical conditions', fmtConditions(), 'medical.html')}
+        ${row('Medications', D['medications'], 'medical.html')}
+      </dl>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">Emergency contact</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('Name', D['ec-name'], 'emergency-contact.html')}
+        ${row('Relationship', D['ec-relationship'], 'emergency-contact.html')}
+        ${row('Address', D['ec-address'], 'emergency-contact.html')}
+        ${row('Phone', D['ec-phone'], 'emergency-contact.html')}
+      </dl>
+
+      <h2 class="font-bold text-[1.5rem] mt-8">General information</h2>
+      <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+        ${row('How they heard about the programme', fmtHowHeard(), 'general-info.html')}
+        ${row('Belongs to clubs or groups', D['in-clubs'], 'general-info.html')}
+        ${row('Which clubs or groups', D['clubs-list'], 'general-info.html')}
+      </dl>
+
+      <div class="mt-8 flex gap-4">
+        <button type="button" onclick="YDP.submit('confirmation.html')" class="${GovBB.BTN_CLS}">Submit application</button>
+      </div>
+    </div>`;
+  }
+});
+</script>
+</body>
+</html>

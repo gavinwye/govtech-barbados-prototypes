@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Required information – Youth Achieving Results (Performing Arts)</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'Youth Achieving Results (Performing Arts)',
+  storeKey: 'ydp_yar_pa',
+  pageId: 'required-info',
+  nextUrl: 'course-info.html',
+  validate: () => {
+    const errs = [];
+    const D = GovBB.D;
+    if (!D['nrn']) errs.push({id:'nrn', msg:'Enter your National Registration Number'});
+    if (!D['tamis']) errs.push({id:'tamis', msg:'Enter your TAMIS Number'});
+    if (!D['has-bank']) errs.push({id:'has-bank', msg:'Tell us if you have a bank account'});
+    return errs;
+  },
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Required information</h1>
+      <div class="space-y-8">
+        ${GovBB.textField('nrn', 'National Registration Number', { hint: 'For example, 870315-1234' })}
+        ${GovBB.textField('tamis', 'TAMIS Number')}
+        ${GovBB.radioGroup('has-bank', 'Do you have an active bank or credit union account?', ['Yes','No'])}
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+</script>
+</body>
+</html>
