@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YES First Contact (Officer) – Division of Youth Affairs</title>
+  <title>BYAC Recruitment Form – Ministry of Youth, Sports &amp; Community Empowerment</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
@@ -59,86 +59,90 @@
 <script src="/assets/govbb-framework.js"></script>
 <script src="/assets/ydp-multipage.js"></script>
 <script>
-const FORM_NAME = 'YES First Contact (Officer)';
+const FORM_NAME = 'BYAC Recruitment Form';
 
-const QUAL_OPTIONS = ['CCSLC', 'CXC / CSEC', 'CAPE', 'CVQs', 'NVQs', 'GCE O-Level', 'City & Guilds', 'Certificate', 'Diploma', 'Professional certificate', 'Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'];
-const MEDICAL_OPTIONS = ['Asthma', 'Epilepsy', 'Hypertension', 'Diabetes', 'Allergies', 'Physical disability', 'Learning disability', 'Behavioural challenge', 'Mental health challenge', 'None', 'Other'];
-const BUSINESS_TYPES = ['Manufacturing', 'Service', 'Agriculture', 'Retail', 'Information technology', 'Cosmetology', 'Food & beverage', 'Fashion', 'Art & craft', 'Entertainment', 'Other'];
-const HOW_HEARD = ['Youth Commissioner', 'School (secondary, SJPI, BCC, UWI)', 'Organisation', 'Press (newspaper, radio, TV)', 'An existing YES client', 'Other'];
-const ASSISTANCE_REQUESTED = ['Business counselling', 'Business training', 'Mentoring', 'Financial assistance', 'Market linkages', 'Other'];
-const ASSISTANCE_RECOMMENDED = ['Business counselling', 'Business training', 'Mentoring', 'Financial assistance', 'Market linkages', 'Referral to another agency', 'Other'];
-
-const FLOW = ['start', 'session-info', 'personal-info', 'education', 'business-info', 'business-details', 'assessment', 'medical', 'general', 'check', 'confirmation'];
+const FLOW = ['start', 'personal-info', 'parent-guardian', 'education', 'qualifications', 'interests', 'personal-statement', 'medical', 'declaration', 'check', 'confirmation'];
 
 const PAGES = {
 
   'start': () => `
     <div class="space-y-8">
       <a href="#" onclick="history.back(); return false;" class="inline-flex items-center gap-xs outline-none underline-offset-2 underline hover:no-underline active:bg-bb-yellow-100 focus-visible:bg-bb-yellow-100 text-bb-teal-00 hover:text-bb-black-00 hover:bg-bb-teal-10">← Back</a>
-      <div class="bg-bb-blue-10 border-l-4 border-bb-blue-40 p-6 rounded-sm">
-        <p class="font-bold text-[1.25rem]">For YES officers only</p>
-        <p class="mt-2">Use this form to record a client's first contact with the YES programme. Complete it during or after your first meeting with a client.</p>
-      </div>
       <div>
-        <h1 class="font-bold text-[3.5rem] leading-[1.15]">YES First Contact – Officer record</h1>
-        <p class="text-bb-mid-grey-00 mt-2">Division of Youth Affairs, Prime Minister's Office</p>
+        <h1 class="font-bold text-[3.5rem] leading-[1.15]">Apply for the Barbados YouthADVANCE Corps</h1>
+        <p class="text-bb-mid-grey-00 mt-2">Last updated: January 2025</p>
       </div>
-      <p>Record the client's personal details, business information, your assessment, and any assistance recommended.</p>
+      <p class="text-[1.25rem]">The Barbados YouthADVANCE Corps (BYAC) gives young people the chance to gain work experience, develop skills, and serve their community. This form is for new applicants.</p>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Who can apply</h2>
+        <p>You can apply if you are a Barbadian citizen or resident and between 17 and 25 years old.</p>
+      </div>
       <div>
         <h2 class="font-bold text-[2rem] mb-4">What you will need</h2>
         <ul class="list-disc pl-6 space-y-2">
-          <li>The client's personal and contact details</li>
-          <li>The client's highest qualification</li>
-          <li>Details about the client's business idea or existing business</li>
-          <li>Your assessment notes from the session</li>
-          <li>The client's emergency contact details</li>
+          <li>Your National Registration Number (NRN) — on your national ID card</li>
+          <li>Your National Insurance Number (NIN)</li>
+          <li>Your educational qualifications (subjects, grades, examining body)</li>
+          <li>Contact details for a parent or guardian (if you are under 18)</li>
+          <li>Your blood type (if you know it)</li>
         </ul>
+        <p class="mt-4 text-bb-mid-grey-00">You will also need to bring these documents when you come in: certified birth certificate, police certificate of character, two passport photos, copies of qualifications, last school report, and a medical certificate.</p>
       </div>
       <div class="mt-8">
-        ${GovBB.startBtn('Start recording')}
+        ${GovBB.startBtn('Start application')}
       </div>
     </div>`,
-
-  'session-info': () => `
-    <form novalidate>
-      ${GovBB.backLink()}
-      ${GovBB.caption()}
-      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Session details</h1>
-      <div class="space-y-8">
-        <div id="error-summary"></div>
-        ${GovBB.dateField('contact-date', 'Date of contact', 'For example, 23 04 2026')}
-        ${GovBB.textField('client-file-number', 'Client file number', { hint: 'The reference number from the client\'s paper file' })}
-        ${GovBB.textField('session-duration', 'Duration of session', { hint: 'For example, 45 minutes', width: 'w-48' })}
-        ${GovBB.textField('officer-name', 'Your name (keying in officer)', { hint: 'The name of the officer completing this record' })}
-        ${GovBB.continueBtn()}
-      </div>
-    </form>`,
 
   'personal-info': () => `
     <form novalidate>
       ${GovBB.backLink()}
       ${GovBB.caption()}
-      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Client's personal details</h1>
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Your personal details</h1>
       <div class="space-y-8">
         <div id="error-summary"></div>
+        ${GovBB.textField('nrn', 'National Registration Number', { hint: 'This is on your national ID card. For example, 870315-1234' })}
+        ${GovBB.textField('nin', 'National Insurance Number', { hint: 'Six digits. For example, 123456' })}
         ${GovBB.textField('first-name', 'First name')}
+        ${GovBB.textField('middle-initial', 'Middle initial(s)', { hint: 'Leave blank if you do not have a middle name' })}
         ${GovBB.textField('last-name', 'Last name')}
-        ${GovBB.radioGroup('sex', 'Sex', ['Male', 'Female'])}
-        ${GovBB.dateField('dob', 'Date of birth', 'For example, 27 03 2007')}
-        ${GovBB.textField('national-id', 'National ID number', { hint: 'On the client\'s national ID card' })}
-        ${GovBB.textField('address', 'Address')}
+        ${GovBB.textField('address-line1', 'Address line 1')}
+        ${GovBB.textField('address-line2', 'Address line 2', { hint: 'Optional' })}
         ${GovBB.selectField('parish', 'Parish', GovBB.PARISHES)}
-        ${GovBB.telField('phone', 'Phone number (home and/or mobile)', { placeholder: '246-555-1234' })}
-        ${GovBB.emailField('contact-email', 'Email address')}
+        ${GovBB.dateField('dob', 'Date of birth', 'For example, 27 03 2007')}
         ${GovBB.textField('country-of-birth', 'Country of birth')}
-        ${GovBB.radioGroup('nationality', 'Nationality', ['Barbadian', 'CARICOM national', 'European national', 'U.S. national', 'British citizen', { value: 'other', label: 'Other' }])}
-        <div id="nationality-other-wrap" class="hidden ml-4">
-          ${GovBB.textField('nationality-other-detail', 'Specify nationality')}
-        </div>
-        ${GovBB.textField('religion', 'Religion', { hint: 'Optional' })}
-        ${GovBB.radioGroup('employment-status', 'Current employment status', ['Employed (full time)', 'Employed (part time)', 'Self-employed', 'Unemployed', 'In school (full time)', 'In school (part time)'])}
-        ${GovBB.radioGroup('marital-status', 'Marital status', ['Single', 'Married', 'Divorced', 'Separated'])}
-        ${GovBB.textField('mailing-address', 'Mailing address', { hint: 'Optional — only if different from the address above' })}
+        ${GovBB.radioGroup('sex', 'Sex', ['Male', 'Female'])}
+        ${GovBB.radioGroup('union-status', 'Relationship status', ['Single', 'Married', 'Divorced', 'Separated', 'Widowed', 'Common-law'])}
+        ${GovBB.textField('num-children', 'How many children do you have?', { hint: 'Enter 0 if none', width: 'w-24', inputmode: 'numeric' })}
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`,
+
+  'parent-guardian': () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Parent or guardian details</h1>
+      <p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">Because you are under 18, we need details for at least one parent or guardian.</p>
+      <div class="space-y-8">
+        <div id="error-summary"></div>
+        <fieldset>
+          <legend class="font-bold text-[1.5rem] mb-4">Parent or guardian 1</legend>
+          <div class="space-y-6">
+            ${GovBB.textField('guardian1-name', 'Full name')}
+            ${GovBB.textField('guardian1-address', 'Address')}
+            ${GovBB.telField('guardian1-phone-home', 'Home phone', { placeholder: '246-555-1234' })}
+            ${GovBB.telField('guardian1-phone-work', 'Work phone', { hint: 'Optional', placeholder: '246-555-1234' })}
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="font-bold text-[1.5rem] mb-4">Parent or guardian 2 (optional)</legend>
+          <div class="space-y-6">
+            ${GovBB.textField('guardian2-name', 'Full name', { hint: 'Optional' })}
+            ${GovBB.textField('guardian2-address', 'Address', { hint: 'Optional' })}
+            ${GovBB.telField('guardian2-phone-home', 'Home phone', { hint: 'Optional', placeholder: '246-555-1234' })}
+            ${GovBB.telField('guardian2-phone-work', 'Work phone', { hint: 'Optional', placeholder: '246-555-1234' })}
+          </div>
+        </fieldset>
         ${GovBB.continueBtn()}
       </div>
     </form>`,
@@ -147,113 +151,92 @@ const PAGES = {
     <form novalidate>
       ${GovBB.backLink()}
       ${GovBB.caption()}
-      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Client's highest qualification</h1>
-      <p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">Choose all that apply.</p>
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Your education</h1>
       <div class="space-y-8">
         <div id="error-summary"></div>
-        <div class="space-y-4">
-          ${QUAL_OPTIONS.map(q => yesCheckbox('qual-' + q.toLowerCase().replace(/[^a-z0-9]/g, '-'), q)).join('')}
-        </div>
-        <div id="qual-other-wrap" class="hidden ml-4">
-          ${GovBB.textField('qual-other-detail', 'Describe the qualification')}
-        </div>
+        <fieldset>
+          <legend class="font-bold text-[1.5rem] mb-4">Primary school</legend>
+          <div class="space-y-4">
+            ${GovBB.textField('primary-school', 'Name of school', { hint: 'Optional' })}
+            ${GovBB.textField('primary-from', 'Year started', { hint: 'Optional', width: 'w-28', inputmode: 'numeric' })}
+            ${GovBB.textField('primary-to', 'Year finished', { hint: 'Optional', width: 'w-28', inputmode: 'numeric' })}
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="font-bold text-[1.5rem] mb-4">Secondary school</legend>
+          <div class="space-y-4">
+            ${GovBB.textField('secondary-school', 'Name of school', { hint: 'Optional' })}
+            ${GovBB.textField('secondary-from', 'Year started', { hint: 'Optional', width: 'w-28', inputmode: 'numeric' })}
+            ${GovBB.textField('secondary-to', 'Year finished', { hint: 'Optional', width: 'w-28', inputmode: 'numeric' })}
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="font-bold text-[1.5rem] mb-4">Other (college, university, training)</legend>
+          <div class="space-y-4">
+            ${GovBB.textField('other-school', 'Name of institution', { hint: 'Optional' })}
+            ${GovBB.textField('other-from', 'Year started', { hint: 'Optional', width: 'w-28', inputmode: 'numeric' })}
+            ${GovBB.textField('other-to', 'Year finished', { hint: 'Optional', width: 'w-28', inputmode: 'numeric' })}
+          </div>
+        </fieldset>
         ${GovBB.continueBtn()}
       </div>
     </form>`,
 
-  'business-info': () => `
+  'qualifications': () => `
     <form novalidate>
       ${GovBB.backLink()}
       ${GovBB.caption()}
-      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">About the client's business</h1>
-      <div class="space-y-8">
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Your qualifications</h1>
+      <p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">List your exam results and certificates. Leave blank if you do not have any.</p>
+      <div class="space-y-8" id="quals-container">
         <div id="error-summary"></div>
-        ${GovBB.textField('business-name', 'Business name', { hint: 'Optional — if no name yet, leave blank' })}
-        ${GovBB.textField('business-location', 'Business location or address', { hint: 'Optional' })}
-        ${GovBB.telField('business-phone', 'Business phone number', { hint: 'Optional', placeholder: '246-555-1234' })}
-        ${GovBB.emailField('business-email', 'Business email address', { hint: 'Optional' })}
-        ${GovBB.textField('business-instagram', 'Instagram handle', { hint: 'Optional. For example, @mybusiness' })}
-        ${GovBB.textField('business-facebook', 'Facebook page', { hint: 'Optional' })}
-        ${GovBB.textField('business-website', 'Website', { hint: 'Optional' })}
-        ${GovBB.textareaField('products-services', 'What products or services does the client sell?', { hint: 'Optional — briefly describe what the business sells', rows: 3 })}
-        ${GovBB.textareaField('business-description', 'Describe the business idea or business', { rows: 5 })}
+        <div id="qual-rows" class="space-y-6"></div>
+        <button type="button" onclick="addQualRow()"
+          class="inline-flex items-center gap-2 text-bb-teal-00 underline underline-offset-2 hover:no-underline text-[1.25rem]">
+          + Add a qualification
+        </button>
         ${GovBB.continueBtn()}
       </div>
     </form>`,
 
-  'business-details': () => `
+  'interests': () => `
     <form novalidate>
       ${GovBB.backLink()}
       ${GovBB.caption()}
-      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Business status and details</h1>
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Tell us about yourself</h1>
       <div class="space-y-8">
         <div id="error-summary"></div>
-        <div>
-          <p class="font-bold text-[1.25rem] mb-4">What is the status of the business?</p>
-          ${yesCheckbox('biz-registered-started', 'Registered and started')}
-          ${yesCheckbox('biz-registered-not-started', 'Registered but not yet started')}
-          ${yesCheckbox('biz-not-registered-started', 'Not registered but already operating')}
-          ${yesCheckbox('biz-not-registered-not-started', 'Not registered and not yet started')}
-        </div>
-        ${GovBB.radioGroup('active-status', 'How does the client run the business?', ['Full time', 'Part time', 'As a hobby'])}
-        ${GovBB.radioGroup('period-in-business', 'How long has the client been in business?', ['Less than 1 year', '1 to 3 years', 'More than 5 years', 'Not started yet'])}
-        ${GovBB.textField('num-employees', 'Number of employees', { hint: 'Enter 0 if the client works alone', width: 'w-24', inputmode: 'numeric' })}
-        ${GovBB.radioGroup('business-structure', 'Business structure', ['Sole proprietorship', 'Partnership', 'Company', 'Other'])}
-        <div>
-          <p class="font-bold text-[1.25rem] mb-4">Type of business</p>
-          <p class="text-[1.25rem] text-bb-mid-grey-00 mb-4">Choose all that apply.</p>
+        ${GovBB.textareaField('group-membership', 'Are you a member of a youth group, community group, or sports club?', { hint: 'Give the name of the group. Write "No" if you are not a member.', rows: 3 })}
+        ${GovBB.textareaField('hobbies', 'What are your hobbies, interests, or special skills?', { hint: 'Optional', rows: 3 })}
+        ${GovBB.radioGroup('employed', 'Are you currently employed?', ['Yes – full time', 'Yes – part time', 'No'])}
+        ${GovBB.textareaField('career-goal', 'What career would you like to pursue?', { rows: 3 })}
+        ${GovBB.textField('alt-choice-1', 'Alternative career choice 1', { hint: 'Optional' })}
+        ${GovBB.textField('alt-choice-2', 'Alternative career choice 2', { hint: 'Optional' })}
+        ${GovBB.textField('alt-choice-3', 'Alternative career choice 3', { hint: 'Optional' })}
+        ${GovBB.radioGroup('can-swim', 'Can you swim?', ['Yes', 'No'])}
+        ${GovBB.textField('religion', 'Religion', { hint: 'Optional' })}
+        ${GovBB.textareaField('disability', 'Do you have a disability?', { hint: 'Describe your disability, or write "None" if you do not have one.', rows: 3 })}
+        <fieldset>
+          <legend class="font-bold text-[1.25rem] mb-4">Clothing sizes (optional)</legend>
           <div class="space-y-4">
-            ${BUSINESS_TYPES.map(t => yesCheckbox('btype-' + t.toLowerCase().replace(/[^a-z0-9]/g, '-'), t)).join('')}
+            ${GovBB.textField('shirt-size', 'Shirt size', { hint: 'For example, M, L, XL', width: 'w-32' })}
+            ${GovBB.textField('pants-size', 'Pants size', { hint: 'For example, 32×30', width: 'w-32' })}
+            ${GovBB.textField('shoe-size', 'Shoe size', { hint: 'For example, 10', width: 'w-32' })}
           </div>
-        </div>
-        <div>
-          <p class="font-bold text-[1.25rem] mb-4">Why does the client want to run their own business?</p>
-          <p class="text-[1.25rem] text-bb-mid-grey-00 mb-4">Choose all that apply.</p>
-          <div class="space-y-4">
-            ${[
-              'To earn extra income',
-              'I am not happy in my current job',
-              'I want to be in control of my own future',
-              'I prefer to use my skills for myself',
-              'I have always wanted to work for myself',
-              'Other'
-            ].map(r => yesCheckbox('reason-' + r.toLowerCase().replace(/[^a-z0-9]/g, '-'), r)).join('')}
-          </div>
-        </div>
+        </fieldset>
         ${GovBB.continueBtn()}
       </div>
     </form>`,
 
-  'assessment': () => `
+  'personal-statement': () => `
     <form novalidate>
       ${GovBB.backLink()}
       ${GovBB.caption()}
-      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Officer assessment</h1>
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Your personal statement</h1>
+      <p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">Tell us about yourself. Include your background, your future plans, and how the BYAC programme can help you reach your goals.</p>
       <div class="space-y-8">
         <div id="error-summary"></div>
-        <div>
-          <p class="font-bold text-[1.25rem] mb-4">Assistance requested by client</p>
-          <p class="text-[1.25rem] text-bb-mid-grey-00 mb-4">Choose all that apply.</p>
-          <div class="space-y-4">
-            ${ASSISTANCE_REQUESTED.map(a => yesCheckbox('req-' + a.toLowerCase().replace(/[^a-z0-9]/g, '-'), a)).join('')}
-          </div>
-        </div>
-        <div id="req-other-wrap" class="hidden ml-4">
-          ${GovBB.textField('req-other-detail', 'Describe the assistance requested')}
-        </div>
-        <div>
-          <p class="font-bold text-[1.25rem] mb-4">Assistance recommended by officer</p>
-          <p class="text-[1.25rem] text-bb-mid-grey-00 mb-4">Choose all that apply.</p>
-          <div class="space-y-4">
-            ${ASSISTANCE_RECOMMENDED.map(a => yesCheckbox('rec-' + a.toLowerCase().replace(/[^a-z0-9]/g, '-'), a)).join('')}
-          </div>
-        </div>
-        <div id="rec-other-wrap" class="hidden ml-4">
-          ${GovBB.textField('rec-other-detail', 'Describe the assistance recommended')}
-        </div>
-        ${GovBB.radioGroup('second-assessment', 'Is a second assessment needed?', ['Yes', 'No'])}
-        ${GovBB.radioGroup('eligible-training', 'Is the client eligible for entrepreneurial training?', ['Yes', 'No'])}
-        ${GovBB.textareaField('assessment-comments', 'Additional comments', { hint: 'Optional — any other notes from the session', rows: 5 })}
+        ${GovBB.textareaField('personal-statement', 'Personal statement', { rows: 10, maxlength: 2000 })}
         ${GovBB.continueBtn()}
       </div>
     </form>`,
@@ -262,172 +245,206 @@ const PAGES = {
     <form novalidate>
       ${GovBB.backLink()}
       ${GovBB.caption()}
-      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Client's health and emergency contact</h1>
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Your health</h1>
+      <p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">This information is kept private. It helps us make sure you are safe during the programme.</p>
       <div class="space-y-8">
         <div id="error-summary"></div>
-        <div>
-          <p class="font-bold text-[1.25rem] mb-4">Does the client have any of the following? Choose all that apply.</p>
-          <div class="space-y-4">
-            ${MEDICAL_OPTIONS.map(c => yesCheckbox('med-' + c.toLowerCase().replace(/[^a-z0-9]/g, '-'), c)).join('')}
-          </div>
-        </div>
-        <div id="med-other-wrap" class="hidden ml-4">
-          ${GovBB.textField('med-other-detail', 'Describe the condition')}
+
+        <div class="space-y-4">
+          <p class="font-bold text-[1.25rem]">Do you have or have you had any of the following?</p>
+          <p class="text-[1.25rem] text-bb-mid-grey-00">Choose Yes or No for each one.</p>
+
+          ${medicalConditionRow('rheumatic-fever', 'Rheumatic fever')}
+          ${medicalConditionRow('asthma', 'Asthma')}
+          ${medicalConditionRow('allergies', 'Allergies')}
+          ${medicalConditionRow('epilepsy', 'Epilepsy')}
+          ${medicalConditionRow('diabetes', 'Diabetes')}
         </div>
 
-        <h2 class="font-bold text-[2rem]">Emergency contact</h2>
-        ${GovBB.textField('ec-name', 'Full name')}
-        ${GovBB.textField('ec-relationship', 'Relationship to client', { hint: 'For example, parent, grandparent, guardian' })}
-        ${GovBB.telField('ec-phone', 'Phone number', { placeholder: '246-555-1234' })}
-        ${GovBB.telField('ec-cell', 'Mobile number', { hint: 'Optional', placeholder: '246-555-1234' })}
-        ${GovBB.textField('ec-address', 'Address', { hint: 'Optional — only if different from the client\'s address' })}
-        ${GovBB.emailField('ec-email', 'Email address', { hint: 'Optional' })}
+        ${GovBB.textareaField('other-conditions', 'Do you have any other medical or physical conditions?', { hint: 'Write "None" if you do not have any.', rows: 3 })}
+        ${GovBB.textField('medication-allergies', 'Are you allergic to any medication?', { hint: 'Write "None" if you are not allergic to any medication.' })}
+        ${GovBB.textField('blood-type', 'What is your blood type?', { hint: 'Optional. For example, O+, A−', width: 'w-32' })}
+        ${GovBB.radioGroup('special-diet', 'Do you follow a special diet?', ['Yes', 'No'])}
+        <div id="diet-detail-wrap" class="hidden">
+          ${GovBB.textareaField('diet-detail', 'Describe your diet', { rows: 3 })}
+        </div>
         ${GovBB.continueBtn()}
       </div>
     </form>`,
 
-  'general': () => `
+  'declaration': () => `
     <form novalidate>
       ${GovBB.backLink()}
       ${GovBB.caption()}
-      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">How did the client find out about YES?</h1>
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Declaration</h1>
       <div class="space-y-8">
         <div id="error-summary"></div>
-        <div class="space-y-4">
-          ${HOW_HEARD.map(h => yesCheckbox('heard-' + h.toLowerCase().replace(/[^a-z0-9]/g, '-'), h)).join('')}
+        <div class="bg-bb-blue-10 p-6 rounded-sm space-y-4">
+          <p class="text-[1.25rem]">By submitting this application, you confirm that:</p>
+          <ul class="list-disc pl-6 space-y-2 text-[1.25rem]">
+            <li>The information you have given is true and complete.</li>
+            <li>You understand that giving false information may disqualify your application.</li>
+            <li>You agree to follow the rules and requirements of the BYAC programme if accepted.</li>
+          </ul>
         </div>
+        ${GovBB.checkboxItem('agree-declaration', 'I confirm that all the information I have given is correct and I agree to the terms above.')}
+        <div class="space-y-2">
+          <p class="font-bold text-[1.25rem]">Your signature</p>
+          <p class="text-[1.25rem] text-bb-mid-grey-00">Sign below using your mouse or finger.</p>
+          <div class="border-2 border-bb-black-00 rounded-sm bg-bb-white-00 h-32 flex items-center justify-center text-bb-mid-grey-00">
+            [Signature area – for prototype purposes]
+          </div>
+        </div>
+        ${GovBB.dateField('declaration-date', 'Date', 'For example, 27 03 2025')}
         ${GovBB.continueBtn()}
       </div>
     </form>`,
 
   'check': () => {
     const D = GovBB.D;
-    const contactDate = [D['contact-date-day'], D['contact-date-month'], D['contact-date-year']].filter(Boolean).join(' / ');
     const dob = [D['dob-day'], D['dob-month'], D['dob-year']].filter(Boolean).join(' / ');
-    const quals = QUAL_OPTIONS.filter(q => D['qual-' + q.toLowerCase().replace(/[^a-z0-9]/g, '-')]).join(', ') || '—';
-    const meds = MEDICAL_OPTIONS.filter(c => D['med-' + c.toLowerCase().replace(/[^a-z0-9]/g, '-')]).join(', ') || '—';
-    const assistRequested = ASSISTANCE_REQUESTED.filter(a => D['req-' + a.toLowerCase().replace(/[^a-z0-9]/g, '-')]).join(', ') || '—';
-    const assistRecommended = ASSISTANCE_RECOMMENDED.filter(a => D['rec-' + a.toLowerCase().replace(/[^a-z0-9]/g, '-')]).join(', ') || '—';
+    const decDate = [D['declaration-date-day'], D['declaration-date-month'], D['declaration-date-year']].filter(Boolean).join(' / ');
+    const isMinor = isApplicantMinor();
     return `
     ${GovBB.backLink()}
-    <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Check the record before saving</h1>
+    <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Check your answers</h1>
     <div class="space-y-10">
+
       <div>
-        <h2 class="font-bold text-[2rem] mb-4">Session details</h2>
+        <h2 class="font-bold text-[2rem] mb-4">Personal details</h2>
         <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
-          ${GovBB.summaryRow('Date of contact', contactDate, 'session-info')}
-          ${GovBB.summaryRow('Client file number', D['client-file-number'] || '—', 'session-info')}
-          ${GovBB.summaryRow('Session duration', D['session-duration'] || '—', 'session-info')}
-          ${GovBB.summaryRow('Officer name', D['officer-name'] || '—', 'session-info')}
-        </dl>
-      </div>
-      <div>
-        <h2 class="font-bold text-[2rem] mb-4">Client's personal details</h2>
-        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
-          ${GovBB.summaryRow('Name', [D['first-name'], D['last-name']].filter(Boolean).join(' '), 'personal-info')}
+          ${GovBB.summaryRow('NRN', D['nrn'], 'personal-info')}
+          ${GovBB.summaryRow('NIN', D['nin'], 'personal-info')}
+          ${GovBB.summaryRow('Name', [D['first-name'], D['middle-initial'], D['last-name']].filter(Boolean).join(' '), 'personal-info')}
+          ${GovBB.summaryRow('Address', [D['address-line1'], D['address-line2'], D['parish']].filter(Boolean).join(', '), 'personal-info')}
           ${GovBB.summaryRow('Date of birth', dob, 'personal-info')}
-          ${GovBB.summaryRow('National ID', D['national-id'], 'personal-info')}
-          ${GovBB.summaryRow('Address', [D['address'], D['parish']].filter(Boolean).join(', '), 'personal-info')}
-          ${GovBB.summaryRow('Phone', D['phone'], 'personal-info')}
-          ${GovBB.summaryRow('Email', D['contact-email'], 'personal-info')}
-          ${GovBB.summaryRow('Nationality', D['nationality'], 'personal-info')}
-          ${GovBB.summaryRow('Employment status', D['employment-status'], 'personal-info')}
-          ${GovBB.summaryRow('Marital status', D['marital-status'], 'personal-info')}
+          ${GovBB.summaryRow('Country of birth', D['country-of-birth'], 'personal-info')}
+          ${GovBB.summaryRow('Sex', D['sex'], 'personal-info')}
+          ${GovBB.summaryRow('Age', YDP.ageFromDob(D), 'personal-info')}
+          ${GovBB.summaryRow('Relationship status', D['union-status'], 'personal-info')}
+          ${GovBB.summaryRow('Children', D['num-children'] || '0', 'personal-info')}
         </dl>
       </div>
+
+      ${isMinor ? `
       <div>
-        <h2 class="font-bold text-[2rem] mb-4">Qualifications</h2>
+        <h2 class="font-bold text-[2rem] mb-4">Parent or guardian</h2>
         <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
-          ${GovBB.summaryRow('Qualifications', quals, 'education')}
+          ${GovBB.summaryRow('Guardian 1 name', D['guardian1-name'], 'parent-guardian')}
+          ${GovBB.summaryRow('Guardian 1 address', D['guardian1-address'], 'parent-guardian')}
+          ${GovBB.summaryRow('Guardian 1 home phone', D['guardian1-phone-home'], 'parent-guardian')}
+          ${D['guardian2-name'] ? GovBB.summaryRow('Guardian 2 name', D['guardian2-name'], 'parent-guardian') : ''}
         </dl>
-      </div>
+      </div>` : ''}
+
       <div>
-        <h2 class="font-bold text-[2rem] mb-4">Business</h2>
+        <h2 class="font-bold text-[2rem] mb-4">Education</h2>
         <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
-          ${GovBB.summaryRow('Business name', D['business-name'] || '—', 'business-info')}
-          ${GovBB.summaryRow('Description', D['business-description'] || '—', 'business-info')}
-          ${GovBB.summaryRow('Active status', D['active-status'] || '—', 'business-details')}
-          ${GovBB.summaryRow('Business structure', D['business-structure'] || '—', 'business-details')}
-          ${GovBB.summaryRow('Number of employees', D['num-employees'] || '0', 'business-details')}
+          ${GovBB.summaryRow('Primary school', D['primary-school'] || '—', 'education')}
+          ${GovBB.summaryRow('Secondary school', D['secondary-school'] || '—', 'education')}
+          ${GovBB.summaryRow('Other institution', D['other-school'] || '—', 'education')}
         </dl>
       </div>
+
       <div>
-        <h2 class="font-bold text-[2rem] mb-4">Officer assessment</h2>
+        <h2 class="font-bold text-[2rem] mb-4">About you</h2>
         <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
-          ${GovBB.summaryRow('Assistance requested', assistRequested, 'assessment')}
-          ${GovBB.summaryRow('Assistance recommended', assistRecommended, 'assessment')}
-          ${GovBB.summaryRow('Second assessment needed', D['second-assessment'] || '—', 'assessment')}
-          ${GovBB.summaryRow('Eligible for training', D['eligible-training'] || '—', 'assessment')}
-          ${GovBB.summaryRow('Comments', D['assessment-comments'] || '—', 'assessment')}
+          ${GovBB.summaryRow('Group membership', D['group-membership'] || '—', 'interests')}
+          ${GovBB.summaryRow('Career goal', D['career-goal'] || '—', 'interests')}
+          ${GovBB.summaryRow('Can swim', D['can-swim'] || '—', 'interests')}
+          ${GovBB.summaryRow('Disability', D['disability'] || '—', 'interests')}
         </dl>
       </div>
+
       <div>
-        <h2 class="font-bold text-[2rem] mb-4">Client's health</h2>
+        <h2 class="font-bold text-[2rem] mb-4">Health</h2>
         <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
-          ${GovBB.summaryRow('Conditions', meds, 'medical')}
-          ${GovBB.summaryRow('Emergency contact', D['ec-name'], 'medical')}
+          ${GovBB.summaryRow('Rheumatic fever', D['rheumatic-fever'] || '—', 'medical')}
+          ${GovBB.summaryRow('Asthma', D['asthma'] || '—', 'medical')}
+          ${GovBB.summaryRow('Allergies', D['allergies'] || '—', 'medical')}
+          ${GovBB.summaryRow('Epilepsy', D['epilepsy'] || '—', 'medical')}
+          ${GovBB.summaryRow('Diabetes', D['diabetes'] || '—', 'medical')}
+          ${GovBB.summaryRow('Medication allergies', D['medication-allergies'] || '—', 'medical')}
+          ${GovBB.summaryRow('Blood type', D['blood-type'] || '—', 'medical')}
         </dl>
       </div>
-      ${GovBB.continueBtn('Save record')}
+
+      ${GovBB.continueBtn('Submit application')}
     </div>`;
   },
 
   'confirmation': () => `
     <div class="space-y-8">
       <div class="bg-bb-teal-00 text-bb-white-00 p-8 rounded-sm space-y-4">
-        <h1 class="font-bold text-[3.5rem] leading-[1.15]">Record saved</h1>
-        <p class="text-[1.5rem]">Reference number</p>
-        <p class="text-[2rem] font-bold">${window.__refNumber || 'YESO-' + Math.random().toString(36).substring(2,8).toUpperCase()}</p>
+        <h1 class="font-bold text-[3.5rem] leading-[1.15]">Application submitted</h1>
+        <p class="text-[1.5rem]">Your reference number</p>
+        <p class="text-[2rem] font-bold">${window.__refNumber || 'BYAC-' + Math.random().toString(36).substring(2,8).toUpperCase()}</p>
       </div>
       <h2 class="font-bold text-[2rem]">What happens next</h2>
-      <p>This record has been submitted to the YES programme database.</p>
-      <p>You can use the reference number above to locate this client's record in the system.</p>
-      <div class="border-t border-bb-grey-00 pt-8">
-        <p class="font-bold text-[1.25rem] mb-4">Officer signature</p>
-        <p class="text-[1.25rem] text-bb-mid-grey-00 mb-6">Sign below to confirm the information recorded is accurate to the best of your knowledge.</p>
-        <div class="border-2 border-bb-black-00 rounded-sm bg-bb-white-00" style="height: 120px; width: 400px;">
-          <p class="text-bb-mid-grey-00 text-[1rem] p-4">Signature area</p>
-        </div>
-        <p class="text-[1.25rem] text-bb-mid-grey-00 mt-4">Date: ${new Date().toLocaleDateString('en-BB', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+      <p>We will review your application and contact you within 10 working days.</p>
+      <p>If you are shortlisted, we will invite you to an interview and ask you to bring your supporting documents.</p>
+      <p>If you have any questions, call us on <strong>(246) 535-0180</strong> or visit us at #33 Warrens Industrial Park, St. Michael.</p>
+      <div class="mt-8">
+        <a href="https://alpha.gov.bb/work-employment/barbados-youthadvance-corps-recruitment/start" class="${GovBB.BTN_CLS} no-underline">Return to alpha.gov.bb</a>
       </div>
-      <a href="yes-first-contact-officer.html" class="${GovBB.LINK_CLS}">Record another client</a>
     </div>`
 };
 
 /* ── Helpers ── */
-function yesCheckbox(id, label) {
+
+function medicalConditionRow(id, label) {
   const D = GovBB.D;
-  const checked = D[id];
+  const val = D[id] || '';
   return `
-    <div class="flex gap-4 items-center">
-      <button type="button" role="checkbox" aria-checked="${checked ? 'true' : 'false'}" id="${id}"
-        onclick="GovBB.toggleCheckbox('${id}'); onCheckChange('${id}')"
-        class="relative inline-flex size-10 shrink-0 items-center justify-center bg-bb-white-00 border-2 border-bb-black-00 rounded-sm transition-all outline-none hover:cursor-pointer hover:shadow-form-hover focus-visible:ring-4 focus-visible:ring-bb-teal-100 ${checked ? 'bg-bb-teal-00 border-bb-teal-00' : ''}">
-        ${checked ? '<svg class="text-white" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
-      </button>
-      <label class="text-[1.25rem] leading-normal text-bb-black-00 cursor-pointer" onclick="GovBB.toggleCheckbox('${id}'); onCheckChange('${id}')">${label}</label>
+    <div class="border border-bb-grey-00 rounded-sm p-4 space-y-4">
+      ${GovBB.radioGroup(id, label, ['Yes', 'No'])}
+      <div id="${id}-detail-wrap" class="${val === 'Yes' ? '' : 'hidden'}">
+        ${GovBB.textareaField(id + '-detail', 'Give details (when, how long, doctor\'s name)', { rows: 3 })}
+      </div>
     </div>`;
 }
 
-function onCheckChange(id) {
-  setTimeout(function() {
-    if (id === 'qual-other') {
-      const w = document.getElementById('qual-other-wrap');
-      if (w) w.classList.toggle('hidden', !GovBB.D['qual-other']);
-    }
-    if (id === 'med-other') {
-      const w = document.getElementById('med-other-wrap');
-      if (w) w.classList.toggle('hidden', !GovBB.D['med-other']);
-    }
-    if (id === 'req-other') {
-      const w = document.getElementById('req-other-wrap');
-      if (w) w.classList.toggle('hidden', !GovBB.D['req-other']);
-    }
-    if (id === 'rec-other') {
-      const w = document.getElementById('rec-other-wrap');
-      if (w) w.classList.toggle('hidden', !GovBB.D['rec-other']);
-    }
-  }, 50);
+function isApplicantMinor() {
+  const D = GovBB.D;
+  const day = parseInt(D['dob-day'], 10);
+  const month = parseInt(D['dob-month'], 10);
+  const year = parseInt(D['dob-year'], 10);
+  if (!day || !month || !year) return false;
+  const dob = new Date(year, month - 1, day);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+  return age < 18;
+}
+
+let qualRowCount = 0;
+function addQualRow() {
+  qualRowCount++;
+  const i = qualRowCount;
+  const container = document.getElementById('qual-rows');
+  const row = document.createElement('div');
+  row.className = 'border border-bb-grey-00 rounded-sm p-4 space-y-4';
+  row.id = `qual-row-${i}`;
+  row.innerHTML = `
+    <div class="flex justify-between items-center">
+      <p class="font-bold text-[1.25rem]">Qualification ${i}</p>
+      <button type="button" onclick="removeQualRow(${i})" class="text-bb-teal-00 underline text-[1rem]">Remove</button>
+    </div>
+    <div class="space-y-4">
+      ${GovBB.textField(`qual-subject-${i}`, 'Subject')}
+      ${GovBB.textField(`qual-year-${i}`, 'Year', { width: 'w-28', inputmode: 'numeric' })}
+      ${GovBB.textField(`qual-body-${i}`, 'Examining body', { hint: 'For example, CXC, CAPE, City & Guilds' })}
+      ${GovBB.textField(`qual-level-${i}`, 'Level', { hint: 'For example, CSEC, CAPE Unit 1' })}
+      ${GovBB.textField(`qual-grade-${i}`, 'Grade', { hint: 'For example, Grade 1, A' })}
+    </div>`;
+  container.appendChild(row);
+  GovBB.render && GovBB.render();
+}
+
+function removeQualRow(i) {
+  const el = document.getElementById(`qual-row-${i}`);
+  if (el) el.remove();
 }
 
 /* ── Validation ── */
@@ -435,56 +452,53 @@ function validate(pageId) {
   const D = GovBB.D;
   const errors = [];
 
-  if (pageId === 'session-info') {
-    if (!D['contact-date-day'] || !D['contact-date-month'] || !D['contact-date-year']) errors.push({ id: 'contact-date-day', msg: 'Date of contact – Enter the date of contact' });
-    if (!D['officer-name']) errors.push({ id: 'officer-name', msg: 'Officer name – Enter your name' });
-  }
-
   if (pageId === 'personal-info') {
-    if (!D['first-name']) errors.push({ id: 'first-name', msg: 'First name – Enter the client\'s first name' });
-    if (!D['last-name']) errors.push({ id: 'last-name', msg: 'Last name – Enter the client\'s last name' });
-    if (!D['sex']) errors.push({ id: 'sex', msg: 'Sex – Choose the client\'s sex' });
-    if (!D['dob-day'] || !D['dob-month'] || !D['dob-year']) errors.push({ id: 'dob-day', msg: 'Date of birth – Enter the client\'s date of birth' });
-    if (!D['national-id']) errors.push({ id: 'national-id', msg: 'National ID – Enter the client\'s national ID number' });
-    if (!D['address']) errors.push({ id: 'address', msg: 'Address – Enter the client\'s address' });
-    if (!D['parish']) errors.push({ id: 'parish', msg: 'Parish – Select the client\'s parish' });
-    if (!D['phone']) errors.push({ id: 'phone', msg: 'Phone – Enter the client\'s phone number' });
-    if (!D['contact-email']) errors.push({ id: 'contact-email', msg: 'Email – Enter the client\'s email address' });
-    if (!D['country-of-birth']) errors.push({ id: 'country-of-birth', msg: 'Country of birth – Enter the client\'s country of birth' });
-    if (!D['nationality']) errors.push({ id: 'nationality', msg: 'Nationality – Choose the client\'s nationality' });
-    if (!D['employment-status']) errors.push({ id: 'employment-status', msg: 'Employment status – Choose the client\'s employment status' });
-    if (!D['marital-status']) errors.push({ id: 'marital-status', msg: 'Marital status – Choose the client\'s marital status' });
+    if (!D['nrn']) errors.push({ id: 'nrn', msg: 'National Registration Number – Enter your NRN' });
+    if (!D['nin']) errors.push({ id: 'nin', msg: 'National Insurance Number – Enter your NIN' });
+    if (!D['last-name']) errors.push({ id: 'last-name', msg: 'Last name – Enter your last name' });
+    if (!D['first-name']) errors.push({ id: 'first-name', msg: 'First name – Enter your first name' });
+    if (!D['address-line1']) errors.push({ id: 'address-line1', msg: 'Address – Enter your address' });
+    if (!D['parish']) errors.push({ id: 'parish', msg: 'Parish – Select your parish' });
+    if (!D['dob-day'] || !D['dob-month'] || !D['dob-year']) errors.push({ id: 'dob-day', msg: 'Date of birth – Enter your date of birth' });
+    if (!D['country-of-birth']) errors.push({ id: 'country-of-birth', msg: 'Country of birth – Enter your country of birth' });
+    if (!D['sex']) errors.push({ id: 'sex', msg: 'Sex – Select your sex' });
+    if (!D['union-status']) errors.push({ id: 'union-status', msg: 'Relationship status – Select your relationship status' });
   }
 
-  if (pageId === 'education') {
-    const any = QUAL_OPTIONS.some(q => D['qual-' + q.toLowerCase().replace(/[^a-z0-9]/g, '-')]);
-    if (!any) errors.push({ id: 'qual-ccslc', msg: 'Qualifications – Choose at least one option' });
+  if (pageId === 'parent-guardian') {
+    if (!D['guardian1-name']) errors.push({ id: 'guardian1-name', msg: 'Guardian 1 name – Enter a name' });
+    if (!D['guardian1-address']) errors.push({ id: 'guardian1-address', msg: 'Guardian 1 address – Enter an address' });
+    if (!D['guardian1-phone-home']) errors.push({ id: 'guardian1-phone-home', msg: 'Guardian 1 home phone – Enter a phone number' });
   }
 
-  if (pageId === 'business-info') {
-    if (!D['business-description']) errors.push({ id: 'business-description', msg: 'Business description – Describe the client\'s business idea' });
+  if (pageId === 'interests') {
+    if (!D['group-membership']) errors.push({ id: 'group-membership', msg: 'Group membership – Answer this question' });
+    if (!D['career-goal']) errors.push({ id: 'career-goal', msg: 'Career goal – Enter your career goal' });
+    if (!D['can-swim']) errors.push({ id: 'can-swim', msg: 'Swimming – Tell us if you can swim' });
+    if (!D['disability']) errors.push({ id: 'disability', msg: 'Disability – Answer this question' });
   }
 
-  if (pageId === 'business-details') {
-    if (!D['active-status']) errors.push({ id: 'active-status', msg: 'Active status – Choose how the client runs the business' });
-    if (!D['business-structure']) errors.push({ id: 'business-structure', msg: 'Business structure – Choose the structure of the business' });
-  }
-
-  if (pageId === 'assessment') {
-    const anyReq = ASSISTANCE_REQUESTED.some(a => D['req-' + a.toLowerCase().replace(/[^a-z0-9]/g, '-')]);
-    if (!anyReq) errors.push({ id: 'req-business-counselling', msg: 'Assistance requested – Choose at least one option' });
-    const anyRec = ASSISTANCE_RECOMMENDED.some(a => D['rec-' + a.toLowerCase().replace(/[^a-z0-9]/g, '-')]);
-    if (!anyRec) errors.push({ id: 'rec-business-counselling', msg: 'Assistance recommended – Choose at least one option' });
-    if (!D['second-assessment']) errors.push({ id: 'second-assessment', msg: 'Second assessment – Choose Yes or No' });
-    if (!D['eligible-training']) errors.push({ id: 'eligible-training', msg: 'Eligible for training – Choose Yes or No' });
+  if (pageId === 'personal-statement') {
+    if (!D['personal-statement']) errors.push({ id: 'personal-statement', msg: 'Personal statement – Write your personal statement' });
   }
 
   if (pageId === 'medical') {
-    const anyMed = MEDICAL_OPTIONS.some(c => D['med-' + c.toLowerCase().replace(/[^a-z0-9]/g, '-')]);
-    if (!anyMed) errors.push({ id: 'med-asthma', msg: 'Health – Choose at least one option, or choose "None"' });
-    if (!D['ec-name']) errors.push({ id: 'ec-name', msg: 'Emergency contact name – Enter a name' });
-    if (!D['ec-relationship']) errors.push({ id: 'ec-relationship', msg: 'Relationship – Enter the relationship' });
-    if (!D['ec-phone']) errors.push({ id: 'ec-phone', msg: 'Emergency contact phone – Enter a phone number' });
+    const conditions = ['rheumatic-fever', 'asthma', 'allergies', 'epilepsy', 'diabetes'];
+    conditions.forEach(c => {
+      if (!D[c]) errors.push({ id: c, msg: `${c.replace(/-/g, ' ')} – Select Yes or No` });
+      if (D[c] === 'Yes' && !D[c + '-detail']) errors.push({ id: c + '-detail', msg: `${c.replace(/-/g, ' ')} details – Give details` });
+    });
+    if (!D['other-conditions']) errors.push({ id: 'other-conditions', msg: 'Other conditions – Answer this question' });
+    if (!D['medication-allergies']) errors.push({ id: 'medication-allergies', msg: 'Medication allergies – Answer this question' });
+    if (!D['special-diet']) errors.push({ id: 'special-diet', msg: 'Special diet – Select Yes or No' });
+    if (D['special-diet'] === 'Yes' && !D['diet-detail']) errors.push({ id: 'diet-detail', msg: 'Diet details – Describe your diet' });
+  }
+
+  if (pageId === 'declaration') {
+    if (!D['agree-declaration']) errors.push({ id: 'agree-declaration', msg: 'Declaration – You must confirm the declaration to continue' });
+    if (!D['declaration-date-day'] || !D['declaration-date-month'] || !D['declaration-date-year']) {
+      errors.push({ id: 'declaration-date-day', msg: 'Date – Enter today\'s date' });
+    }
   }
 
   return errors;
@@ -493,13 +507,27 @@ function validate(pageId) {
 /* ── Init ── */
 GovBB.init({
   formName: FORM_NAME,
+  deptContactPhone: '(246) 535-0180',
   flow: FLOW,
   pages: PAGES,
   validate: validate,
+  getFlow: function() {
+    if (isApplicantMinor()) {
+      return ['start', 'personal-info', 'parent-guardian', 'education', 'qualifications', 'interests', 'personal-statement', 'medical', 'declaration', 'check', 'confirmation'];
+    }
+    return ['start', 'personal-info', 'education', 'qualifications', 'interests', 'personal-statement', 'medical', 'declaration', 'check', 'confirmation'];
+  },
   onRadioChange: function(name, value) {
-    if (name === 'nationality') {
-      const w = document.getElementById('nationality-other-wrap');
-      if (w) w.classList.toggle('hidden', value !== 'other');
+    // Medical condition Yes/No toggles
+    const conditions = ['rheumatic-fever', 'asthma', 'allergies', 'epilepsy', 'diabetes'];
+    if (conditions.includes(name)) {
+      const wrap = document.getElementById(name + '-detail-wrap');
+      if (wrap) wrap.classList.toggle('hidden', value !== 'Yes');
+    }
+    // Special diet toggle
+    if (name === 'special-diet') {
+      const wrap = document.getElementById('diet-detail-wrap');
+      if (wrap) wrap.classList.toggle('hidden', value !== 'Yes');
     }
   }
 });

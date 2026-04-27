@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registration submitted – Youth Achieving Results (Performing Arts)</title>
+  <title>Registration submitted – Youth Achieving Results (Visual Arts)</title>
   <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,17 +19,17 @@
 <script src="/assets/govbb-framework.js"></script>
 <script src="/assets/ydp-multipage.js"></script>
 <script>
-const STORE = 'ydp_yar_pa';
+const STORE = 'ydp_yar_va';
 let ref = '';
 try { ref = sessionStorage.getItem(STORE + '_ref') || ''; } catch(e) {}
-if (!ref) ref = 'YARPA-' + Math.random().toString(36).substring(2,8).toUpperCase();
+if (!ref) ref = 'YARVA-' + Math.random().toString(36).substring(2,8).toUpperCase();
 try {
   sessionStorage.removeItem(STORE);
   sessionStorage.removeItem(STORE + '_ref');
 } catch(e) {}
 
 YDP.initPage({
-  formName: 'Youth Achieving Results (Performing Arts)',
+  formName: 'Youth Achieving Results (Visual Arts)',
   storeKey: STORE,
   pageId: 'confirmation',
   template: () => `
@@ -43,7 +43,7 @@ YDP.initPage({
       <p class="text-[1.25rem]">We have sent a confirmation to your email address. The Division of Youth Affairs will review your registration and contact you within 10 working days.</p>
       <p class="text-[1.25rem]">If you have a question, email <a href="mailto:youth@barbados.gov.bb" class="${GovBB.LINK_CLS}">youth@barbados.gov.bb</a>.</p>
       <div class="mt-8">
-        <a href="../../index.html" class="${GovBB.BTN_CLS} no-underline">Back to all forms</a>
+        <a href="https://alpha.gov.bb/work-employment/youth-achieving-results-visual-arts/start" class="${GovBB.BTN_CLS} no-underline">Return to alpha.gov.bb</a>
       </div>
     </div>`
 });
