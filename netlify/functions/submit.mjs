@@ -70,14 +70,6 @@ export default async function handler(req) {
     }
   }
 
-  // TEMP DIAGNOSTIC — remove once email sending is confirmed working
-  console.log('[submit] env diag', {
-    keyPrefix: RESEND_API_KEY.slice(0, 10),
-    keyLen: RESEND_API_KEY.length,
-    emailFrom: EMAIL_FROM,
-    demoRecipient: DEMO_RECIPIENT
-  });
-
   const prefix = formRef || 'REF';
   const referenceNumber = prefix + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
