@@ -195,6 +195,25 @@
     return out;
   };
 
+  /* Compute age in whole years from a form-data object holding dob-day/month/year.
+   * Returns a non-negative integer or null if DOB is missing or invalid.
+   * Stateless — used for display only; the authoritative age is computed server-side. */
+  YDP.ageFromDob = function (D) {
+    D = D || (typeof GovBB !== 'undefined' ? GovBB.D : {});
+    var day = parseInt(D['dob-day'], 10);
+    var month = parseInt(D['dob-month'], 10);
+    var year = parseInt(D['dob-year'], 10);
+    if (!day || !month || !year) return null;
+    var dob = new Date(year, month - 1, day);
+    if (isNaN(dob.getTime())) return null;
+    var today = new Date();
+    var age = today.getFullYear() - dob.getFullYear();
+    var m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+    if (age < 0) return null;
+    return age;
+  };
+
   /* Render a checkbox group storing each option under `${name}__${option}`. */
   YDP.checkboxGroup = function (name, label, options, opts) {
     opts = opts || {};

@@ -57,6 +57,7 @@
 </footer>
 
 <script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
 <script>
 const FORM_NAME = 'Digital Media Programme 2026';
 
@@ -132,13 +133,13 @@ const PAGES = {
       <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Your personal details</h1>
       <div class="space-y-8">
         <div id="error-summary"></div>
-        ${GovBB.textField('full-name', 'Full name')}
-        ${GovBB.radioGroup('sex', 'Sex', ['Male', 'Female'])}
-        ${GovBB.textField('age', 'Age', { width: 'w-24', inputmode: 'numeric' })}
+        ${GovBB.textField('first-name', 'First name')}
+        ${GovBB.textField('last-name', 'Last name')}
+        ${GovBB.radioGroup('gender', 'Gender', ['Female', 'Male', 'Prefer not to say'])}
         ${GovBB.textField('address', 'Address')}
         ${GovBB.selectField('parish', 'Parish', GovBB.PARISHES)}
         ${GovBB.telField('phone-home', 'Home phone', { hint: 'Optional', placeholder: '246-555-1234' })}
-        ${GovBB.telField('phone-cell', 'Mobile phone', { placeholder: '246-555-1234' })}
+        ${GovBB.telField('phone-mobile', 'Mobile phone', { placeholder: '246-555-1234' })}
         ${GovBB.emailField('contact-email', 'Email address')}
         ${GovBB.textField('national-id', 'National ID number', { hint: 'This is on your national ID card' })}
         ${GovBB.dateField('dob', 'Date of birth', 'For example, 27 03 2007')}
@@ -221,7 +222,7 @@ const PAGES = {
         ${GovBB.textField('ec-relationship', 'Relationship to you', { hint: 'For example, parent, guardian, sibling' })}
         ${GovBB.textField('ec-address', 'Address')}
         ${GovBB.telField('ec-phone-home', 'Home phone', { hint: 'Optional', placeholder: '246-555-1234' })}
-        ${GovBB.telField('ec-phone-cell', 'Mobile phone', { placeholder: '246-555-1234' })}
+        ${GovBB.telField('ec-phone-mobile', 'Mobile phone', { placeholder: '246-555-1234' })}
         ${GovBB.continueBtn()}
       </div>
     </form>`,
@@ -283,11 +284,11 @@ const PAGES = {
       <div>
         <h2 class="font-bold text-[2rem] mb-4">Personal details</h2>
         <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
-          ${GovBB.summaryRow('Name', D['full-name'], 'personal-info')}
-          ${GovBB.summaryRow('Sex', D['sex'], 'personal-info')}
-          ${GovBB.summaryRow('Age', D['age'], 'personal-info')}
+          ${GovBB.summaryRow('Name', [D['first-name'], D['last-name']].filter(Boolean).join(' '), 'personal-info')}
+          ${GovBB.summaryRow('Gender', D['gender'], 'personal-info')}
+          ${GovBB.summaryRow('Age', YDP.ageFromDob(D), 'personal-info')}
           ${GovBB.summaryRow('Address', [D['address'], D['parish']].filter(Boolean).join(', '), 'personal-info')}
-          ${GovBB.summaryRow('Mobile phone', D['phone-cell'], 'personal-info')}
+          ${GovBB.summaryRow('Mobile phone', D['phone-mobile'], 'personal-info')}
           ${GovBB.summaryRow('Email', D['contact-email'], 'personal-info')}
           ${GovBB.summaryRow('National ID', D['national-id'], 'personal-info')}
           ${GovBB.summaryRow('Date of birth', dob, 'personal-info')}
@@ -319,7 +320,7 @@ const PAGES = {
         <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
           ${GovBB.summaryRow('Name', D['ec-name'], 'emergency-contact')}
           ${GovBB.summaryRow('Relationship', D['ec-relationship'], 'emergency-contact')}
-          ${GovBB.summaryRow('Phone', D['ec-phone-cell'], 'emergency-contact')}
+          ${GovBB.summaryRow('Phone', D['ec-phone-mobile'], 'emergency-contact')}
         </dl>
       </div>
       <div>
@@ -372,12 +373,12 @@ function validate(pageId) {
   }
 
   if (pageId === 'personal-info') {
-    if (!D['full-name']) errors.push({ id: 'full-name', msg: 'Full name – Enter your full name' });
-    if (!D['sex']) errors.push({ id: 'sex', msg: 'Sex – Select your sex' });
-    if (!D['age']) errors.push({ id: 'age', msg: 'Age – Enter your age' });
+    if (!D['first-name']) errors.push({ id: 'first-name', msg: 'First name – Enter your first name' });
+    if (!D['last-name']) errors.push({ id: 'last-name', msg: 'Last name – Enter your last name' });
+    if (!D['gender']) errors.push({ id: 'gender', msg: 'Gender – Choose your gender' });
     if (!D['address']) errors.push({ id: 'address', msg: 'Address – Enter your address' });
     if (!D['parish']) errors.push({ id: 'parish', msg: 'Parish – Select your parish' });
-    if (!D['phone-cell']) errors.push({ id: 'phone-cell', msg: 'Mobile phone – Enter your mobile number' });
+    if (!D['phone-mobile']) errors.push({ id: 'phone-mobile', msg: 'Mobile phone – Enter your mobile number' });
     if (!D['contact-email']) errors.push({ id: 'contact-email', msg: 'Email – Enter your email address' });
     if (!D['national-id']) errors.push({ id: 'national-id', msg: 'National ID – Enter your national ID number' });
     if (!D['dob-day'] || !D['dob-month'] || !D['dob-year']) errors.push({ id: 'dob-day', msg: 'Date of birth – Enter your date of birth' });
@@ -406,7 +407,7 @@ function validate(pageId) {
   if (pageId === 'emergency-contact') {
     if (!D['ec-name']) errors.push({ id: 'ec-name', msg: 'Emergency contact name – Enter a name' });
     if (!D['ec-relationship']) errors.push({ id: 'ec-relationship', msg: 'Relationship – Enter the relationship' });
-    if (!D['ec-phone-cell']) errors.push({ id: 'ec-phone-cell', msg: 'Mobile phone – Enter a phone number' });
+    if (!D['ec-phone-mobile']) errors.push({ id: 'ec-phone-mobile', msg: 'Mobile phone – Enter a phone number' });
   }
 
   if (pageId === 'community-group') {

@@ -2,6 +2,20 @@ import { esc, EMAIL_FROM } from './_shared.mjs';
 
 const MAX_BODY_BYTES = 32 * 1024;
 
+function ageFromDob(d, m, y) {
+  const day = parseInt(d, 10);
+  const month = parseInt(m, 10);
+  const year = parseInt(y, 10);
+  if (!day || !month || !year) return null;
+  const dob = new Date(year, month - 1, day);
+  if (isNaN(dob.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const diffM = today.getMonth() - dob.getMonth();
+  if (diffM < 0 || (diffM === 0 && today.getDate() < dob.getDate())) age--;
+  return age < 0 ? null : age;
+}
+
 export default async function handler(req) {
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 });
@@ -76,7 +90,25 @@ export default async function handler(req) {
   const prefix = formRef || 'REF';
   const referenceNumber = prefix + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
-  const summaryRows = Object.entries(formData || {})
+  const enrichedFormData = { ...(formData || {}) };
+  // Drop any client-supplied age — authoritative age is computed server-side.
+  delete enrichedFormData.age;
+
+  const computedAge = ageFromDob(
+    enrichedFormData['dob-day'],
+    enrichedFormData['dob-month'],
+    enrichedFormData['dob-year']
+  );
+  if (computedAge !== null) enrichedFormData.age = computedAge;
+
+  // Derive `full-name` from `first-name` + `last-name` for back-compat with
+  // any email/template that reads the old key.
+  if (!enrichedFormData['full-name'] && (enrichedFormData['first-name'] || enrichedFormData['last-name'])) {
+    enrichedFormData['full-name'] = [enrichedFormData['first-name'], enrichedFormData['last-name']]
+      .filter(Boolean).join(' ');
+  }
+
+  const summaryRows = Object.entries(enrichedFormData)
     .filter(([, v]) => v !== null && v !== '' && v !== undefined)
     .map(([key, val]) => {
       const label = key.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());

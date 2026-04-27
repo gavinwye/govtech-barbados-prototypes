@@ -57,6 +57,7 @@
 </footer>
 
 <script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
 <script>
 const FORM_NAME = 'YES First Contact';
 
@@ -99,7 +100,8 @@ const PAGES = {
       <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Your personal details</h1>
       <div class="space-y-8">
         <div id="error-summary"></div>
-        ${GovBB.textField('full-name', 'First and last name')}
+        ${GovBB.textField('first-name', 'First name')}
+        ${GovBB.textField('last-name', 'Last name')}
         ${GovBB.radioGroup('sex', 'Sex', ['Male', 'Female'])}
         ${GovBB.dateField('dob', 'Date of birth', 'For example, 27 03 2007')}
         ${GovBB.textField('national-id', 'National ID number', { hint: 'This is on your national ID card' })}
@@ -255,7 +257,7 @@ const PAGES = {
       <div>
         <h2 class="font-bold text-[2rem] mb-4">Personal details</h2>
         <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
-          ${GovBB.summaryRow('Name', D['full-name'], 'personal-info')}
+          ${GovBB.summaryRow('Name', [D['first-name'], D['last-name']].filter(Boolean).join(' '), 'personal-info')}
           ${GovBB.summaryRow('Date of birth', dob, 'personal-info')}
           ${GovBB.summaryRow('National ID', D['national-id'], 'personal-info')}
           ${GovBB.summaryRow('Address', [D['address'], D['parish']].filter(Boolean).join(', '), 'personal-info')}
@@ -341,7 +343,8 @@ function validate(pageId) {
   const errors = [];
 
   if (pageId === 'personal-info') {
-    if (!D['full-name']) errors.push({ id: 'full-name', msg: 'Name – Enter your name' });
+    if (!D['first-name']) errors.push({ id: 'first-name', msg: 'First name – Enter your first name' });
+    if (!D['last-name']) errors.push({ id: 'last-name', msg: 'Last name – Enter your last name' });
     if (!D['sex']) errors.push({ id: 'sex', msg: 'Sex – Choose your sex' });
     if (!D['dob-day'] || !D['dob-month'] || !D['dob-year']) errors.push({ id: 'dob-day', msg: 'Date of birth – Enter your date of birth' });
     if (!D['national-id']) errors.push({ id: 'national-id', msg: 'National ID – Enter your national ID number' });

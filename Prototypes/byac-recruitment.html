@@ -57,6 +57,7 @@
 </footer>
 
 <script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
 <script>
 const FORM_NAME = 'BYAC Recruitment Form';
 
@@ -101,16 +102,15 @@ const PAGES = {
         <div id="error-summary"></div>
         ${GovBB.textField('nrn', 'National Registration Number', { hint: 'This is on your national ID card. For example, 870315-1234' })}
         ${GovBB.textField('nin', 'National Insurance Number', { hint: 'Six digits. For example, 123456' })}
-        ${GovBB.textField('last-name', 'Last name')}
         ${GovBB.textField('first-name', 'First name')}
         ${GovBB.textField('middle-initial', 'Middle initial(s)', { hint: 'Leave blank if you do not have a middle name' })}
+        ${GovBB.textField('last-name', 'Last name')}
         ${GovBB.textField('address-line1', 'Address line 1')}
         ${GovBB.textField('address-line2', 'Address line 2', { hint: 'Optional' })}
         ${GovBB.selectField('parish', 'Parish', GovBB.PARISHES)}
         ${GovBB.dateField('dob', 'Date of birth', 'For example, 27 03 2007')}
         ${GovBB.textField('country-of-birth', 'Country of birth')}
         ${GovBB.radioGroup('sex', 'Sex', ['Male', 'Female'])}
-        ${GovBB.textField('age', 'Age', { width: 'w-24', inputmode: 'numeric' })}
         ${GovBB.radioGroup('union-status', 'Relationship status', ['Single', 'Married', 'Divorced', 'Separated', 'Widowed', 'Common-law'])}
         ${GovBB.textField('num-children', 'How many children do you have?', { hint: 'Enter 0 if none', width: 'w-24', inputmode: 'numeric' })}
         ${GovBB.continueBtn()}
@@ -320,7 +320,7 @@ const PAGES = {
           ${GovBB.summaryRow('Date of birth', dob, 'personal-info')}
           ${GovBB.summaryRow('Country of birth', D['country-of-birth'], 'personal-info')}
           ${GovBB.summaryRow('Sex', D['sex'], 'personal-info')}
-          ${GovBB.summaryRow('Age', D['age'], 'personal-info')}
+          ${GovBB.summaryRow('Age', YDP.ageFromDob(D), 'personal-info')}
           ${GovBB.summaryRow('Relationship status', D['union-status'], 'personal-info')}
           ${GovBB.summaryRow('Children', D['num-children'] || '0', 'personal-info')}
         </dl>
@@ -460,7 +460,6 @@ function validate(pageId) {
     if (!D['dob-day'] || !D['dob-month'] || !D['dob-year']) errors.push({ id: 'dob-day', msg: 'Date of birth – Enter your date of birth' });
     if (!D['country-of-birth']) errors.push({ id: 'country-of-birth', msg: 'Country of birth – Enter your country of birth' });
     if (!D['sex']) errors.push({ id: 'sex', msg: 'Sex – Select your sex' });
-    if (!D['age']) errors.push({ id: 'age', msg: 'Age – Enter your age' });
     if (!D['union-status']) errors.push({ id: 'union-status', msg: 'Relationship status – Select your relationship status' });
   }
 

@@ -69,13 +69,13 @@ YDP.initPage({
 
       <h2 class="font-bold text-[1.5rem] mt-8">Your information</h2>
       <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
-        ${row('Name', D['full-name'], 'personal-info.html')}
+        ${row('Name', [D['first-name'], D['last-name']].filter(Boolean).join(' '), 'personal-info.html')}
         ${row('Gender', withOther('gender'), 'personal-info.html')}
-        ${row('Age', D['age'], 'personal-info.html')}
         ${row('Date of birth', fmtDob(), 'personal-info.html')}
+        ${row('Age', YDP.ageFromDob(D), 'personal-info.html')}
         ${row('Address', D['address'], 'personal-info.html')}
         ${row('Parish', D['parish'], 'personal-info.html')}
-        ${row('Telephone', D['telephone'], 'personal-info.html')}
+        ${row('Phone', D['phone'], 'personal-info.html')}
         ${row('Email', D['email'], 'personal-info.html')}
         ${row('Country of birth', D['country-of-birth'], 'personal-info.html')}
         ${row('Nationality', withOther('nationality'), 'personal-info.html')}

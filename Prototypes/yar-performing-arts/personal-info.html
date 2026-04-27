@@ -19,9 +19,6 @@
 <script src="/assets/govbb-framework.js"></script>
 <script src="/assets/ydp-multipage.js"></script>
 <script>
-const AGES = [];
-for (let a = 17; a <= 30; a++) AGES.push(String(a));
-
 const EMPLOY = ['Employed (Full-time)','Employed (Part-time)','In School (Full-time)','In School (Part-time)','Unemployed (actively seeking employment)','Unemployed (not seeking employment)','Self-employed'];
 const QUAL = ['CCSLC','CXC/CSEC','CAPE','CVQs','NVQs','GCE-O-Level','City & Guilds','Certificate','Diploma','Associates','Bachelors','Masters','Doctorate','Professional Qualification (e.g. ACCA)','None'];
 
@@ -33,13 +30,20 @@ YDP.initPage({
   validate: () => {
     const errs = [];
     const D = GovBB.D;
-    if (!D['full-name']) errs.push({id:'full-name', msg:'Enter your first and last name'});
+    if (!D['first-name']) errs.push({id:'first-name', msg:'Enter your first name'});
+    if (!D['last-name']) errs.push({id:'last-name', msg:'Enter your last name'});
     if (!D['gender']) errs.push({id:'gender', msg:'Choose your gender'});
-    if (!D['age']) errs.push({id:'age', msg:'Choose your age'});
-    if (!D['dob-day'] || !D['dob-month'] || !D['dob-year']) errs.push({id:'dob-day', msg:'Enter your date of birth'});
+    if (!D['dob-day'] || !D['dob-month'] || !D['dob-year']) {
+      errs.push({id:'dob-day', msg:'Enter your date of birth'});
+    } else {
+      const age = YDP.ageFromDob(D);
+      if (age !== null && (age < 17 || age > 30)) {
+        errs.push({id:'dob-day', msg:'You must be aged 17 to 30 to apply'});
+      }
+    }
     if (!D['address']) errs.push({id:'address', msg:'Enter your address'});
     if (!D['parish']) errs.push({id:'parish', msg:'Choose your parish'});
-    if (!D['telephone']) errs.push({id:'telephone', msg:'Enter a telephone number'});
+    if (!D['phone']) errs.push({id:'phone', msg:'Enter a phone number'});
     if (!D['email']) errs.push({id:'email', msg:'Enter your email address'});
     if (!D['country-of-birth']) errs.push({id:'country-of-birth', msg:'Enter your country of birth'});
     if (!D['nationality']) errs.push({id:'nationality', msg:'Choose your nationality'});
@@ -53,13 +57,13 @@ YDP.initPage({
       ${GovBB.caption()}
       <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Your information</h1>
       <div class="space-y-8">
-        ${GovBB.textField('full-name', 'Your first and last name')}
+        ${GovBB.textField('first-name', 'First name')}
+        ${GovBB.textField('last-name', 'Last name')}
         ${YDP.radioWithOther('gender', 'What is your gender?', ['Female','Male','Prefer not to say'])}
-        ${GovBB.selectField('age', 'How old are you?', AGES)}
         ${GovBB.dateField('dob', 'Date of birth')}
         ${GovBB.textareaField('address', 'What is your address?', { rows: 3 })}
         ${GovBB.selectField('parish', 'Parish', GovBB.PARISHES)}
-        ${GovBB.telField('telephone', 'Telephone number', { hint: 'A home, work or mobile number', placeholder: '246-555-1234' })}
+        ${GovBB.telField('phone', 'Phone number', { hint: 'For example, 246-555-1234', placeholder: '246-555-1234' })}
         ${GovBB.emailField('email', 'Email address')}
         ${GovBB.textField('country-of-birth', 'Country of birth')}
         ${YDP.radioWithOther('nationality', 'Nationality', ['Barbadian','CARICOM National','European National','U.S. National','British Citizen'])}
