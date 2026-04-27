@@ -32,7 +32,7 @@ export default async function handler(req) {
     );
   }
 
-  const { formName, formId, formRef, formData, userEmail } = body;
+  const { formName, formId, formRef, formData, userEmail, deptContactEmail, deptContactPhone } = body;
 
   if (formData !== undefined && (typeof formData !== 'object' || formData === null || Array.isArray(formData))) {
     return Response.json(
@@ -40,7 +40,7 @@ export default async function handler(req) {
       { status: 400 }
     );
   }
-  for (const [key, val] of [['formName', formName], ['formId', formId], ['formRef', formRef], ['userEmail', userEmail]]) {
+  for (const [key, val] of [['formName', formName], ['formId', formId], ['formRef', formRef], ['userEmail', userEmail], ['deptContactEmail', deptContactEmail], ['deptContactPhone', deptContactPhone]]) {
     if (val !== undefined && typeof val !== 'string') {
       return Response.json(
         { error: { message: `${key} must be a string when provided.` } },
@@ -70,6 +70,9 @@ export default async function handler(req) {
     }
   }
 
+  const contactEmail = deptContactEmail || DEPT_CONTACT_EMAIL;
+  const contactPhone = deptContactPhone || DEPT_CONTACT_PHONE;
+
   const prefix = formRef || 'REF';
   const referenceNumber = prefix + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
@@ -96,8 +99,8 @@ export default async function handler(req) {
         <h2 style="font-size:17px;margin:24px 0 12px;border-bottom:2px solid #e0e4e9;padding-bottom:8px">What happens next</h2>
         <p>We will review your submission and contact you if we need anything else. This usually takes up to 5 working days.</p>
         <h2 style="font-size:17px;margin:24px 0 12px;border-bottom:2px solid #e0e4e9;padding-bottom:8px">If you have questions</h2>
-        <p style="margin:0 0 6px">Email: <a href="mailto:${esc(DEPT_CONTACT_EMAIL)}" style="color:#0e5f64">${esc(DEPT_CONTACT_EMAIL)}</a></p>
-        <p style="margin:0">Phone: ${esc(DEPT_CONTACT_PHONE)}</p>
+        <p style="margin:0 0 6px">Email: <a href="mailto:${esc(contactEmail)}" style="color:#0e5f64">${esc(contactEmail)}</a></p>
+        <p style="margin:0">Phone: ${esc(contactPhone)}</p>
         <hr style="border:none;border-top:1px solid #e0e4e9;margin:24px 0">
         <p style="font-size:13px;color:#595959">Prototype — alpha.gov.bb. This is not an official Government of Barbados service.</p>
       </div>
