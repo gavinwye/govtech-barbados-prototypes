@@ -19,8 +19,6 @@
 <script src="/assets/govbb-framework.js"></script>
 <script src="/assets/ydp-multipage.js"></script>
 <script>
-const AGES = ['18','19','20','21','22','23','24','25','26','27','28','29','30','30+'];
-
 YDP.initPage({
   formName: 'Get Hired Programme 2026',
   storeKey: 'ydp_get_hired',
@@ -29,13 +27,13 @@ YDP.initPage({
   validate: () => {
     const errs = [];
     const D = GovBB.D;
-    if (!D['full-name']) errs.push({id:'full-name', msg:'Enter your first and last name'});
-    if (!D['age']) errs.push({id:'age', msg:'Choose your age'});
+    if (!D['first-name']) errs.push({id:'first-name', msg:'Enter your first name'});
+    if (!D['last-name']) errs.push({id:'last-name', msg:'Enter your last name'});
     if (!D['dob-day'] || !D['dob-month'] || !D['dob-year']) errs.push({id:'dob-day', msg:'Enter your date of birth'});
     if (!D['gender']) errs.push({id:'gender', msg:'Choose your gender'});
     if (!D['address']) errs.push({id:'address', msg:'Enter your address'});
     if (!D['parish']) errs.push({id:'parish', msg:'Choose your parish'});
-    if (!D['telephone']) errs.push({id:'telephone', msg:'Enter a telephone number'});
+    if (!D['phone']) errs.push({id:'phone', msg:'Enter a phone number'});
     if (!D['email']) errs.push({id:'email', msg:'Enter your email address'});
     if (!D['religion']) errs.push({id:'religion', msg:'Enter your religion'});
     return errs;
@@ -46,13 +44,13 @@ YDP.initPage({
       ${GovBB.caption()}
       <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Your information</h1>
       <div class="space-y-8">
-        ${GovBB.textField('full-name', 'Your first and last name')}
-        ${GovBB.selectField('age', 'How old are you?', AGES)}
+        ${GovBB.textField('first-name', 'First name')}
+        ${GovBB.textField('last-name', 'Last name')}
         ${GovBB.dateField('dob', 'Date of birth')}
         ${YDP.radioWithOther('gender', 'What is your gender?', ['Male','Female','Prefer not to say'])}
         ${GovBB.textareaField('address', 'What is your address?', { rows: 3 })}
         ${GovBB.selectField('parish', 'Parish', GovBB.PARISHES)}
-        ${GovBB.telField('telephone', 'Telephone number', { hint: 'A landline or mobile number', placeholder: '246-555-1234' })}
+        ${GovBB.telField('phone', 'Phone number', { hint: 'For example, 246-555-1234', placeholder: '246-555-1234' })}
         ${GovBB.emailField('email', 'Email address')}
         ${GovBB.textField('religion', 'Religion')}
         ${GovBB.continueBtn()}
