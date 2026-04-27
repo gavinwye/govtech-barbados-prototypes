@@ -43,6 +43,8 @@
   var YDP = {};
   YDP.storeKey = null;
   YDP.formName = '';
+  YDP.deptContactEmail = null;
+  YDP.deptContactPhone = null;
 
   YDP.injectChrome = function () {
     var top = document.getElementById('chrome-top');
@@ -79,6 +81,8 @@
    * template and validate are functions. */
   YDP.initPage = function (cfg) {
     YDP.formName = cfg.formName;
+    if (cfg.deptContactEmail) YDP.deptContactEmail = cfg.deptContactEmail;
+    if (cfg.deptContactPhone) YDP.deptContactPhone = cfg.deptContactPhone;
     YDP.loadData(cfg.storeKey);
     YDP.injectChrome();
     if (cfg.title) document.title = cfg.title;
@@ -120,6 +124,8 @@
   YDP.submit = function (confirmationUrl) {
     var email = GovBB.D['email'] || GovBB.D['contact-email'] || '';
     var payload = { formName: YDP.formName, formData: GovBB.D, userEmail: email };
+    if (YDP.deptContactEmail) payload.deptContactEmail = YDP.deptContactEmail;
+    if (YDP.deptContactPhone) payload.deptContactPhone = YDP.deptContactPhone;
     fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

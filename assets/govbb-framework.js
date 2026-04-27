@@ -23,6 +23,8 @@
   var _getFlow   = null;
   var _appEl     = 'app';
   var _onRadio   = null;
+  var _deptContactEmail = '';
+  var _deptContactPhone = '';
 
   /* ── CSS class constants ── */
   GovBB.BTN_CLS = 'relative inline-flex items-center justify-center gap-2 text-[20px] whitespace-nowrap transition-[background-color,box-shadow] duration-200 outline-none bg-bb-teal-00 text-bb-white-00 hover:bg-[#1a777d] hover:shadow-[inset_0_0_0_4px_rgba(222,245,246,0.10)] active:bg-[#0a4549] active:shadow-[inset_0_0_0_3px_rgba(0,0,0,0.20)] px-xm py-s rounded-sm leading-[1.7] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-offset-1 focus-visible:ring-bb-teal-100 focus-visible:rounded-sm';
@@ -39,6 +41,8 @@
     _getFlow  = cfg.getFlow || null;
     _appEl    = cfg.appElementId || 'app';
     _onRadio  = cfg.onRadioChange || null;
+    _deptContactEmail = cfg.deptContactEmail || '';
+    _deptContactPhone = cfg.deptContactPhone || '';
     _current  = 0;
     GovBB.render();
   };
@@ -102,6 +106,8 @@
   function _submitForm(cb) {
     var email = GovBB.D['contact-email'] || GovBB.D['email'] || '';
     var payload = { formName: _formName, formData: GovBB.D, userEmail: email };
+    if (_deptContactEmail) payload.deptContactEmail = _deptContactEmail;
+    if (_deptContactPhone) payload.deptContactPhone = _deptContactPhone;
     fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
