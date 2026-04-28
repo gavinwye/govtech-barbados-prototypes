@@ -1,6 +1,6 @@
 import { esc, EMAIL_FROM } from './_shared.mjs';
 
-const MAX_BODY_BYTES = 32 * 1024;
+const MAX_BODY_BYTES = 8 * 1024 * 1024;
 
 function ageFromDob(d, m, y) {
   const day = parseInt(d, 10);
@@ -108,6 +108,15 @@ export default async function handler(req) {
       .filter(Boolean).join(' ');
   }
 
+  // Pull attachment-only keys out of the form data so they don't appear in
+  // the summary table or get echoed back to the applicant.
+  let cvBase64 = enrichedFormData['cv-file-base64'];
+  let cvType = enrichedFormData['cv-file-type'];
+  delete enrichedFormData['cv-file-base64'];
+  delete enrichedFormData['cv-file-type'];
+  if (typeof cvBase64 !== 'string' || !cvBase64) cvBase64 = undefined;
+  if (typeof cvType !== 'string' || !cvType) cvType = undefined;
+
   const summaryRows = Object.entries(enrichedFormData)
     .filter(([, v]) => v !== null && v !== '' && v !== undefined)
     .map(([key, val]) => {
@@ -156,9 +165,10 @@ export default async function handler(req) {
 
   const errors = [];
 
-  const sendEmail = async ({ to, cc, subject, html }) => {
+  const sendEmail = async ({ to, cc, subject, html, attachments }) => {
     const payload = { from: EMAIL_FROM, to, subject, html };
     if (cc) payload.cc = cc;
+    if (attachments && attachments.length) payload.attachments = attachments;
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -188,11 +198,16 @@ export default async function handler(req) {
   try {
     const internalTo = deptContactEmail || DEMO_RECIPIENT;
     const internalCc = deptContactEmail && deptContactEmail !== DEMO_RECIPIENT ? [DEMO_RECIPIENT] : undefined;
+    const cvFilename = enrichedFormData['cv-filename'];
+    const attachments = (cvBase64 && cvType && typeof cvFilename === 'string' && cvFilename)
+      ? [{ filename: cvFilename, content: cvBase64, content_type: cvType }]
+      : undefined;
     await sendEmail({
       to: internalTo,
       cc: internalCc,
       subject: `New submission: ${formName || 'Unknown'} — ${referenceNumber}`,
-      html: deptHtml
+      html: deptHtml,
+      attachments
     });
   } catch (e) {
     errors.push(`Department email failed: ${e.message}`);
