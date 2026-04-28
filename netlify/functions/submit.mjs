@@ -154,7 +154,7 @@ export default async function handler(req) {
         <h2 style="font-size:17px;margin:24px 0 12px;border-bottom:2px solid #e0e4e9;padding-bottom:8px">Form data</h2>
         ${summaryTable}
         <hr style="border:none;border-top:1px solid #e0e4e9;margin:24px 0">
-        <p style="font-size:13px;color:#595959">Submitted via the alpha.gov.bb chat prototype.</p>
+        <p style="font-size:13px;color:#595959">Submitted via <a href="https://alpha.gov.bb" style="color:#00267f">alpha.gov.bb</a>.</p>
       </div>
     </div>`;
 
