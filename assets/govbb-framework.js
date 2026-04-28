@@ -202,7 +202,8 @@
       function _syncMark() {
         if (mark) mark.style.display = el.checked ? 'flex' : 'none';
       }
-      if (GovBB.D[name]) { el.checked = true; _syncMark(); }
+      if (GovBB.D[name]) el.checked = true;
+      _syncMark();
       el.addEventListener('change', function () {
         GovBB.D[name] = el.checked;
         _syncMark();
@@ -479,7 +480,7 @@
       '<div class="relative inline-flex mt-1 size-8 shrink-0 border-2 border-bb-black-00 rounded-sm bg-bb-white-00 hover:shadow-form-hover">' +
         '<input type="checkbox" id="' + name + '" data-checkbox="' + name + '"' + checked +
         ' class="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />' +
-        '<span class="check-mark hidden absolute inset-0 flex items-center justify-center pointer-events-none">' +
+        '<span class="check-mark absolute inset-0 items-center justify-center pointer-events-none" style="display:none">' +
           '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' +
         '</span>' +
       '</div>' +

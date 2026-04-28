@@ -358,10 +358,10 @@ function checkboxItem(id, label) {
     <div class="flex gap-4 items-center">
       <button type="button" role="checkbox" aria-checked="${checked ? 'true' : 'false'}" id="${id}"
         onclick="GovBB.toggleCheckbox('${id}')"
-        class="relative inline-flex size-10 shrink-0 items-center justify-center bg-bb-white-00 border-2 border-bb-black-00 rounded-sm transition-all outline-none hover:cursor-pointer hover:shadow-form-hover focus-visible:ring-4 focus-visible:ring-bb-teal-100 ${checked ? 'bg-bb-teal-00 border-bb-teal-00' : ''}">
+        class="relative inline-flex size-10 shrink-0 items-center justify-center border-2 rounded-sm transition-all outline-none hover:cursor-pointer hover:shadow-form-hover focus-visible:ring-4 focus-visible:ring-bb-teal-100 ${checked ? 'bg-bb-teal-00 border-bb-teal-00' : 'bg-bb-white-00 border-bb-black-00'}">
         ${checked ? '<svg class="text-white" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
       </button>
-      <label for="${id}" class="text-[1.25rem] leading-normal text-bb-black-00 cursor-pointer" onclick="GovBB.toggleCheckbox('${id}')">${label}</label>
+      <label for="${id}" class="text-[1.25rem] leading-normal text-bb-black-00 cursor-pointer">${label}</label>
     </div>`;
 }
 

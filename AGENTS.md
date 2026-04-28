@@ -67,6 +67,8 @@ Define these as CSS custom properties on `:root`. In Tailwind utility classes, u
 | `--color-pink-00` | `bb-pink-00` | `#ad1157` | |
 | `--color-pink-100` | `bb-pink-100` | `#ff94d9` | |
 
+**Conditional Tailwind classes for state:** when a class string toggles between states (e.g. checked/unchecked, active/inactive), make the two states *mutually exclusive* on the same CSS property. Don't append a state-class onto a base-class — `bg-bb-white-00 ${checked ? 'bg-bb-teal-00' : ''}` emits both rules at equal specificity and source order silently picks the wrong one. Use `${checked ? 'bg-bb-teal-00 border-bb-teal-00' : 'bg-bb-white-00 border-bb-black-00'}` instead.
+
 ### Typography tokens
 
 | Token | Value |
