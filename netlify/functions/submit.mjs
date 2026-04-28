@@ -67,7 +67,8 @@ export default async function handler(req) {
     RESEND_API_KEY,
     DEMO_RECIPIENT,
     DEPT_CONTACT_EMAIL,
-    DEPT_CONTACT_PHONE
+    DEPT_CONTACT_PHONE,
+    EMAIL_OVERRIDE_TO
   } = process.env;
 
   for (const [name, val] of Object.entries({
@@ -83,6 +84,9 @@ export default async function handler(req) {
       );
     }
   }
+
+  const overrideTo = EMAIL_OVERRIDE_TO && EMAIL_OVERRIDE_TO.trim();
+  const subjectPrefix = overrideTo ? '[OVERRIDE] ' : '';
 
   const contactEmail = deptContactEmail || DEPT_CONTACT_EMAIL;
   const contactPhone = deptContactPhone || DEPT_CONTACT_PHONE;
@@ -176,8 +180,8 @@ export default async function handler(req) {
   if (userEmail) {
     try {
       await sendEmail({
-        to: userEmail,
-        subject: `We received your ${formName || 'form'} — ref ${referenceNumber}`,
+        to: overrideTo || userEmail,
+        subject: `${subjectPrefix}We received your ${formName || 'form'} — ref ${referenceNumber}`,
         html: applicantHtml
       });
     } catch (e) {
@@ -186,12 +190,12 @@ export default async function handler(req) {
   }
 
   try {
-    const internalTo = deptContactEmail || DEMO_RECIPIENT;
-    const internalCc = deptContactEmail && deptContactEmail !== DEMO_RECIPIENT ? [DEMO_RECIPIENT] : undefined;
+    const internalTo = overrideTo || (deptContactEmail || DEMO_RECIPIENT);
+    const internalCc = !overrideTo && deptContactEmail && deptContactEmail !== DEMO_RECIPIENT ? [DEMO_RECIPIENT] : undefined;
     await sendEmail({
       to: internalTo,
       cc: internalCc,
-      subject: `New submission: ${formName || 'Unknown'} — ${referenceNumber}`,
+      subject: `${subjectPrefix}New submission: ${formName || 'Unknown'} — ${referenceNumber}`,
       html: deptHtml
     });
   } catch (e) {
