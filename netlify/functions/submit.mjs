@@ -67,7 +67,8 @@ export default async function handler(req) {
     RESEND_API_KEY,
     DEMO_RECIPIENT,
     DEPT_CONTACT_EMAIL,
-    DEPT_CONTACT_PHONE
+    DEPT_CONTACT_PHONE,
+    EMAIL_OVERRIDE_TO
   } = process.env;
 
   for (const [name, val] of Object.entries({
@@ -83,6 +84,9 @@ export default async function handler(req) {
       );
     }
   }
+
+  const overrideTo = EMAIL_OVERRIDE_TO && EMAIL_OVERRIDE_TO.trim();
+  const subjectPrefix = overrideTo ? '[OVERRIDE] ' : '';
 
   const contactEmail = deptContactEmail || DEPT_CONTACT_EMAIL;
   const contactPhone = deptContactPhone || DEPT_CONTACT_PHONE;
@@ -159,7 +163,7 @@ export default async function handler(req) {
         <h2 style="font-size:17px;margin:24px 0 12px;border-bottom:2px solid #e0e4e9;padding-bottom:8px">Form data</h2>
         ${summaryTable}
         <hr style="border:none;border-top:1px solid #e0e4e9;margin:24px 0">
-        <p style="font-size:13px;color:#595959">Submitted via the alpha.gov.bb chat prototype.</p>
+        <p style="font-size:13px;color:#595959">Submitted via <a href="https://alpha.gov.bb" style="color:#00267f">alpha.gov.bb</a>.</p>
       </div>
     </div>`;
 
@@ -186,8 +190,8 @@ export default async function handler(req) {
   if (userEmail) {
     try {
       await sendEmail({
-        to: userEmail,
-        subject: `We received your ${formName || 'form'} — ref ${referenceNumber}`,
+        to: overrideTo || userEmail,
+        subject: `${subjectPrefix}We received your ${formName || 'form'} — ref ${referenceNumber}`,
         html: applicantHtml
       });
     } catch (e) {
@@ -196,8 +200,8 @@ export default async function handler(req) {
   }
 
   try {
-    const internalTo = deptContactEmail || DEMO_RECIPIENT;
-    const internalCc = deptContactEmail && deptContactEmail !== DEMO_RECIPIENT ? [DEMO_RECIPIENT] : undefined;
+    const internalTo = overrideTo || (deptContactEmail || DEMO_RECIPIENT);
+    const internalCc = !overrideTo && deptContactEmail && deptContactEmail !== DEMO_RECIPIENT ? [DEMO_RECIPIENT] : undefined;
     const cvFilename = enrichedFormData['cv-filename'];
     const attachments = (cvBase64 && cvType && typeof cvFilename === 'string' && cvFilename)
       ? [{ filename: cvFilename, content: cvBase64, content_type: cvType }]
@@ -205,7 +209,7 @@ export default async function handler(req) {
     await sendEmail({
       to: internalTo,
       cc: internalCc,
-      subject: `New submission: ${formName || 'Unknown'} — ${referenceNumber}`,
+      subject: `${subjectPrefix}New submission: ${formName || 'Unknown'} — ${referenceNumber}`,
       html: deptHtml,
       attachments
     });
