@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check your answers – Digital Media Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+const QUALIFICATIONS = [
+  'CCSLC', 'CXC / CSEC', 'CAPE', 'CVQs', 'NVQs', 'City & Guilds',
+  'Certificate', 'Diploma', 'Associates', 'Bachelors', 'Masters',
+  'Doctorate', 'Professional qualification (e.g. ACCA)', 'Other'
+];
+const MEDICAL_CONDITIONS = [
+  'Asthma', 'Epilepsy', 'Diabetes', 'Allergies', 'Hypertension',
+  'Physical disability', 'Learning disability', 'Behavioural challenge',
+  'Mental health challenge', 'None', 'Other'
+];
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+YDP.initPage({
+  formName: 'Digital Media Programme 2026',
+  storeKey: 'ydp_dmp',
+  pageId: 'check',
+  deptContactEmail: 'mysce.pti@barbados.gov.bb',
+  deptContactPhone: '(246) 535-3835',
+  template: () => {
+    const D = GovBB.D;
+    const dob = [D['dob-day'], D['dob-month'], D['dob-year']].filter(Boolean).join(' / ');
+    const selectedQuals = QUALIFICATIONS.filter(q => D['qual-' + slug(q)]).join(', ') || '—';
+    const selectedMed = MEDICAL_CONDITIONS.filter(c => D['med-' + slug(c)]).join(', ') || '—';
+    return `
+    ${GovBB.backLink()}
+    <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Check your answers</h1>
+    <div class="space-y-10">
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Personal details</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Name', [D['first-name'], D['last-name']].filter(Boolean).join(' '), 'personal-info.html')}
+          ${GovBB.summaryRow('Gender', D['gender'], 'personal-info.html')}
+          ${GovBB.summaryRow('Age', YDP.ageFromDob(D), 'personal-info.html')}
+          ${GovBB.summaryRow('Address', [D['address'], D['parish']].filter(Boolean).join(', '), 'personal-info.html')}
+          ${GovBB.summaryRow('Mobile phone', D['phone-mobile'], 'personal-info.html')}
+          ${GovBB.summaryRow('Email', D['contact-email'], 'personal-info.html')}
+          ${GovBB.summaryRow('National ID', D['national-id'], 'personal-info.html')}
+          ${GovBB.summaryRow('Date of birth', dob, 'personal-info.html')}
+          ${GovBB.summaryRow('Country of birth', D['country-of-birth'], 'personal-info.html')}
+          ${GovBB.summaryRow('Nationality', D['nationality'], 'personal-info.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Employment</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Status', D['employment-status'], 'employment-status.html')}
+          ${D['institution-name'] ? GovBB.summaryRow('Institution / Workplace', D['institution-name'], 'employment-status.html') : ''}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Qualifications</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Qualifications held', selectedQuals, 'qualifications.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Health</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Conditions', selectedMed, 'medical.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Emergency contact</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Name', D['ec-name'], 'emergency-contact.html')}
+          ${GovBB.summaryRow('Relationship', D['ec-relationship'], 'emergency-contact.html')}
+          ${GovBB.summaryRow('Phone', D['ec-phone-mobile'], 'emergency-contact.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Community groups</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Member of a group?', D['community-group'], 'community-group.html')}
+          ${D['community-group'] === 'Yes' ? GovBB.summaryRow('Group name', D['group-name'], 'community-group.html') : ''}
+        </dl>
+      </div>
+      <div class="mt-8 flex gap-4">
+        <button type="button" onclick="YDP.submit('confirmation.html')" class="${GovBB.BTN_CLS}">Submit application</button>
+      </div>
+    </div>`;
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your qualifications – Digital Media Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+const QUALIFICATIONS = [
+  'CCSLC', 'CXC / CSEC', 'CAPE', 'CVQs', 'NVQs', 'City & Guilds',
+  'Certificate', 'Diploma', 'Associates', 'Bachelors', 'Masters',
+  'Doctorate', 'Professional qualification (e.g. ACCA)', 'Other'
+];
+const qualKey = q => 'qual-' + q.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+YDP.initPage({
+  formName: 'Digital Media Programme 2026',
+  storeKey: 'ydp_dmp',
+  pageId: 'qualifications',
+  nextUrl: 'medical.html',
+  validate: () => {
+    const D = GovBB.D;
+    const any = QUALIFICATIONS.some(q => D[qualKey(q)]);
+    return any ? [] : [{ id: qualKey('CCSLC'), msg: 'Qualifications – Choose at least one qualification, or choose "None"' }];
+  },
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Your qualifications</h1>
+      <p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">Choose all that apply.</p>
+      <div class="space-y-8">
+        <div id="error-summary"></div>
+        <div class="space-y-4">
+          ${QUALIFICATIONS.map(q => GovBB.checkboxItem(qualKey(q), q)).join('')}
+        </div>
+        <div data-show-when-check="${qualKey('Other')}" style="${GovBB.D[qualKey('Other')] ? '' : 'display:none;'}" class="pl-s mt-s">
+          ${GovBB.textField('qual-other-detail', 'Describe your other qualification')}
+        </div>
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+</script>
+</body>
+</html>

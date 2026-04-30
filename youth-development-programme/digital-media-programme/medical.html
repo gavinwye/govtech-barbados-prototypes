@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your health – Digital Media Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+const MEDICAL_CONDITIONS = [
+  'Asthma', 'Epilepsy', 'Diabetes', 'Allergies', 'Hypertension',
+  'Physical disability', 'Learning disability', 'Behavioural challenge',
+  'Mental health challenge', 'None', 'Other'
+];
+const medKey = c => 'med-' + c.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+YDP.initPage({
+  formName: 'Digital Media Programme 2026',
+  storeKey: 'ydp_dmp',
+  pageId: 'medical',
+  nextUrl: 'emergency-contact.html',
+  validate: () => {
+    const D = GovBB.D;
+    const any = MEDICAL_CONDITIONS.some(c => D[medKey(c)]);
+    return any ? [] : [{ id: medKey('Asthma'), msg: 'Health – Choose at least one option, or choose "None"' }];
+  },
+  template: () => {
+    const hasCondition = MEDICAL_CONDITIONS.filter(c => c !== 'None').some(c => GovBB.D[medKey(c)]);
+    return `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Your health</h1>
+      <p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">This information is private. It helps us support you during the programme. Choose all that apply.</p>
+      <div class="space-y-8">
+        <div id="error-summary"></div>
+        <div class="space-y-4">
+          ${MEDICAL_CONDITIONS.map(c => GovBB.checkboxItem(medKey(c), c)).join('')}
+        </div>
+        <div data-show-when-check="${medKey('Other')}" style="${GovBB.D[medKey('Other')] ? '' : 'display:none;'}" class="pl-s mt-s">
+          ${GovBB.textField('med-other-detail', 'Describe your other condition')}
+        </div>
+        <div id="medication-wrap" style="${hasCondition ? '' : 'display:none;'}">
+          ${GovBB.textareaField('medication', 'What medication do you take?', { hint: 'Optional — leave blank if none', rows: 3 })}
+        </div>
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`;
+  }
+});
+
+// Toggle medication-wrap when any non-None condition checkbox changes
+document.addEventListener('change', function(e) {
+  const t = e.target;
+  if (!t || t.getAttribute('data-checkbox') === null) return;
+  const name = t.getAttribute('data-checkbox');
+  if (!name || name.indexOf('med-') !== 0) return;
+  setTimeout(function() {
+    const has = MEDICAL_CONDITIONS.filter(c => c !== 'None').some(c => GovBB.D[medKey(c)]);
+    const wrap = document.getElementById('medication-wrap');
+    if (wrap) wrap.style.display = has ? '' : 'none';
+  }, 10);
+});
+</script>
+</body>
+</html>
