@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apply for the Barbados YouthADVANCE Corps – BYAC Recruitment Form</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'BYAC Recruitment Form',
+  storeKey: 'ydp_byac',
+  pageId: 'start',
+  nextUrl: 'personal-info.html',
+  template: () => `
+    <div class="space-y-8">
+      <a href="../../index.html" class="inline-flex items-center gap-xs outline-none underline-offset-2 underline hover:no-underline active:bg-bb-yellow-100 focus-visible:bg-bb-yellow-100 text-bb-teal-00 hover:text-bb-black-00 hover:bg-bb-teal-10">← Back</a>
+      <div>
+        <h1 class="font-bold text-[3.5rem] leading-[1.15]">Apply for the Barbados YouthADVANCE Corps</h1>
+        <p class="text-bb-mid-grey-00 mt-2">Last updated: January 2025</p>
+      </div>
+      <p class="text-[1.25rem]">The Barbados YouthADVANCE Corps (BYAC) gives young people the chance to gain work experience, develop skills, and serve their community. This form is for new applicants.</p>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Who can apply</h2>
+        <p>You can apply if you are a Barbadian citizen or resident and between 17 and 25 years old.</p>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">What you will need</h2>
+        <ul class="list-disc pl-6 space-y-2">
+          <li>Your National Registration Number (NRN) — on your national ID card</li>
+          <li>Your National Insurance Number (NIN)</li>
+          <li>Your educational qualifications (subjects, grades, examining body)</li>
+          <li>Contact details for a parent or guardian (if you are under 18)</li>
+          <li>Your blood type (if you know it)</li>
+        </ul>
+        <p class="mt-4 text-bb-mid-grey-00">You will also need to bring these documents when you come in: certified birth certificate, police certificate of character, two passport photos, copies of qualifications, last school report, and a medical certificate.</p>
+      </div>
+      ${GovBB.startBtn('Start now')}
+    </div>`
+});
+</script>
+</body>
+</html>
