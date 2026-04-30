@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your nationality – Pathways Employability Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'Pathways Employability Programme 2026',
+  storeKey: 'ydp_pep',
+  pageId: 'nationality',
+  nextUrl: 'employment-status.html',
+  validate: () => {
+    const D = GovBB.D;
+    const errors = [];
+    if (!D['country-of-birth']) errors.push({ id: 'country-of-birth', msg: 'Country of birth – Enter your country of birth' });
+    if (!D['nationality']) errors.push({ id: 'nationality', msg: 'Nationality – Choose your nationality' });
+    return errors;
+  },
+  template: () => {
+    const showOther = GovBB.D['nationality'] === 'other';
+    return `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Where are you from?</h1>
+      <div class="space-y-8">
+        <div id="error-summary"></div>
+        ${GovBB.textField('country-of-birth', 'Country of birth')}
+        ${GovBB.radioGroup('nationality', 'Nationality', [
+          'Barbadian', 'CARICOM national', 'European national',
+          'U.S. national', 'British citizen', { value: 'other', label: 'Other' }
+        ])}
+        <div data-show-when-name="nationality" data-show-when-value="other" style="${showOther ? '' : 'display:none;'}" class="pl-s">
+          ${GovBB.textField('nationality-other-detail', 'Describe your nationality')}
+        </div>
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`;
+  }
+});
+</script>
+</body>
+</html>

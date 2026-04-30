@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your date of birth – Pathways Employability Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'Pathways Employability Programme 2026',
+  storeKey: 'ydp_pep',
+  pageId: 'dob',
+  nextUrl: 'nationality.html',
+  validate: () => {
+    const D = GovBB.D;
+    const errors = [];
+    if (!D['dob-day'] || !D['dob-month'] || !D['dob-year']) {
+      errors.push({ id: 'dob-day', msg: 'Date of birth – Enter your date of birth' });
+    } else {
+      const age = YDP.ageFromDob(D);
+      if (age === null || age < 18 || age > 24) {
+        errors.push({ id: 'dob-day', msg: 'You must be aged 18 to 24 to apply' });
+      }
+    }
+    return errors;
+  },
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">What is your date of birth?</h1>
+      <div class="space-y-8">
+        <div id="error-summary"></div>
+        ${GovBB.dateField('dob', 'Date of birth', 'For example, 27 03 2007')}
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ID and financial details – Pathways Employability Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'Pathways Employability Programme 2026',
+  storeKey: 'ydp_pep',
+  pageId: 'required-docs',
+  nextUrl: 'qualifications.html',
+  validate: () => {
+    const D = GovBB.D;
+    const errors = [];
+    if (!D['nrn']) errors.push({ id: 'nrn', msg: 'NRN – Enter your National Registration Number' });
+    if (!D['bank-account']) errors.push({ id: 'bank-account', msg: 'Bank account – Choose Yes or No' });
+    return errors;
+  },
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Your ID and financial details</h1>
+      <p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">If you do not have these yet, you will need them before you start the programme. We can help you get them.</p>
+      <div class="space-y-8">
+        <div id="error-summary"></div>
+        ${GovBB.textField('nrn', 'National Registration Number (NRN)', { hint: 'This is on your national ID card. For example, 870315-1234' })}
+        ${GovBB.textField('tamis', 'TAMIS number', { hint: 'Optional — leave blank if you do not have one' })}
+        ${GovBB.textField('nis', 'National Insurance Number (NIS)', { hint: 'Optional — six digits. For example, 123456' })}
+        ${GovBB.radioGroup('bank-account', 'Do you have an active bank or credit union account?', ['Yes', 'No'])}
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+</script>
+</body>
+</html>
