@@ -26,6 +26,14 @@ YDP.initPage({
   nextUrl: 'publicity-consent.html',
   validate: () => {
     if (!GovBB.D['cv-filename']) return [{id:'cv', msg:'Choose a file to upload'}];
+    const b64 = GovBB.D['cv-file-base64'];
+    // 5 MB cap on the base64 payload length (~3.75 MB raw).
+    if (b64 && b64.length > 5 * 1024 * 1024) {
+      delete GovBB.D['cv-file-base64'];
+      delete GovBB.D['cv-file-type'];
+      YDP.saveData();
+      return [{id:'cv', msg:'File is too large (max 5 MB)'}];
+    }
     return [];
   },
   template: () => {
@@ -40,8 +48,8 @@ YDP.initPage({
       <div class="space-y-8">
         <div class="field-group flex flex-col gap-xs w-full items-start">
           <label for="cv" class="block text-[1.25rem] leading-normal font-bold text-bb-black-00">Your CV file</label>
-          <p class="text-[1.25rem] leading-normal text-bb-mid-grey-00">PDF, Word or plain text.</p>
-          <input type="file" id="cv" name="cv" class="text-[1.125rem] py-s" accept=".pdf,.doc,.docx,.odt,.rtf,.txt" onchange="GovBB.D['cv-filename']=this.files[0]?this.files[0].name:''; YDP.saveData();">
+          <p class="text-[1.25rem] leading-normal text-bb-mid-grey-00">PDF, Word or plain text. Maximum 5 MB.</p>
+          <input type="file" id="cv" name="cv" class="text-[1.125rem] py-s" accept=".pdf,.doc,.docx,.odt,.rtf,.txt" onchange="(function(input){var f=input.files&&input.files[0];if(!f){GovBB.D['cv-filename']='';delete GovBB.D['cv-file-base64'];delete GovBB.D['cv-file-type'];YDP.saveData();return;}GovBB.D['cv-filename']=f.name;GovBB.D['cv-file-type']=f.type||'application/octet-stream';var r=new FileReader();r.onload=function(){var s=String(r.result||'');var i=s.indexOf('base64,');GovBB.D['cv-file-base64']=i>=0?s.slice(i+7):'';YDP.saveData();};r.readAsDataURL(f);})(this)">
           ${note}
         </div>
         ${GovBB.continueBtn()}
