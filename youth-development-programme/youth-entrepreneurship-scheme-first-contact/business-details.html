@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business status and details – YES First Contact</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+const BUSINESS_TYPES = ['Manufacturing', 'Service', 'Agriculture', 'Retail', 'Information technology', 'Cosmetology', 'Food & beverage', 'Fashion', 'Art & craft', 'Entertainment', 'Other'];
+const REASONS = [
+  'To earn extra income',
+  'I am not happy in my current job',
+  'I want to be in control of my own future',
+  'I prefer to use my skills for myself',
+  'I have always wanted to work for myself',
+  'Other'
+];
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+YDP.initPage({
+  formName: 'YES First Contact',
+  storeKey: 'ydp_yes',
+  pageId: 'business-details',
+  nextUrl: 'medical.html',
+  validate: () => {
+    const D = GovBB.D;
+    const errors = [];
+    if (!D['active-status']) errors.push({ id: 'active-status', msg: 'Active status – Choose how you run the business' });
+    if (!D['business-structure']) errors.push({ id: 'business-structure', msg: 'Business structure – Choose the structure of your business' });
+    return errors;
+  },
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Business status and details</h1>
+      <div class="space-y-8">
+        <div id="error-summary"></div>
+        <div>
+          <p class="font-bold text-[1.25rem] mb-4">What is the status of your business?</p>
+          ${GovBB.checkboxItem('biz-registered-started', 'Registered and started')}
+          ${GovBB.checkboxItem('biz-registered-not-started', 'Registered but not yet started')}
+          ${GovBB.checkboxItem('biz-not-registered-started', 'Not registered but already operating')}
+          ${GovBB.checkboxItem('biz-not-registered-not-started', 'Not registered and not yet started')}
+        </div>
+        ${GovBB.radioGroup('active-status', 'How do you run the business?', ['Full time', 'Part time', 'As a hobby'])}
+        ${GovBB.radioGroup('period-in-business', 'How long have you been in business?', ['Less than 1 year', '1 to 3 years', 'More than 5 years', 'Not started yet'])}
+        ${GovBB.textField('num-employees', 'Number of employees', { hint: 'Enter 0 if you work alone', width: 'w-24', inputmode: 'numeric' })}
+        ${GovBB.radioGroup('business-structure', 'Business structure', ['Sole proprietorship', 'Partnership', 'Company', 'Other'])}
+        <div>
+          <p class="font-bold text-[1.25rem] mb-4">Type of business</p>
+          <p class="text-[1.25rem] text-bb-mid-grey-00 mb-4">Choose all that apply.</p>
+          <div class="space-y-4">
+            ${BUSINESS_TYPES.map(t => GovBB.checkboxItem('btype-' + slug(t), t)).join('')}
+          </div>
+        </div>
+        <div>
+          <p class="font-bold text-[1.25rem] mb-4">Why do you want to run your own business?</p>
+          <p class="text-[1.25rem] text-bb-mid-grey-00 mb-4">Choose all that apply.</p>
+          <div class="space-y-4">
+            ${REASONS.map(r => GovBB.checkboxItem('reason-' + slug(r), r)).join('')}
+          </div>
+        </div>
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+</script>
+</body>
+</html>
