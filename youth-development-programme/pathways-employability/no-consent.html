@@ -24,7 +24,7 @@ YDP.initPage({
   storeKey: 'ydp_pep',
   pageId: 'no-consent',
   template: () => {
-    try { sessionStorage.removeItem('ydp_pep'); } catch(e) {}
+    YDP.clearAll('ydp_pep');
     return `
     <div class="space-y-8">
       ${GovBB.caption()}
