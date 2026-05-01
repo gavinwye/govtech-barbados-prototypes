@@ -20,6 +20,18 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Run tests
+        run: npm test
+
+      - name: Run deploy gate
+        run: npm run check
+        env:
+          DEPLOY_GATE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+          YDP_FALLBACK_EMAIL: ${{ secrets.YDP_FALLBACK_EMAIL }}
+          YDP_LINK_PRIVACY: ${{ secrets.YDP_LINK_PRIVACY }}
+          YDP_LINK_TERMS: ${{ secrets.YDP_LINK_TERMS }}
+          YDP_LINK_ACCESSIBILITY: ${{ secrets.YDP_LINK_ACCESSIBILITY }}
+
       - name: Install Netlify CLI
         run: npm install -g netlify-cli
 

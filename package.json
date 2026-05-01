@@ -2,6 +2,12 @@
   "name": "govtech-barbados-prototypes",
   "private": true,
   "type": "module",
+  "scripts": {
+    "test": "node --test tests/ydp-submit.test.mjs tests/ydp-static.test.mjs",
+    "test:ydp": "node --test tests/ydp-submit.test.mjs",
+    "test:smoke": "node --test tests/smoke.mjs",
+    "check": "node scripts/check-deploy.mjs && npm test"
+  },
   "dependencies": {
     "@netlify/blobs": "^8.1.0",
     "@supabase/supabase-js": "^2.103.3"
