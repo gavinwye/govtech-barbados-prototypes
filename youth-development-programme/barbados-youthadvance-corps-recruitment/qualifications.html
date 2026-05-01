@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your qualifications – BYAC Recruitment Form</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+let qualRowCount = 0;
+
+function qualRowHtml(i) {
+  return `
+    <div class="flex justify-between items-center">
+      <p class="font-bold text-[1.25rem]">Qualification ${i}</p>
+      <button type="button" onclick="removeQualRow(${i})" class="text-bb-teal-00 underline text-[1rem]">Remove</button>
+    </div>
+    <div class="space-y-4">
+      ${GovBB.textField(`qual-subject-${i}`, 'Subject')}
+      ${GovBB.textField(`qual-year-${i}`, 'Year', { width: 'w-28', inputmode: 'numeric' })}
+      ${GovBB.textField(`qual-body-${i}`, 'Examining body', { hint: 'For example, CXC, CAPE, City & Guilds' })}
+      ${GovBB.textField(`qual-level-${i}`, 'Level', { hint: 'For example, CSEC, CAPE Unit 1' })}
+      ${GovBB.textField(`qual-grade-${i}`, 'Grade', { hint: 'For example, Grade 1, A' })}
+    </div>`;
+}
+
+function addQualRow() {
+  qualRowCount++;
+  const i = qualRowCount;
+  const container = document.getElementById('qual-rows');
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'border border-bb-grey-00 rounded-sm p-4 space-y-4';
+  row.id = `qual-row-${i}`;
+  row.innerHTML = qualRowHtml(i);
+  container.appendChild(row);
+  GovBB.render && GovBB.render();
+}
+
+function removeQualRow(i) {
+  const el = document.getElementById(`qual-row-${i}`);
+  if (el) el.remove();
+  // Clear that row's data so it doesn't reappear after a re-render.
+  ['subject', 'year', 'body', 'level', 'grade'].forEach(k => {
+    delete GovBB.D[`qual-${k}-${i}`];
+  });
+}
+
+function rebuildExistingQualRows() {
+  // Find any qual-subject-N keys in saved data and rebuild rows for them.
+  const indexes = new Set();
+  Object.keys(GovBB.D).forEach(k => {
+    const m = k.match(/^qual-(?:subject|year|body|level|grade)-(\d+)$/);
+    if (m) indexes.add(parseInt(m[1], 10));
+  });
+  const sorted = Array.from(indexes).sort((a, b) => a - b);
+  if (!sorted.length) return;
+  const container = document.getElementById('qual-rows');
+  if (!container) return;
+  sorted.forEach(i => {
+    if (i > qualRowCount) qualRowCount = i;
+    const row = document.createElement('div');
+    row.className = 'border border-bb-grey-00 rounded-sm p-4 space-y-4';
+    row.id = `qual-row-${i}`;
+    row.innerHTML = qualRowHtml(i);
+    container.appendChild(row);
+  });
+  GovBB.render && GovBB.render();
+}
+
+YDP.initPage({
+  formName: 'BYAC Recruitment Form',
+  storeKey: 'ydp_byac',
+  pageId: 'qualifications',
+  nextUrl: 'interests.html',
+  validate: () => [],
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Your qualifications</h1>
+      <p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">List your exam results and certificates. Leave blank if you do not have any.</p>
+      <div class="space-y-8" id="quals-container">
+        <div id="error-summary"></div>
+        <div id="qual-rows" class="space-y-6"></div>
+        <button type="button" onclick="addQualRow()"
+          class="inline-flex items-center gap-2 text-bb-teal-00 underline underline-offset-2 hover:no-underline text-[1.25rem]">
+          + Add a qualification
+        </button>
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+
+// Restore any rows the user had previously added.
+rebuildExistingQualRows();
+</script>
+</body>
+</html>

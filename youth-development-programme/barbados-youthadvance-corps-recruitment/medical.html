@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your health – BYAC Recruitment Form</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+const CONDITIONS = ['rheumatic-fever', 'asthma', 'allergies', 'epilepsy', 'diabetes'];
+
+function medicalConditionRow(id, label) {
+  const D = GovBB.D;
+  const val = D[id] || '';
+  return `
+    <div class="border border-bb-grey-00 rounded-sm p-4 space-y-4">
+      ${GovBB.radioGroup(id, label, ['Yes', 'No'])}
+      <div id="${id}-detail-wrap" class="${val === 'Yes' ? '' : 'hidden'}">
+        ${GovBB.textareaField(id + '-detail', "Give details (when, how long, doctor's name)", { rows: 3 })}
+      </div>
+    </div>`;
+}
+
+function wireConditionToggles() {
+  const inputs = document.querySelectorAll('input[type="radio"]');
+  inputs.forEach(input => {
+    const name = input.name;
+    if (CONDITIONS.includes(name) || name === 'special-diet') {
+      input.addEventListener('change', () => {
+        const wrapId = name === 'special-diet' ? 'diet-detail-wrap' : name + '-detail-wrap';
+        const wrap = document.getElementById(wrapId);
+        if (wrap) wrap.classList.toggle('hidden', input.value !== 'Yes');
+      });
+    }
+  });
+}
+
+YDP.initPage({
+  formName: 'BYAC Recruitment Form',
+  storeKey: 'ydp_byac',
+  pageId: 'medical',
+  nextUrl: 'declaration.html',
+  validate: () => {
+    const D = GovBB.D;
+    const errors = [];
+    CONDITIONS.forEach(c => {
+      if (!D[c]) errors.push({ id: c, msg: `${c.replace(/-/g, ' ')} – Select Yes or No` });
+      if (D[c] === 'Yes' && !D[c + '-detail']) errors.push({ id: c + '-detail', msg: `${c.replace(/-/g, ' ')} details – Give details` });
+    });
+    if (!D['other-conditions']) errors.push({ id: 'other-conditions', msg: 'Other conditions – Answer this question' });
+    if (!D['medication-allergies']) errors.push({ id: 'medication-allergies', msg: 'Medication allergies – Answer this question' });
+    if (!D['special-diet']) errors.push({ id: 'special-diet', msg: 'Special diet – Select Yes or No' });
+    if (D['special-diet'] === 'Yes' && !D['diet-detail']) errors.push({ id: 'diet-detail', msg: 'Diet details – Describe your diet' });
+    return errors;
+  },
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Your health</h1>
+      <p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">This information is kept private. It helps us make sure you are safe during the programme.</p>
+      <div class="space-y-8">
+        <div id="error-summary"></div>
+
+        <div class="space-y-4">
+          <p class="font-bold text-[1.25rem]">Do you have or have you had any of the following?</p>
+          <p class="text-[1.25rem] text-bb-mid-grey-00">Choose Yes or No for each one.</p>
+
+          ${medicalConditionRow('rheumatic-fever', 'Rheumatic fever')}
+          ${medicalConditionRow('asthma', 'Asthma')}
+          ${medicalConditionRow('allergies', 'Allergies')}
+          ${medicalConditionRow('epilepsy', 'Epilepsy')}
+          ${medicalConditionRow('diabetes', 'Diabetes')}
+        </div>
+
+        ${GovBB.textareaField('other-conditions', 'Do you have any other medical or physical conditions?', { hint: 'Write "None" if you do not have any.', rows: 3 })}
+        ${GovBB.textField('medication-allergies', 'Are you allergic to any medication?', { hint: 'Write "None" if you are not allergic to any medication.' })}
+        ${GovBB.textField('blood-type', 'What is your blood type?', { hint: 'Optional. For example, O+, A−', width: 'w-32' })}
+        ${GovBB.radioGroup('special-diet', 'Do you follow a special diet?', ['Yes', 'No'])}
+        <div id="diet-detail-wrap" class="${GovBB.D['special-diet'] === 'Yes' ? '' : 'hidden'}">
+          ${GovBB.textareaField('diet-detail', 'Describe your diet', { rows: 3 })}
+        </div>
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+
+wireConditionToggles();
+</script>
+</body>
+</html>

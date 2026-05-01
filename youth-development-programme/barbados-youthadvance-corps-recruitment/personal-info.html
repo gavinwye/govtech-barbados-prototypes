@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your personal details – BYAC Recruitment Form</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'BYAC Recruitment Form',
+  storeKey: 'ydp_byac',
+  pageId: 'personal-info',
+  nextUrl: 'parent-guardian.html',
+  onBeforeNext: () => YDP.ageFromDob(GovBB.D) >= 18 ? 'education.html' : null,
+  validate: () => {
+    const D = GovBB.D;
+    const errors = [];
+    if (!D['nrn']) errors.push({ id: 'nrn', msg: 'National Registration Number – Enter your NRN' });
+    if (!D['nin']) errors.push({ id: 'nin', msg: 'National Insurance Number – Enter your NIN' });
+    if (!D['last-name']) errors.push({ id: 'last-name', msg: 'Last name – Enter your last name' });
+    if (!D['first-name']) errors.push({ id: 'first-name', msg: 'First name – Enter your first name' });
+    if (!D['address-line1']) errors.push({ id: 'address-line1', msg: 'Address – Enter your address' });
+    if (!D['parish']) errors.push({ id: 'parish', msg: 'Parish – Select your parish' });
+    if (!D['dob-day'] || !D['dob-month'] || !D['dob-year']) errors.push({ id: 'dob-day', msg: 'Date of birth – Enter your date of birth' });
+    if (!D['country-of-birth']) errors.push({ id: 'country-of-birth', msg: 'Country of birth – Enter your country of birth' });
+    if (!D['sex']) errors.push({ id: 'sex', msg: 'Sex – Select your sex' });
+    if (!D['union-status']) errors.push({ id: 'union-status', msg: 'Relationship status – Select your relationship status' });
+    return errors;
+  },
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Your personal details</h1>
+      <div class="space-y-8">
+        <div id="error-summary"></div>
+        ${GovBB.textField('nrn', 'National Registration Number', { hint: 'This is on your national ID card. For example, 870315-1234' })}
+        ${GovBB.textField('nin', 'National Insurance Number', { hint: 'Six digits. For example, 123456' })}
+        ${GovBB.textField('first-name', 'First name')}
+        ${GovBB.textField('middle-initial', 'Middle initial(s)', { hint: 'Leave blank if you do not have a middle name' })}
+        ${GovBB.textField('last-name', 'Last name')}
+        ${GovBB.textField('address-line1', 'Address line 1')}
+        ${GovBB.textField('address-line2', 'Address line 2', { hint: 'Optional' })}
+        ${GovBB.selectField('parish', 'Parish', GovBB.PARISHES)}
+        ${GovBB.dateField('dob', 'Date of birth', 'For example, 27 03 2007')}
+        ${GovBB.textField('country-of-birth', 'Country of birth')}
+        ${GovBB.radioGroup('sex', 'Sex', ['Male', 'Female'])}
+        ${GovBB.radioGroup('union-status', 'Relationship status', ['Single', 'Married', 'Divorced', 'Separated', 'Widowed', 'Common-law'])}
+        ${GovBB.textField('num-children', 'How many children do you have?', { hint: 'Enter 0 if none', width: 'w-24', inputmode: 'numeric' })}
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+</script>
+</body>
+</html>
