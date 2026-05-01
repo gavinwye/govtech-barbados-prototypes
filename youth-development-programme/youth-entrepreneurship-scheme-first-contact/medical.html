@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your health and emergency contact – YES First Contact</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+const MEDICAL_OPTIONS = ['Asthma', 'Epilepsy', 'Hypertension', 'Diabetes', 'Allergies', 'Physical disability', 'Learning disability', 'Behavioural challenge', 'Mental health challenge', 'None', 'Other'];
+const medKey = c => 'med-' + c.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+YDP.initPage({
+  formName: 'YES First Contact',
+  storeKey: 'ydp_yes',
+  pageId: 'medical',
+  nextUrl: 'how-heard.html',
+  validate: () => {
+    const D = GovBB.D;
+    const errors = [];
+    const anyMed = MEDICAL_OPTIONS.some(c => D[medKey(c)]);
+    if (!anyMed) errors.push({ id: medKey('Asthma'), msg: 'Health – Choose at least one option, or choose "None"' });
+    if (!D['ec-name']) errors.push({ id: 'ec-name', msg: 'Emergency contact name – Enter a name' });
+    if (!D['ec-relationship']) errors.push({ id: 'ec-relationship', msg: 'Relationship – Enter the relationship' });
+    if (!D['ec-phone']) errors.push({ id: 'ec-phone', msg: 'Emergency contact phone – Enter a phone number' });
+    return errors;
+  },
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Your health and emergency contact</h1>
+      <div class="space-y-8">
+        <div id="error-summary"></div>
+        <div>
+          <p class="font-bold text-[1.25rem] mb-4">Do you have any of the following? Choose all that apply.</p>
+          <div class="space-y-4">
+            ${MEDICAL_OPTIONS.map(c => GovBB.checkboxItem(medKey(c), c)).join('')}
+          </div>
+        </div>
+        <div data-show-when-check="${medKey('Other')}" style="${GovBB.D[medKey('Other')] ? '' : 'display:none;'}" class="pl-s mt-s">
+          ${GovBB.textField('med-other-detail', 'Describe your condition')}
+        </div>
+
+        <h2 class="font-bold text-[2rem]">Emergency contact</h2>
+        ${GovBB.textField('ec-name', 'Full name')}
+        ${GovBB.textField('ec-relationship', 'Relationship to you', { hint: 'For example, parent, grandparent, guardian' })}
+        ${GovBB.telField('ec-phone', 'Phone number', { placeholder: '246-555-1234' })}
+        ${GovBB.telField('ec-cell', 'Mobile number', { hint: 'Optional', placeholder: '246-555-1234' })}
+        ${GovBB.textField('ec-address', 'Address', { hint: 'Optional — only if different from yours' })}
+        ${GovBB.emailField('ec-email', 'Email address', { hint: 'Optional' })}
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+</script>
+</body>
+</html>
