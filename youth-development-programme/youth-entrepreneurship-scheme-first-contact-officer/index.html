@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YES First Contact (Officer) – Division of Youth Affairs</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'YES First Contact (Officer)',
+  storeKey: 'ydp_yes_officer',
+  pageId: 'start',
+  nextUrl: 'session-info.html',
+  template: () => `
+    <div class="space-y-8">
+      <a href="../../index.html" class="inline-flex items-center gap-xs outline-none underline-offset-2 underline hover:no-underline active:bg-bb-yellow-100 focus-visible:bg-bb-yellow-100 text-bb-teal-00 hover:text-bb-black-00 hover:bg-bb-teal-10">← Back</a>
+      <div class="bg-bb-blue-10 border-l-4 border-bb-blue-40 p-6 rounded-sm">
+        <p class="font-bold text-[1.25rem]">For YES officers only</p>
+        <p class="mt-2">Use this form to record a client's first contact with the YES programme. Complete it during or after your first meeting with a client.</p>
+      </div>
+      <div>
+        <h1 class="font-bold text-[3.5rem] leading-[1.15]">YES First Contact – Officer record</h1>
+        <p class="text-bb-mid-grey-00 mt-2">Division of Youth Affairs, Prime Minister's Office</p>
+      </div>
+      <p>Record the client's personal details, business information, your assessment, and any assistance recommended.</p>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">What you will need</h2>
+        <ul class="list-disc pl-6 space-y-2">
+          <li>The client's personal and contact details</li>
+          <li>The client's highest qualification</li>
+          <li>Details about the client's business idea or existing business</li>
+          <li>Your assessment notes from the session</li>
+          <li>The client's emergency contact details</li>
+        </ul>
+      </div>
+      <div class="mt-8">
+        ${GovBB.startBtn('Start recording')}
+      </div>
+    </div>`
+});
+</script>
+</body>
+</html>

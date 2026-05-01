@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check the record before saving – YES First Contact (Officer)</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+const QUAL_OPTIONS = ['CCSLC', 'CXC / CSEC', 'CAPE', 'CVQs', 'NVQs', 'GCE O-Level', 'City & Guilds', 'Certificate', 'Diploma', 'Professional certificate', 'Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'];
+const MEDICAL_OPTIONS = ['Asthma', 'Epilepsy', 'Hypertension', 'Diabetes', 'Allergies', 'Physical disability', 'Learning disability', 'Behavioural challenge', 'Mental health challenge', 'None', 'Other'];
+const ASSISTANCE_REQUESTED = ['Business counselling', 'Business training', 'Mentoring', 'Financial assistance', 'Market linkages', 'Other'];
+const ASSISTANCE_RECOMMENDED = ['Business counselling', 'Business training', 'Mentoring', 'Financial assistance', 'Market linkages', 'Referral to another agency', 'Other'];
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+YDP.initPage({
+  formName: 'YES First Contact (Officer)',
+  storeKey: 'ydp_yes_officer',
+  pageId: 'check',
+  template: () => {
+    const D = GovBB.D;
+    const contactDate = [D['contact-date-day'], D['contact-date-month'], D['contact-date-year']].filter(Boolean).join(' / ');
+    const dob = [D['dob-day'], D['dob-month'], D['dob-year']].filter(Boolean).join(' / ');
+    const quals = QUAL_OPTIONS.filter(q => D['qual-' + slug(q)]).join(', ') || '—';
+    const meds = MEDICAL_OPTIONS.filter(c => D['med-' + slug(c)]).join(', ') || '—';
+    const assistRequested = ASSISTANCE_REQUESTED.filter(a => D['req-' + slug(a)]).join(', ') || '—';
+    const assistRecommended = ASSISTANCE_RECOMMENDED.filter(a => D['rec-' + slug(a)]).join(', ') || '—';
+    return `
+    ${GovBB.backLink()}
+    <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Check the record before saving</h1>
+    <div class="space-y-10">
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Session details</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Date of contact', contactDate, 'session-info.html')}
+          ${GovBB.summaryRow('Client file number', D['client-file-number'] || '—', 'session-info.html')}
+          ${GovBB.summaryRow('Session duration', D['session-duration'] || '—', 'session-info.html')}
+          ${GovBB.summaryRow('Officer name', D['officer-name'] || '—', 'session-info.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Client's personal details</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Name', [D['first-name'], D['last-name']].filter(Boolean).join(' '), 'personal-info.html')}
+          ${GovBB.summaryRow('Date of birth', dob, 'personal-info.html')}
+          ${GovBB.summaryRow('National ID', D['national-id'], 'personal-info.html')}
+          ${GovBB.summaryRow('Address', [D['address'], D['parish']].filter(Boolean).join(', '), 'personal-info.html')}
+          ${GovBB.summaryRow('Phone', D['phone'], 'personal-info.html')}
+          ${GovBB.summaryRow('Email', D['contact-email'], 'personal-info.html')}
+          ${GovBB.summaryRow('Nationality', D['nationality'] === 'Other' ? (D['nationality-other'] || 'Other') : D['nationality'], 'personal-info.html')}
+          ${GovBB.summaryRow('Employment status', D['employment-status'], 'personal-info.html')}
+          ${GovBB.summaryRow('Marital status', D['marital-status'], 'personal-info.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Qualifications</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Qualifications', quals, 'education.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Business</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Business name', D['business-name'] || '—', 'business-info.html')}
+          ${GovBB.summaryRow('Description', D['business-description'] || '—', 'business-info.html')}
+          ${GovBB.summaryRow('Active status', D['active-status'] || '—', 'business-details.html')}
+          ${GovBB.summaryRow('Business structure', D['business-structure'] || '—', 'business-details.html')}
+          ${GovBB.summaryRow('Number of employees', D['num-employees'] || '0', 'business-details.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Officer assessment</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Assistance requested', assistRequested, 'assessment.html')}
+          ${GovBB.summaryRow('Assistance recommended', assistRecommended, 'assessment.html')}
+          ${GovBB.summaryRow('Second assessment needed', D['second-assessment'] || '—', 'assessment.html')}
+          ${GovBB.summaryRow('Eligible for training', D['eligible-training'] || '—', 'assessment.html')}
+          ${GovBB.summaryRow('Comments', D['assessment-comments'] || '—', 'assessment.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Client's health</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Conditions', meds, 'medical.html')}
+          ${GovBB.summaryRow('Emergency contact', D['ec-name'], 'medical.html')}
+        </dl>
+      </div>
+      <div class="mt-8 flex gap-4">
+        <button type="button" onclick="YDP.submit('confirmation.html')" class="${GovBB.BTN_CLS}">Save record</button>
+      </div>
+    </div>`;
+  }
+});
+</script>
+</body>
+</html>

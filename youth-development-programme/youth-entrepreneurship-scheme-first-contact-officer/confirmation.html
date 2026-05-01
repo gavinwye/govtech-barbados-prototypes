@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Record saved – YES First Contact (Officer)</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+const STORE = 'ydp_yes_officer';
+let ref = '';
+try { ref = sessionStorage.getItem(STORE + '_ref') || ''; } catch(e) {}
+if (!ref) ref = 'YESO-' + Math.random().toString(36).substring(2,8).toUpperCase();
+try {
+  sessionStorage.removeItem(STORE);
+  sessionStorage.removeItem(STORE + '_ref');
+} catch(e) {}
+
+const todayStr = new Date().toLocaleDateString('en-BB', { day: '2-digit', month: 'long', year: 'numeric' });
+
+YDP.initPage({
+  formName: 'YES First Contact (Officer)',
+  storeKey: STORE,
+  pageId: 'confirmation',
+  template: () => `
+    <div class="space-y-8">
+      <div class="bg-bb-teal-00 text-bb-white-00 p-8 rounded-sm space-y-4">
+        <h1 class="font-bold text-[3.5rem] leading-[1.15]">Record saved</h1>
+        <p class="text-[1.5rem]">Reference number</p>
+        <p class="text-[2rem] font-bold">${YDP.esc(ref)}</p>
+      </div>
+      <h2 class="font-bold text-[2rem]">What happens next</h2>
+      <p class="text-[1.25rem]">This record has been submitted to the YES programme database.</p>
+      <p class="text-[1.25rem]">You can use the reference number above to locate this client's record in the system.</p>
+      <div class="border-t border-bb-grey-00 pt-8">
+        <p class="font-bold text-[1.25rem] mb-4">Officer signature</p>
+        <p class="text-[1.25rem] text-bb-mid-grey-00 mb-6">Sign below to confirm the information recorded is accurate to the best of your knowledge.</p>
+        <div class="border-2 border-bb-black-00 rounded-sm bg-bb-white-00" style="height: 120px; width: 400px;">
+          <p class="text-bb-mid-grey-00 text-[1rem] p-4">Signature area</p>
+        </div>
+        <p class="text-[1.25rem] text-bb-mid-grey-00 mt-4">Date: ${YDP.esc(todayStr)}</p>
+      </div>
+      <div class="mt-8">
+        <a href="https://alpha.gov.bb/" class="${GovBB.BTN_CLS} no-underline">Go home</a>
+      </div>
+    </div>`
+});
+</script>
+</body>
+</html>
