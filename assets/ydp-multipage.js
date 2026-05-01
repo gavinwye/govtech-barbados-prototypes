@@ -43,6 +43,7 @@
   var YDP = {};
   YDP.storeKey = null;
   YDP.formName = '';
+  YDP.formId = null;
   YDP.deptContactEmail = null;
   YDP.deptContactPhone = null;
 
@@ -84,6 +85,14 @@
     if (cfg.deptContactEmail) YDP.deptContactEmail = cfg.deptContactEmail;
     if (cfg.deptContactPhone) YDP.deptContactPhone = cfg.deptContactPhone;
     YDP.loadData(cfg.storeKey);
+    // Persist formId once at init so submit on a later page can recover it.
+    var formIdKey = cfg.storeKey + '_formId';
+    if (cfg.formId) {
+      YDP.formId = cfg.formId;
+      try { sessionStorage.setItem(formIdKey, cfg.formId); } catch (e) {}
+    } else {
+      try { YDP.formId = sessionStorage.getItem(formIdKey); } catch (e) {}
+    }
     YDP.injectChrome();
     if (cfg.title) document.title = cfg.title;
 
@@ -120,13 +129,17 @@
     });
   };
 
-  /* Submit the form to /api/submit and redirect to confirmationUrl. */
+  /* Submit the form to /api/ydp-submit and redirect to confirmationUrl.
+   * The server derives form name, recipient, ref prefix, and contact info
+   * from the registry keyed on `formId` — the browser only sends formId
+   * and the collected formData. */
   YDP.submit = function (confirmationUrl) {
-    var email = GovBB.D['email'] || GovBB.D['contact-email'] || '';
-    var payload = { formName: YDP.formName, formData: GovBB.D, userEmail: email };
-    if (YDP.deptContactEmail) payload.deptContactEmail = YDP.deptContactEmail;
-    if (YDP.deptContactPhone) payload.deptContactPhone = YDP.deptContactPhone;
-    fetch('/api/submit', {
+    var formId = YDP.formId;
+    if (!formId) {
+      try { formId = sessionStorage.getItem(YDP.storeKey + '_formId'); } catch (e) {}
+    }
+    var payload = { formId: formId, formData: GovBB.D };
+    fetch('/api/ydp-submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
