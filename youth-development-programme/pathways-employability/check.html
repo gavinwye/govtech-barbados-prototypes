@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check your answers – Pathways Employability Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+const EMPLOYMENT_OPTIONS = [
+  'Employed (full time)', 'Employed (part time)', 'Self-employed',
+  'Unemployed', 'In school (full time)', 'In school (part time)', 'Other'
+];
+const MEDICAL_CONDITIONS = [
+  'Asthma', 'Epilepsy', 'Hypertension', 'Diabetes', 'Allergies',
+  'Physical disability', 'Learning disability', 'Behavioural challenges',
+  'Mental health challenges', 'None', 'Other'
+];
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+YDP.initPage({
+  formName: 'Pathways Employability Programme 2026',
+  storeKey: 'ydp_pep',
+  pageId: 'check',
+  deptContactEmail: 'pathways@barbados.gov.bb',
+  deptContactPhone: '(246) 535-3863',
+  template: () => {
+    const D = GovBB.D;
+    const dob = [D['dob-day'], D['dob-month'], D['dob-year']].filter(Boolean).join(' / ');
+    const empSelected = EMPLOYMENT_OPTIONS.filter(o => {
+      const id = 'emp-' + (typeof o === 'string' ? o : o.value).toLowerCase().replace(/[^a-z0-9]/g, '-');
+      return D[id];
+    }).map(o => typeof o === 'string' ? o : o.label).join(', ') || '—';
+    const medSelected = MEDICAL_CONDITIONS.filter(c => D['med-' + slug(c)]).join(', ') || '—';
+    const age = YDP.ageFromDob(D);
+    return `
+    ${GovBB.backLink()}
+    <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Check your answers</h1>
+    <div class="space-y-10">
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Personal details</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Name', [D['first-name'], D['last-name']].filter(Boolean).join(' '), 'name.html')}
+          ${GovBB.summaryRow('Gender', D['gender'] === 'other' ? (D['gender-other-detail'] || 'Other') : D['gender'], 'gender.html')}
+          ${GovBB.summaryRow('Address', [D['address'], D['parish']].filter(Boolean).join(', '), 'address.html')}
+          ${GovBB.summaryRow('Phone', D['phone'], 'contact.html')}
+          ${GovBB.summaryRow('Email', D['contact-email'], 'contact.html')}
+          ${GovBB.summaryRow('Date of birth', dob, 'dob.html')}
+          ${GovBB.summaryRow('Age', age == null ? '—' : String(age), 'dob.html')}
+          ${GovBB.summaryRow('Country of birth', D['country-of-birth'], 'nationality.html')}
+          ${GovBB.summaryRow('Nationality', D['nationality'] === 'other' ? (D['nationality-other-detail'] || 'Other') : D['nationality'], 'nationality.html')}
+          ${GovBB.summaryRow('Marital status', D['marital-status'], 'marital-religion.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Current situation</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Status', empSelected, 'employment-status.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">ID and finances</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('NRN', D['nrn'], 'required-docs.html')}
+          ${GovBB.summaryRow('Bank account', D['bank-account'], 'required-docs.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Qualifications and work history</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Qualifications', D['qualifications'] || '—', 'qualifications.html')}
+          ${GovBB.summaryRow('Work experience', D['employment-history'] || '—', 'employment-history.html')}
+          ${GovBB.summaryRow('Job interests', D['job-interests'] || '—', 'job-interests.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Health</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Conditions', medSelected, 'medical.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Emergency contact</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('Name', D['ec-name'], 'emergency-contact.html')}
+          ${GovBB.summaryRow('Relationship', D['ec-relationship'], 'emergency-contact.html')}
+          ${GovBB.summaryRow('Phone', D['ec-phone'], 'emergency-contact.html')}
+        </dl>
+      </div>
+      <div>
+        <h2 class="font-bold text-[2rem] mb-4">Publicity</h2>
+        <dl class="divide-y divide-bb-grey-00 border-t border-bb-grey-00">
+          ${GovBB.summaryRow('How heard', D['how-heard'] === 'other' ? (D['how-heard-other-detail'] || 'Other') : (D['how-heard'] || '—'), 'how-heard.html')}
+          ${GovBB.summaryRow('Photo consent', D['publicity-consent'] || '—', 'publicity-consent.html')}
+        </dl>
+      </div>
+      <div class="mt-8 flex gap-4">
+        <button type="button" onclick="YDP.submit('confirmation.html')" class="${GovBB.BTN_CLS}">Submit application</button>
+      </div>
+    </div>`;
+  }
+});
+</script>
+</body>
+</html>
