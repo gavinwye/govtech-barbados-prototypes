@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency contact – Digital Media Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'Digital Media Programme 2026',
+  storeKey: 'ydp_dmp',
+  pageId: 'emergency-contact',
+  nextUrl: 'community-group.html',
+  validate: () => {
+    const D = GovBB.D;
+    const errors = [];
+    if (!D['ec-name']) errors.push({ id: 'ec-name', msg: 'Emergency contact name – Enter a name' });
+    if (!D['ec-relationship']) errors.push({ id: 'ec-relationship', msg: 'Relationship – Enter the relationship' });
+    if (!D['ec-phone-mobile']) errors.push({ id: 'ec-phone-mobile', msg: 'Mobile phone – Enter a phone number' });
+    return errors;
+  },
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Emergency contact</h1>
+      <div class="space-y-8">
+        <div id="error-summary"></div>
+        ${GovBB.textField('ec-name', 'Full name')}
+        ${GovBB.textField('ec-relationship', 'Relationship to you', { hint: 'For example, parent, guardian, sibling' })}
+        ${GovBB.textField('ec-address', 'Address')}
+        ${GovBB.telField('ec-phone-home', 'Home phone', { hint: 'Optional', placeholder: '246-555-1234' })}
+        ${GovBB.telField('ec-phone-mobile', 'Mobile phone', { placeholder: '246-555-1234' })}
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+</script>
+</body>
+</html>

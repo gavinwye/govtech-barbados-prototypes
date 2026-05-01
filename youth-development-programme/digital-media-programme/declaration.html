@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Declaration – Digital Media Programme 2026</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Barbados.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/govbb-tailwind-config.js"></script>
+  <link rel="stylesheet" href="/assets/govbb-base.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+<main><div class="container py-l max-w-3xl" id="app"></div></main>
+<div id="chrome-bottom"></div>
+<script src="/assets/govbb-framework.js"></script>
+<script src="/assets/ydp-multipage.js"></script>
+<script>
+YDP.initPage({
+  formName: 'Digital Media Programme 2026',
+  storeKey: 'ydp_dmp',
+  pageId: 'declaration',
+  nextUrl: 'check.html',
+  validate: () => {
+    const D = GovBB.D;
+    const errors = [];
+    if (!D['agree-declaration']) errors.push({ id: 'agree-declaration', msg: 'Declaration – You must confirm the declaration to continue' });
+    if (!D['declaration-date-day'] || !D['declaration-date-month'] || !D['declaration-date-year']) {
+      errors.push({ id: 'declaration-date-day', msg: 'Date – Enter today\'s date' });
+    }
+    return errors;
+  },
+  template: () => `
+    <form novalidate>
+      ${GovBB.backLink()}
+      ${GovBB.caption()}
+      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-8">Declaration</h1>
+      <div class="space-y-8">
+        <div id="error-summary"></div>
+        <div class="bg-bb-blue-10 p-6 rounded-sm space-y-4 text-[1.25rem]">
+          <p>By submitting this form, you confirm that:</p>
+          <ul class="list-disc pl-6 space-y-1">
+            <li>All the information you have given is true and complete.</li>
+            <li>You agree to us using your information as described on the first page.</li>
+          </ul>
+        </div>
+        ${GovBB.checkboxItem('agree-declaration', 'I confirm the information I have given is correct and I agree to the declaration above.')}
+        <div class="space-y-2">
+          <p class="font-bold text-[1.25rem]">Your signature</p>
+          <p class="text-[1.25rem] text-bb-mid-grey-00">Sign below using your mouse or finger.</p>
+          <div class="border-2 border-bb-black-00 rounded-sm bg-bb-white-00 h-32 flex items-center justify-center text-bb-mid-grey-00">
+            [Signature area – for prototype purposes]
+          </div>
+        </div>
+        ${GovBB.dateField('declaration-date', 'Date', 'For example, 27 03 2026')}
+        ${GovBB.continueBtn()}
+      </div>
+    </form>`
+});
+</script>
+</body>
+</html>
