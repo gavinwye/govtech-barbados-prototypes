@@ -25,20 +25,43 @@
     '</div>'
   ].join('');
 
-  var CHROME_BOTTOM = [
-    '<footer class="bg-bb-blue-100 text-bb-white-00">',
-      '<div class="container py-l text-[1rem]">',
-        '<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">',
-          '<p>&copy; 2026 Government of Barbados. All rights reserved.</p>',
-          '<div class="flex gap-4">',
-            '<a href="#" class="underline underline-offset-2 hover:no-underline text-bb-white-00">Privacy</a>',
-            '<a href="#" class="underline underline-offset-2 hover:no-underline text-bb-white-00">Terms</a>',
-            '<a href="#" class="underline underline-offset-2 hover:no-underline text-bb-white-00">Accessibility</a>',
+  // Footer policy links. Override per-deploy by setting `window.YDP_LINKS`
+  // before the framework loads (or via a small site-wide config script).
+  // Production must replace these with the real URLs before launch — PR4
+  // adds a deploy-time check that fails when these placeholders remain.
+  var DEFAULT_LINKS = {
+    privacy: 'https://www.gov.bb/privacy-policy',
+    terms: 'https://www.gov.bb/terms-of-use',
+    accessibility: 'https://www.gov.bb/accessibility-statement',
+    guardianConsent: 'https://www.gov.bb/youth-development/guardian-consent'
+  };
+  function links() {
+    var override = (typeof window !== 'undefined' && window.YDP_LINKS) || {};
+    return {
+      privacy: override.privacy || DEFAULT_LINKS.privacy,
+      terms: override.terms || DEFAULT_LINKS.terms,
+      accessibility: override.accessibility || DEFAULT_LINKS.accessibility,
+      guardianConsent: override.guardianConsent || DEFAULT_LINKS.guardianConsent
+    };
+  }
+
+  function chromeBottom() {
+    var L = links();
+    return [
+      '<footer class="bg-bb-blue-100 text-bb-white-00">',
+        '<div class="container py-l text-[1rem]">',
+          '<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">',
+            '<p>&copy; 2026 Government of Barbados. All rights reserved.</p>',
+            '<div class="flex gap-4">',
+              '<a href="' + L.privacy + '" class="underline underline-offset-2 hover:no-underline text-bb-white-00">Privacy</a>',
+              '<a href="' + L.terms + '" class="underline underline-offset-2 hover:no-underline text-bb-white-00">Terms</a>',
+              '<a href="' + L.accessibility + '" class="underline underline-offset-2 hover:no-underline text-bb-white-00">Accessibility</a>',
+            '</div>',
           '</div>',
         '</div>',
-      '</div>',
-    '</footer>'
-  ].join('');
+      '</footer>'
+    ].join('');
+  }
 
   var YDP = {};
   YDP.storeKey = null;
@@ -51,15 +74,28 @@
     var top = document.getElementById('chrome-top');
     if (top) top.innerHTML = CHROME_TOP;
     var bot = document.getElementById('chrome-bottom');
-    if (bot) bot.innerHTML = CHROME_BOTTOM;
+    if (bot) bot.innerHTML = chromeBottom();
   };
+
+  // Stored data carries a `t` (savedAt) timestamp; entries older than the TTL
+  // are treated as gone. Stops half-finished forms from leaking PII into a
+  // shared device session that's been idle.
+  var TTL_MS = 30 * 60 * 1000;
 
   YDP.loadData = function (key) {
     YDP.storeKey = key;
     try {
       var raw = sessionStorage.getItem(key);
-      if (raw) {
-        var data = JSON.parse(raw);
+      if (!raw) return;
+      var parsed = JSON.parse(raw);
+      // Back-compat with the unwrapped format used in earlier prototypes.
+      var data = (parsed && typeof parsed === 'object' && parsed.t && parsed.d) ? parsed.d : parsed;
+      var savedAt = (parsed && parsed.t) || 0;
+      if (savedAt && (Date.now() - savedAt > TTL_MS)) {
+        YDP.clearAll();
+        return;
+      }
+      if (data && typeof data === 'object') {
         Object.keys(data).forEach(function (k) { GovBB.D[k] = data[k]; });
       }
     } catch (e) { /* ignore */ }
@@ -68,13 +104,44 @@
   YDP.saveData = function () {
     if (!YDP.storeKey) return;
     try {
-      sessionStorage.setItem(YDP.storeKey, JSON.stringify(GovBB.D));
+      sessionStorage.setItem(YDP.storeKey, JSON.stringify({ t: Date.now(), d: GovBB.D }));
     } catch (e) { /* ignore */ }
   };
 
   YDP.clearData = function () {
     if (!YDP.storeKey) return;
     try { sessionStorage.removeItem(YDP.storeKey); } catch (e) { /* ignore */ }
+  };
+
+  // Wipe every trace of this form from the browser: form data, formId,
+  // reference number, and any IndexedDB-held files. Called on the
+  // confirmation and no-consent landings so a shared device cannot scrape
+  // submitted PII out of sessionStorage. Accepts an optional explicit key
+  // for callers that run before initPage has set YDP.storeKey.
+  YDP.clearAll = function (key) {
+    var k = key || YDP.storeKey;
+    if (!k) return;
+    YDP.storeKey = k;
+    try {
+      sessionStorage.removeItem(k);
+      sessionStorage.removeItem(k + '_formId');
+      sessionStorage.removeItem(k + '_ref');
+    } catch (e) { /* ignore */ }
+    if (typeof YDP.deleteFile === 'function') YDP.deleteFile();
+  };
+
+  // Reusable banner pointing under-18 applicants at the offline guardian
+  // consent form. Drop it into a form's consent or parent-guardian page.
+  YDP.guardianNote = function (opts) {
+    opts = opts || {};
+    var url = opts.url || links().guardianConsent;
+    var heading = opts.heading || 'Under 18? Your parent or guardian must also sign';
+    var body = opts.body || 'Applicants under 18 must submit a signed guardian consent form alongside this application. The form is available offline at any Division of Youth Affairs office.';
+    return '<aside class="bg-bb-yellow-10 border-l-4 border-bb-yellow-100 p-6 rounded-sm space-y-2">' +
+      '<h2 class="font-bold text-[1.5rem]">' + YDP.esc(heading) + '</h2>' +
+      '<p class="text-[1.125rem]">' + YDP.esc(body) + '</p>' +
+      '<p class="text-[1.125rem]"><a class="underline underline-offset-2 hover:no-underline" href="' + url + '" target="_blank" rel="noopener">Download the guardian consent form</a></p>' +
+    '</aside>';
   };
 
   /* Initialize a standard question page.
