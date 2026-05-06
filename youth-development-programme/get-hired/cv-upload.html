@@ -19,42 +19,67 @@
 <script src="/assets/govbb-framework.js"></script>
 <script src="/assets/ydp-multipage.js"></script>
 <script>
+var MAX_BYTES = 5 * 1024 * 1024;
+var ALLOWED_EXT = ['pdf', 'doc', 'docx', 'odt', 'rtf', 'txt'];
+
+function handleCv(input) {
+  var f = input.files && input.files[0];
+  if (!f) {
+    GovBB.D['cv-filename'] = '';
+    GovBB.D['cv-file-type'] = '';
+    YDP.saveData();
+    YDP.deleteFile();
+    return;
+  }
+  var ext = (f.name.split('.').pop() || '').toLowerCase();
+  if (ALLOWED_EXT.indexOf(ext) === -1) {
+    GovBB.showErrors([{ id: 'cv', msg: 'Choose a PDF, Word, ODT, RTF or TXT file.' }]);
+    input.value = '';
+    return;
+  }
+  if (f.size > MAX_BYTES) {
+    GovBB.showErrors([{ id: 'cv', msg: 'File is too large (max 5 MB).' }]);
+    input.value = '';
+    return;
+  }
+  GovBB.clearErrors();
+  GovBB.D['cv-filename'] = f.name;
+  GovBB.D['cv-file-type'] = f.type || 'application/octet-stream';
+  // Drop any legacy base64 left over from the previous storage scheme.
+  delete GovBB.D['cv-file-base64'];
+  YDP.saveData();
+  YDP.putFile(f);
+}
+
 YDP.initPage({
+  formId: 'ydp-get-hired',
   formName: 'Get Hired Programme 2026',
   storeKey: 'ydp_get_hired',
   pageId: 'cv-upload',
   nextUrl: 'publicity-consent.html',
-  validate: () => {
-    if (!GovBB.D['cv-filename']) return [{id:'cv', msg:'Choose a file to upload'}];
-    const b64 = GovBB.D['cv-file-base64'];
-    // 5 MB cap on the base64 payload length (~3.75 MB raw).
-    if (b64 && b64.length > 5 * 1024 * 1024) {
-      delete GovBB.D['cv-file-base64'];
-      delete GovBB.D['cv-file-type'];
-      YDP.saveData();
-      return [{id:'cv', msg:'File is too large (max 5 MB)'}];
-    }
+  validate: function () {
+    if (!GovBB.D['cv-filename']) return [{ id: 'cv', msg: 'Choose a file to upload' }];
     return [];
   },
-  template: () => {
-    const prev = GovBB.D['cv-filename'] || '';
-    const note = prev ? `<p class="text-[1rem] text-bb-mid-grey-00 mt-xs">You uploaded: <span class="font-semibold">${YDP.esc(prev)}</span>. Choose a new file to replace it.</p>` : '';
-    return `
-    <form novalidate>
-      ${GovBB.backLink()}
-      ${GovBB.caption()}
-      <h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Upload your CV</h1>
-      <p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">We need a copy of your curriculum vitae (CV).</p>
-      <div class="space-y-8">
-        <div class="field-group flex flex-col gap-xs w-full items-start">
-          <label for="cv" class="block text-[1.25rem] leading-normal font-bold text-bb-black-00">Your CV file</label>
-          <p class="text-[1.25rem] leading-normal text-bb-mid-grey-00">PDF, Word or plain text. Maximum 5 MB.</p>
-          <input type="file" id="cv" name="cv" class="text-[1.125rem] py-s" accept=".pdf,.doc,.docx,.odt,.rtf,.txt" onchange="(function(input){var f=input.files&&input.files[0];if(!f){GovBB.D['cv-filename']='';delete GovBB.D['cv-file-base64'];delete GovBB.D['cv-file-type'];YDP.saveData();return;}GovBB.D['cv-filename']=f.name;GovBB.D['cv-file-type']=f.type||'application/octet-stream';var r=new FileReader();r.onload=function(){var s=String(r.result||'');var i=s.indexOf('base64,');GovBB.D['cv-file-base64']=i>=0?s.slice(i+7):'';YDP.saveData();};r.readAsDataURL(f);})(this)">
-          ${note}
-        </div>
-        ${GovBB.continueBtn()}
-      </div>
-    </form>`;
+  template: function () {
+    var prev = GovBB.D['cv-filename'] || '';
+    var note = prev ? '<p class="text-[1rem] text-bb-mid-grey-00 mt-xs">You uploaded: <span class="font-semibold">' + YDP.esc(prev) + '</span>. Choose a new file to replace it.</p>' : '';
+    return '' +
+    '<form novalidate>' +
+      GovBB.backLink() +
+      GovBB.caption() +
+      '<h1 class="font-bold text-[3.5rem] leading-[1.15] mb-4">Upload your CV</h1>' +
+      '<p class="text-[1.25rem] text-bb-mid-grey-00 mb-8">We need a copy of your curriculum vitae (CV).</p>' +
+      '<div class="space-y-8">' +
+        '<div class="field-group flex flex-col gap-xs w-full items-start">' +
+          '<label for="cv" class="block text-[1.25rem] leading-normal font-bold text-bb-black-00">Your CV file</label>' +
+          '<p class="text-[1.25rem] leading-normal text-bb-mid-grey-00">PDF, Word, ODT, RTF or plain text. Maximum 5 MB.</p>' +
+          '<input type="file" id="cv" name="cv" class="text-[1.125rem] py-s" accept=".pdf,.doc,.docx,.odt,.rtf,.txt" onchange="handleCv(this)">' +
+          note +
+        '</div>' +
+        GovBB.continueBtn() +
+      '</div>' +
+    '</form>';
   }
 });
 </script>

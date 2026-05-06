@@ -129,33 +129,96 @@
     });
   };
 
+  /* IndexedDB-backed Blob store for files (e.g. the Get Hired CV). Files
+   * cannot live in sessionStorage as base64 — too large, and exfiltrable to
+   * any script on the page. They live here as opaque Blobs across page
+   * navigations, then ride out as multipart/form-data at submit time. */
+  var IDB_NAME = 'ydp-files';
+  var IDB_STORE = 'files';
+  function idbOpen() {
+    return new Promise(function (resolve, reject) {
+      var req = indexedDB.open(IDB_NAME, 1);
+      req.onupgradeneeded = function () {
+        req.result.createObjectStore(IDB_STORE);
+      };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error); };
+    });
+  }
+  YDP.fileKey = function () { return YDP.storeKey + '_cv'; };
+  YDP.putFile = function (blob) {
+    return idbOpen().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(IDB_STORE, 'readwrite');
+        tx.objectStore(IDB_STORE).put(blob, YDP.fileKey());
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { reject(tx.error); };
+      });
+    });
+  };
+  YDP.getFile = function () {
+    return idbOpen().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(IDB_STORE, 'readonly');
+        var r = tx.objectStore(IDB_STORE).get(YDP.fileKey());
+        r.onsuccess = function () { resolve(r.result || null); };
+        r.onerror = function () { reject(r.error); };
+      });
+    }).catch(function () { return null; });
+  };
+  YDP.deleteFile = function () {
+    return idbOpen().then(function (db) {
+      return new Promise(function (resolve) {
+        var tx = db.transaction(IDB_STORE, 'readwrite');
+        tx.objectStore(IDB_STORE).delete(YDP.fileKey());
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { resolve(); };
+      });
+    }).catch(function () { });
+  };
+
   /* Submit the form to /api/ydp-submit and redirect to confirmationUrl.
    * The server derives form name, recipient, ref prefix, and contact info
    * from the registry keyed on `formId` — the browser only sends formId
-   * and the collected formData. */
+   * and the collected formData. If a CV blob is present in IndexedDB it
+   * rides out as multipart/form-data; otherwise the request is JSON. */
   YDP.submit = function (confirmationUrl) {
     var formId = YDP.formId;
     if (!formId) {
       try { formId = sessionStorage.getItem(YDP.storeKey + '_formId'); } catch (e) {}
     }
-    var payload = { formId: formId, formData: GovBB.D };
-    fetch('/api/ydp-submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    })
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
+    var afterSubmit = function (data) {
       if (data && data.referenceNumber) {
         try { sessionStorage.setItem(YDP.storeKey + '_ref', data.referenceNumber); } catch (e) {}
       }
+      YDP.deleteFile();
       window.location.href = confirmationUrl;
-    })
-    .catch(function () {
+    };
+    var fail = function () {
       var ref = 'REF-' + Math.random().toString(36).substring(2, 8).toUpperCase();
       try { sessionStorage.setItem(YDP.storeKey + '_ref', ref); } catch (e) {}
+      YDP.deleteFile();
       window.location.href = confirmationUrl;
-    });
+    };
+
+    YDP.getFile().then(function (blob) {
+      if (blob) {
+        var fd = new FormData();
+        fd.append('formId', formId);
+        fd.append('formData', JSON.stringify(GovBB.D));
+        var name = GovBB.D['cv-filename'] || 'cv';
+        fd.append('cv', blob, name);
+        return fetch('/api/ydp-submit', { method: 'POST', body: fd });
+      }
+      return fetch('/api/ydp-submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ formId: formId, formData: GovBB.D })
+      });
+    })
+    .then(function (r) { return r.json(); })
+    .then(afterSubmit)
+    .catch(fail);
   };
 
   /* Render a "Yes/No + Other radio" style group commonly used in these forms. */

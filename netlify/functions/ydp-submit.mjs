@@ -19,6 +19,18 @@ import { REGISTRY, fieldAllowed, resolveRecipient } from './_ydp-registry.mjs';
 
 const MAX_BODY_BYTES = 8 * 1024 * 1024;
 const MAX_FIELD_LEN = 8 * 1024;
+const MAX_CV_BYTES = 5 * 1024 * 1024;
+const CV_ALLOWED_EXT = new Set(['pdf', 'doc', 'docx', 'odt', 'rtf', 'txt']);
+const CV_ALLOWED_TYPES = new Set([
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.oasis.opendocument.text',
+  'application/rtf',
+  'text/rtf',
+  'text/plain',
+  'application/octet-stream'
+]);
 const HONEYPOT = '_hp';
 
 // In-memory rate limiter — per-instance only. Survives soft starts within a
@@ -64,19 +76,45 @@ export default async function handler(req) {
   const ip = req.headers.get('x-nf-client-connection-ip') || req.headers.get('x-forwarded-for') || '';
   if (rateLimited(ip)) return bad('Too many submissions. Please try again in a minute.', 429);
 
-  const raw = await req.text();
-  if (raw.length > MAX_BODY_BYTES) return bad('Request body too large.', 413);
+  const ctype = (req.headers.get('content-type') || '').toLowerCase();
+  let formId, formData, cvUpload = null;
 
-  let body;
-  try { body = JSON.parse(raw); } catch { return bad('Invalid JSON.'); }
-  if (!body || typeof body !== 'object' || Array.isArray(body)) return bad('Request body must be an object.');
+  if (ctype.startsWith('multipart/form-data')) {
+    let fd;
+    try { fd = await req.formData(); } catch { return bad('Invalid multipart body.'); }
+    formId = fd.get('formId');
+    const formDataJson = fd.get('formData');
+    if (typeof formId !== 'string' || !formId) return bad('formId is required.');
+    if (typeof formDataJson !== 'string') return bad('formData is required.');
+    try { formData = JSON.parse(formDataJson); } catch { return bad('formData is not valid JSON.'); }
 
-  const { formId, formData } = body;
+    const cv = fd.get('cv');
+    if (cv && typeof cv === 'object' && typeof cv.arrayBuffer === 'function') {
+      if (cv.size > MAX_CV_BYTES) return bad('CV file is too large (max 5 MB).', 413);
+      const filename = (cv.name || '').toString();
+      const ext = (filename.split('.').pop() || '').toLowerCase();
+      if (!CV_ALLOWED_EXT.has(ext)) return bad('CV file type not allowed.');
+      const mime = (cv.type || 'application/octet-stream').toLowerCase();
+      if (!CV_ALLOWED_TYPES.has(mime)) return bad('CV MIME type not allowed.');
+      const buf = Buffer.from(await cv.arrayBuffer());
+      cvUpload = { filename, mime, base64: buf.toString('base64'), size: cv.size };
+    }
+  } else {
+    const raw = await req.text();
+    if (raw.length > MAX_BODY_BYTES) return bad('Request body too large.', 413);
+    let body;
+    try { body = JSON.parse(raw); } catch { return bad('Invalid JSON.'); }
+    if (!body || typeof body !== 'object' || Array.isArray(body)) return bad('Request body must be an object.');
+    formId = body.formId;
+    formData = body.formData;
+  }
+
   if (typeof formId !== 'string' || !formId) return bad('formId is required.');
   if (!formData || typeof formData !== 'object' || Array.isArray(formData)) return bad('formData must be an object.');
 
   const entry = REGISTRY[formId];
   if (!entry) return bad('Unknown formId.');
+  if (cvUpload && !entry.hasCv) return bad('This form does not accept file uploads.');
 
   // Honeypot: if a bot fills the hidden field we silently 200 with a
   // fake-looking ref. No email is sent.
@@ -98,9 +136,7 @@ export default async function handler(req) {
       if (typeof v !== 'string' && typeof v !== 'number' && typeof v !== 'boolean') {
         return bad(`Invalid value for ${k}.`);
       }
-      // CV base64 has its own size cap (5 MB raw ≈ 6.7 MB base64).
-      const cap = (k === 'cv-file-base64') ? 7 * 1024 * 1024 : MAX_FIELD_LEN;
-      if (typeof v === 'string' && v.length > cap) return bad(`Value too long for ${k}.`);
+      if (typeof v === 'string' && v.length > MAX_FIELD_LEN) return bad(`Value too long for ${k}.`);
     }
     cleaned[k] = v;
   }
@@ -150,15 +186,16 @@ export default async function handler(req) {
   const contactEmail = recipient;
   const contactPhone = entry.contactPhone || env.DEPT_CONTACT_PHONE || '';
 
-  // Strip CV attachment fields from summary; surface as email attachment.
-  let cvBase64 = cleaned['cv-file-base64'];
-  let cvType = cleaned['cv-file-type'];
-  let cvFilename = cleaned['cv-filename'];
+  // CV attachment metadata is now driven by the multipart upload. Drop the
+  // older base64 fields if a stale browser still sends them (transitional).
   delete cleaned['cv-file-base64'];
   delete cleaned['cv-file-type'];
-  if (typeof cvBase64 !== 'string' || !cvBase64) cvBase64 = undefined;
-  if (typeof cvType !== 'string' || !cvType) cvType = undefined;
-  if (typeof cvFilename !== 'string' || !cvFilename) cvFilename = undefined;
+  const cvFilename = cvUpload?.filename || cleaned['cv-filename'];
+  const cvBase64 = cvUpload?.base64;
+  const cvType = cvUpload?.mime;
+  if (entry.hasCv && entry.requiredFields.includes('cv-filename') && !cvUpload) {
+    return bad('Missing required CV file.');
+  }
 
   // Build the dept summary table (full data — recipient is registry-approved).
   const summaryRows = Object.entries(cleaned)

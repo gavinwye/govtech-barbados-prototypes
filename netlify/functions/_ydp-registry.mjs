@@ -80,7 +80,7 @@ export const REGISTRY = {
     allowedFields: [
       ...COMMON_FIELDS,
       'right-to-work', 'current-status', 'education', 'interests',
-      'cv-filename', 'cv-file-base64', 'cv-file-type'
+      'cv-filename', 'cv-file-type'
     ],
     requiredFields: [
       'first-name', 'last-name', 'nrn', 'dob-day', 'dob-month', 'dob-year',
