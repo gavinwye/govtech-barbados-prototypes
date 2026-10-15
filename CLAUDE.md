@@ -52,3 +52,12 @@ Live demo tomorrow afternoon. Ship each change as its own PR against a preview U
 - Any change touching prompts, field keys, or the GovBB framework.
 
 **Why:** 24h window, no existing test coverage, LLM-load-bearing prompts — regression risk dominates. Proper schema-driven rebuild is post-demo. Remove this section after 2026-04-21.
+
+# Estimates and velocity
+
+Estimates against reality, and cycle time, are measured daily across every repo gavinwye owns. The result is `velocity.json` in the private repo `gavinwye/the-colonel` (on the VPS: `~/the-colonel/velocity.json`; elsewhere: `gh api repos/gavinwye/the-colonel/contents/velocity.json -H 'Accept: application/vnd.github.raw'`), and is shown at https://the-colonel.netlify.app/velocity.html. It can only measure what is linked and estimated, so always do the following.
+
+- **Link every PR to its issue.** Put `Closes #N` (or `Closes owner/repo#N`) in every PR description for work done from an issue. One issue per branch where practical, so the commits on the PR show the time spent on that issue. If the work has no issue, create one first.
+- **Every issue gets an estimate.** When opening, planning or breaking down an issue, add a line `Estimate: 2h` to the issue body (units `m`, `h`, `d`; 1 d = 6 focused hours). Give each phase of a plan its own issue with its own line, not an estimate in prose, so it can be measured. If scope changes, add a new `Estimate:` line; the last one wins. In `gavinwye/the-colonel` use that repo's `Estimate` labels instead (`15m`, `30m`, `1h`, `2h`, `half day`).
+- **Quote calibrated estimates.** Before giving an estimate, read `.calibration` in `velocity.json` (`overall`, `byRepo[<repo>]`, `byLabel[<label>]`, each with `n`, `medianRatio` = actual ÷ estimate, and `trusted`, true at 3 or more issues). Use the most specific entry that is trusted and show both: "raw 2h, calibrated about 3h (work has run 1.5x the estimate here)". If none is trusted, or the file cannot be read, say so and give the raw estimate only. Write the raw estimate on the issue, never the calibrated one, so the ratio stays honest.
+- **Report at the end of a job.** When finishing work on an issue, say what the estimate was and how long it actually took.
